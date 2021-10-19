@@ -4,6 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.vue",
+    "deploy": "vue-tsc --noEmit && vite build --base '/prestaui/'",
     "serve": "vite preview"
   },
   "dependencies": {
@@ -16,7 +18,10 @@
     "@tailwindcss/line-clamp": "^0.2.2",
     "@tailwindcss/typography": "^0.4.1",
     "@types/node": "^16.11.1",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
     "@vitejs/plugin-vue": "^1.9.3",
+    "@vue/compiler-sfc": "^3.2.20",
     "autoprefixer": "^10.3.7",
     "eslint": "^8.0.1",
     "eslint-plugin-vue": "^7.19.1",
