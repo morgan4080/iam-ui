@@ -57,13 +57,9 @@ const setWidth = ref(true)
                 Roles
               </router-link>
 
-              <a href="#" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
-                Customers
-              </a>
-
             </div>
           </div>
-          <div class="space-y-1">
+          <div class="space-y-1 hidden">
             <button type="button" class="bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-controls="sub-menu-1" @click="open = !open" aria-expanded="false">
               <svg class="mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150 text-gray-300" viewBox="0 0 20 20" aria-hidden="true" :class="{ 'text-gray-400 rotate-90': open, 'text-gray-300': !(open) }">
                 <path d="M6 6L14 10L6 14V6Z" fill="currentColor"></path>
@@ -90,7 +86,7 @@ const setWidth = ref(true)
 
             </div>
           </div>
-          <div class="space-y-1">
+          <div class="space-y-1 hidden">
             <a href="#" class="text-gray-900 group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-gray-900" >
               Organisation activity
             </a>
