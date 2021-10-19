@@ -11,6 +11,7 @@ module.exports = {
       pink: colors.fuchsia,
       white: colors.white,
       indigo: colors.indigo,
+      teal: colors.teal,
     },
     extend: {
       rotate: {
