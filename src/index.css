@@ -1,0 +1,8 @@
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.router-link-active.router-link-exact-active {
+    @apply bg-gray-100;
+}
