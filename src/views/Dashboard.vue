@@ -42,9 +42,9 @@
             </h1>
           </div>
           <div class="ml-3 text-sm block ">
-            <div class="text-xs pt-3 opacity-75">
+            <div class="text-xs pt-3 opacity-75 space-y-2">
               <a href="#" class="flex text-blue-600">IAM documentation</a>
-              <a href="#" class="flex text-blue-600">Release history and additional resources</a>
+              <a href="#" class="flex text-blue-600">Additional resources</a>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
