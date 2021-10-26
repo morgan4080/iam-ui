@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import Logo from '../components/Logo.vue'
-import SignIn from '../components/SignIn.vue'
+import TheLogo from '../components/TheLogo.vue'
+import TheSignIn from '../components/TheSignIn.vue'
 
 </script>
 
@@ -14,7 +14,7 @@ import SignIn from '../components/SignIn.vue'
     <div class="relative mx-auto max-w-md px-4 py-12 sm:max-w-7xl sm:px-6 sm:py-20 md:py-28 lg:px-8 lg:py-32">
       <div class="md:ml-auto md:w-1/2 md:pl-10">
         <div class="flex text-white font-bold text-lg space-x-5 items-center">
-          <Logo class="w-10"/>
+          <TheLogo class="w-10"/>
           <h1>PRESTA CAPITAL</h1>
         </div>
         <h2 class="text-base font-semibold uppercase tracking-wider text-white pt-6">
@@ -22,7 +22,7 @@ import SignIn from '../components/SignIn.vue'
         </h2>
 
         <div class="mt-6 text-gray-300">
-          <SignIn />
+          <TheSignIn />
         </div>
       </div>
     </div>

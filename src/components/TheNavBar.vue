@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import Logo from './Logo.vue'
+import TheLogo from './TheLogo.vue'
 import {ref} from "vue";
 const servicesMenu = ref(false)
 const accountMenu = ref(false)
 const mobileMenu = ref(false)
+// defineProps<{ msg: string }>()
 </script>
 <template>
   <nav class="bg-gray-800">
@@ -37,11 +38,11 @@ const mobileMenu = ref(false)
         </div>
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
           <div class="flex-shrink-0 flex items-center">
-            <Logo class="h-8 w-auto" />
+            <TheLogo class="h-8 w-auto" />
           </div>
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
-              <div class="ml-12 relative">
+              <div class="ml-6 relative">
                 <div>
                   <button @click="servicesMenu = !servicesMenu" type="button" class="inline-flex items-center px-3 py-2  text-sm leading-4 font-medium rounded-md text-gray-100 bg-gray-800 hover:text-gray-400 focus:outline-none focus:ring-1 transition" id="services-menu-button" aria-expanded="false" aria-haspopup="true">
                     <span class="sr-only">Open services menu</span>

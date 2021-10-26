@@ -1,21 +1,15 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import NavBar from './components/NavBar.vue'
-import Footer from './components/Footer.vue'
-import SideBar from './components/SideBar.vue'
+import TheNavBar from './components/TheNavBar.vue'
+import TheFooter from './components/TheFooter.vue'
+import TheSideBar from './components/TheSideBar.vue'
 
 </script>
 
 <template>
-  <NavBar v-if="$route.name !== 'Landing'" />
+  <TheNavBar v-if="$route.name !== 'Landing'" />
   <div class="flex" >
-    <SideBar v-if="$route.name !== 'Landing'" />
+    <TheSideBar v-if="$route.name !== 'Landing' && $route.name !== 'NewUsers'" />
     <router-view></router-view>
   </div>
-  <Footer />
+  <TheFooter />
 </template>
-
-<style scoped>
-
-</style>

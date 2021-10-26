@@ -2,13 +2,15 @@
   "name": "prestaui",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vue-tsc --noEmit && vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.vue",
     "deploy": "vue-tsc --noEmit && vite build --base '/prestaui/'",
     "serve": "vite preview"
   },
   "dependencies": {
+    "@vuelidate/core": "^2.0.0-alpha.30",
+    "@vuelidate/validators": "^2.0.0-alpha.24",
     "vue": "^3.2.16",
     "vue-router": "^4.0.12"
   },
