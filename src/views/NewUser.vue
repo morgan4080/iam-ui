@@ -15,6 +15,7 @@ const rulesStep1 = {
 
 const vuelidateStep1 = useVuelidate(rulesStep1, formStep1)
 
+const addRoleToUser = ref(false)
 
 
 const currentStep = ref(1)
@@ -126,7 +127,7 @@ function launchSpecific(stepInput: number) {
                 <div class="flex flex-col mx-auto pt-8">
                   <div class="flex flex-row items-center space-x-4">
                     <label for="username" class="text-base font-semibold text-gray-700">Username *</label>
-                    <input id="username" v-model="formStep1.username" class="border-gray-300 rounded-md" type="text">
+                    <input id="username" v-model="formStep1.username" class="border-gray-400 rounded-md" type="text">
                   </div>
                 </div>
                 <div class="flex flex-row justify-between pt-8 border-b pb-1">
@@ -142,14 +143,14 @@ function launchSpecific(stepInput: number) {
                     <h4 class="font-semibold pt-2 pr-4 text-gray-700">Select user type *</h4>
                     <div class="flex flex-col space-y-5">
                       <div class="flex flex-row items-center space-x-3">
-                        <input id="ussd" v-model="formStep1.user_type" value="ussd" name="user_type" class="border-gray-300 rounded-md" type="radio">
+                        <input id="ussd" v-model="formStep1.user_type" value="ussd" name="user_type" class="border-gray-400 rounded-md" type="radio">
                         <label for="ussd" class="text-base text-gray-700 flex flex-col">
                           <span class="font-semibold">USSD access</span>
                           <span class="font-medium text-sm text-gray-500">For lending customers using USSD</span>
                         </label>
                       </div>
                       <div class="flex flex-row items-center space-x-3">
-                        <input id="web" v-model="formStep1.user_type" value="web" name="user_type" class="border-gray-300 rounded-md" type="radio">
+                        <input id="web" v-model="formStep1.user_type" value="web" name="user_type" class="border-gray-400 rounded-md" type="radio">
                         <label for="web" class="text-base text-gray-700 flex flex-col">
                           <span class="font-semibold">Web access</span>
                           <span class="font-medium text-sm text-gray-500">For lending organisation users</span>
@@ -193,7 +194,7 @@ function launchSpecific(stepInput: number) {
                 </div>
                 <div class="flex flex-col pt-4">
                   <div class="flex">
-                    <div class="flex-initial flex space-x-2 items-center py-4 px-3 rounded-md ring-2 bg-gray-50 ring-blue-300 text-gray-700 text-base cursor-pointer">
+                    <div :class="{ 'ring-2 bg-gray-50 ring-blue-300' : addRoleToUser }" class="flex-initial flex space-x-2 items-center py-4 px-3 rounded-md text-gray-700 text-base border cursor-pointer shadow" @click="addRoleToUser = !addRoleToUser">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
@@ -203,11 +204,11 @@ function launchSpecific(stepInput: number) {
                 </div>
                 <div class="flex flex-row justify-between pt-8 border-b pb-1">
                   <div class="font-medium text-lg text-gray-700">
-                    <h3>Set user access type</h3>
+                    <h3>Set user roles</h3>
                   </div>
                 </div>
                 <div class="flex text-sm text-gray-500 pt-1">
-                  <p>Select how these users will access lending services. Mobile USSD or Web</p>
+                  <p>Select user access roles</p>
                 </div>
                 <div class="flex flex-row items-center pt-8 pb-20 w-full border-b">
                   <div class="flex items-start mx-auto">
