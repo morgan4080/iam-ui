@@ -4,16 +4,13 @@
       <div class="py-3 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
-            <div class="flex pb-2 pt-2">
-              <router-link to="/dashboard" class="text-blue-500">IAM</router-link>&nbsp;> Users
-            </div>
-            <div class="space-y-4 flex flex-col items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
+            <div class="pt-12 flex flex-row items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
               <div class="space-x-1">
-                <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
                   Add user
                 </button>
 
-                <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
                   Delete user
                 </button>
               </div>
@@ -35,7 +32,6 @@
                   </svg>
                 </button>
               </span>
-
             </div>
             <div class="-my-2 pt-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -69,13 +65,13 @@
                         <input class="rounded" type="checkbox">
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Jane Kariuki
+                        Jane doe
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         1 hour ago
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        jane.kariuki@example.com
+                        jane.doe@example.com
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         Admin
