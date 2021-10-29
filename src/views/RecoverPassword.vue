@@ -33,5 +33,5 @@ function resetPassword () {
       </form>
     </div>
   </main>
-  <img src="/public/beams-corner-light.jpg" alt="" class="absolute bottom-0 right-0 w-[45.875rem]">
+  <img src="/beams-corner-light.jpg" alt="" class="absolute bottom-0 right-0 w-[45.875rem]">
 </template>
