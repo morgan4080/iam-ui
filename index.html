@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-gray-100 js-focus-visible">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
@@ -15,7 +15,7 @@
       }
       /* width */
       ::-webkit-scrollbar {
-          width: 14px;
+          width: 10px;
       }
       /* Track */
       ::-webkit-scrollbar-track {
@@ -33,8 +33,8 @@
       }
     </style>
   </head>
-  <body class="overflow-y-hidden">
-    <div id="app" class="font-sans"></div>
+  <body>
+    <div id="app" class="font-sans antialiased text-gray-600 flex flex-col min-h-full flex flex-col relative"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

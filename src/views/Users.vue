@@ -4,8 +4,8 @@
       <div class="py-3 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
-            <div class="pt-12 flex flex-row items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
-              <div class="space-x-1">
+            <div class="py-10 sm:py-6 flex flex-wrap items-center justify-start space-y-0 sm:flex-row sm:items-end">
+              <div class="space-x-2">
                 <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
                   Add user
                 </button>

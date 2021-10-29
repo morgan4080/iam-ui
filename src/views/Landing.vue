@@ -13,11 +13,11 @@ import TheSignIn from '../components/TheSignIn.vue'
     </div>
     <div class="relative mx-auto max-w-md px-4 py-12 sm:max-w-7xl sm:px-6 sm:py-20 md:py-28 lg:px-8 lg:py-32">
       <div class="md:ml-auto md:w-1/2 md:pl-10">
-        <div class="flex text-white font-bold text-lg space-x-5 items-center">
+        <div class="flex text-gray-200 font-bold text-lg space-x-5 items-center">
           <TheLogo class="w-10"/>
           <h1>PRESTA CAPITAL</h1>
         </div>
-        <h2 class="text-base font-semibold uppercase tracking-wider text-white pt-6">
+        <h2 class="text-base font-semibold uppercase tracking-wider text-gray-200 pt-6">
           identity and access management
         </h2>
 

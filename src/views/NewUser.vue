@@ -202,7 +202,7 @@ function createUser() {
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
             <div class="flex flex-row justify-between">
-              <div class="font-semibold text-2xl text-gray-700">
+              <div class="text-lg font-bold tracking-tight text-gray-900">
                 <h3>Add User</h3>
               </div>
               <nav class="flex items-center justify-center" aria-label="Progress">
@@ -314,7 +314,7 @@ function createUser() {
             >
               <div v-if="currentStep === 2" class="flex flex-col min-h-screen">
                 <div class="flex flex-row justify-between pt-8 border-b pb-2">
-                  <div class="font-medium text-lg text-gray-700">
+                  <div class="font-medium text-base tracking-tight text-gray-700">
                     <h3>Set user roles</h3>
                   </div>
                 </div>

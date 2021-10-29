@@ -7,6 +7,7 @@ const routes = [
     {path:'/users', name: 'Users', component: () => import("@/views/Users.vue")},
     {path:'/new-users', name: 'NewUsers', component: () => import("@/views/NewUser.vue")},
     {path:'/roles', name: 'Roles', component: () => import("@/views/Roles.vue")},
+    {path:'/password/reset', name: 'Password-Reset', component: () => import("@/views/RecoverPassword.vue")},
 ]
 
 const router = createRouter({

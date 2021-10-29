@@ -8,7 +8,7 @@ const setWidth = ref(true)
 </script>
 
 <template>
-  <div :class="{ 'transition duration-500 ease-in-out w-64': setWidth, 'transition duration-500 ease-in-out w-0': !setWidth }" class="flex flex-col transform">
+  <div :class="{ 'transition duration-500 ease-in-out w-64': setWidth, 'transition duration-500 ease-in-out w-0': !setWidth }" class="flex flex-col transform bg-white">
     <div class="ml-4 mt-3 border-r text-base relative font-bold tracking-tight text-gray-900">
       <div v-if="setWidth">
         <h1>Identity and Access</h1>

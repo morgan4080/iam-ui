@@ -15,6 +15,9 @@ module.exports = {
       teal: colors.teal,
     },
     extend: {
+      width: {
+        'w-[45.875rem]' : '45.875rem'
+      },
       rotate: {
         '270': '270deg',
       },
@@ -24,7 +27,11 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      outline: ['focus'],
+      ringColor: ['focus'],
+      ringOffsetColor: ['focus'],
+    },
   },
   plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography'), require('@tailwindcss/aspect-ratio'), require('@tailwindcss/line-clamp')],
 }

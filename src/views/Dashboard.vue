@@ -20,8 +20,8 @@
           <div class="ml-3 mt-4 text-sm block ">
             <div class="font-normal border-b border-gray-200 py-2">IAM resources</div>
             <div class="text-xs pt-3 opacity-75 flex space-x-16">
-              <a href="#" class="flex text-blue-600"><span class="pr-3">Users:</span>  2</a>
-              <a href="#" class="flex text-blue-600"><span class="pr-3">Roles:</span>  4</a>
+              <router-link to="/users" class="flex text-blue-600"><span class="pr-3">Users:</span>  0</router-link>
+              <router-link to="/roles" class="flex text-blue-600"><span class="pr-3">Roles:</span>  0</router-link>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
