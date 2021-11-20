@@ -13,12 +13,11 @@ function resetPassword () {
 <template>
   <main class="relative z-10 flex-auto flex items-center justify-center text-sm text-center text-gray-600 pb-16 px-4 sm:px-6 lg:px-8">
     <div class="w-full max-w-sm">
-      <div class="flex justify-center items-center font-bold text-2xl mx-auto mb-12 space-x-1 text-gray-900">
+      <div class="flex flex-col justify-center items-center space-y-2 font-bold text-2xl mx-auto mb-4 space-x-1 text-gray-900">
         <TheLogo class="w-16 text-blue-600 hover:text-blue-900"/>
         <h1>Presta Capital</h1>
       </div>
-      <h1 class="text-center mb-2 text-gray-900 text-sm font-semibold">Reset your password</h1>
-      <p class="text-center text-sm mb-10">Enter your email and we'll send you a link to reset your password.</p>
+      <p class="text-center text-sm mb-8">Enter your email and we'll send you a link to reset your password.</p>
 
       <form @submit.prevent="resetPassword" method="POST">
         <div class="relative">

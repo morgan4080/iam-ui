@@ -6,3 +6,7 @@
 a.router-link-active.router-link-exact-active {
     @apply bg-gray-100;
 }
+
+a.navbar.router-link-active.router-link-exact-active {
+    background-color: hsla(199,89%,48%,0.5);
+}

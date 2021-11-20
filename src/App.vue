@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import TheNavBar from './components/TheNavBar.vue'
-import TheFooter from './components/TheFooter.vue'
-import TheSideBar from './components/TheSideBar.vue'
+  import TheNavBar from './components/TheNavBar.vue'
+  import TheFooter from './components/TheFooter.vue'
+  import TheSideBar from './components/TheSideBar.vue'
+  import { getAccessToken, getAuthentication } from '@/modules/all'
+  import { useStore } from "vuex"
+
+  const store = useStore()
+
+  console.log(import.meta.env)
+
+  getAccessToken()
+      .then(getAuthentication)
+      .then((data: any) => store.commit('set_current_user', data))
+      .catch((e: any) => console.log(e))
 
 </script>
 

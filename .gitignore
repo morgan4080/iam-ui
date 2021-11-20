@@ -1,6 +1,7 @@
 node_modules
 .DS_Store
 .idea
+.env.local
 dist
 prestaui
 dist-ssr

@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import TheLogo from './TheLogo.vue'
-import {ref} from "vue";
+import {computed, ref} from "vue";
 const servicesMenu = ref(false)
 const accountMenu = ref(false)
 const mobileMenu = ref(false)
-// defineProps<{ msg: string }>()
+import { useStore } from "vuex"
+
+const store = useStore()
+// defineProps<{ user: object }>()
+
+const user = computed(() => {
+  return store.state.user ? store.state.user : null
+})
+
 </script>
 <template>
   <nav class="bg-gray-800">
@@ -38,7 +46,9 @@ const mobileMenu = ref(false)
         </div>
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
           <div class="flex-shrink-0 flex items-center">
-            <TheLogo class="h-8 w-auto" />
+            <router-link to="/" class="navbar p-1">
+              <TheLogo class="h-8 w-auto" />
+            </router-link>
           </div>
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
@@ -63,8 +73,8 @@ const mobileMenu = ref(false)
                 >
                 <div v-if="servicesMenu" class="bg-gray-800 origin-top-left absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                   <!-- Active: "bg-gray-100", Not Active: "" -->
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="service-menu-item-0">Service 1</a>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="service-menu-item-2">Service 2</a>
+                  <a href="#" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="service-menu-item-0">Service 1</a>
+                  <a href="#" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="service-menu-item-2">Service 2</a>
                 </div>
                 </transition>
               </div>
@@ -85,7 +95,7 @@ const mobileMenu = ref(false)
             <div>
               <button @click="accountMenu = !accountMenu" type="button" class="inline-flex items-center px-3 py-2  text-sm leading-4 font-medium rounded-md text-gray-100 bg-gray-800 hover:text-gray-400 focus:outline-none focus:ring-1 transition" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                 <span class="sr-only">Open user menu</span>
-                Mutugi
+                {{ user ? user.firstName + ' ' + user.lastName : 'loading..' }}
                 <svg class="mt-1 rotate-90 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150 text-gray-300 text-gray-300" viewBox="0 0 20 20" aria-hidden="true" ><path d="M6 6L14 10L6 14V6Z" fill="currentColor"></path></svg>
               </button>
             </div>
@@ -100,8 +110,8 @@ const mobileMenu = ref(false)
             >
             <div v-if="accountMenu" class="bg-gray-800 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
               <!-- Active: "bg-gray-100", Not Active: "" -->
-              <a href="#" class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
-              <a @click="$router.push('/')" href="#" class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
+              <router-link :to="`/profiles/${user.id}`" @click="accountMenu = !accountMenu" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</router-link>
+              <a @click="$router.push('/')" href="#" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
             </div>
             </transition>
           </div>

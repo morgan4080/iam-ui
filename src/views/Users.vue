@@ -1,3 +1,19 @@
+<script setup lang="ts">
+  import { getAccessToken, getUsers } from '@/modules/all'
+  import { ref } from "vue"
+
+  const allUsers = ref(<any[]>[])
+
+  getAccessToken()
+  .then((token: string) => getUsers(token))
+  .then((users: {isEnabled: boolean,userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[]) => {
+    allUsers.value = users
+  }).catch((e: any) => {
+    console.log(e)
+    alert("User fetch Error")
+  })
+</script>
+
 <template>
   <div class="flex-col h-screen w-full overflow-y-auto" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
@@ -11,7 +27,7 @@
                 </button>
 
                 <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
-                  Delete user
+                  Disable user
                 </button>
               </div>
 
@@ -19,11 +35,6 @@
                 <button type="button" class="relative inline-flex items-center px-2.5 py-1.5 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-                  </svg>
-                </button>
-                <button type="button" class="-ml-px relative inline-flex items-center px-2.5 py-1.5 border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                   </svg>
                 </button>
                 <button type="button" class="-ml-px relative inline-flex items-center px-2.5 py-1.5 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
@@ -46,7 +57,7 @@
                         Name
                       </th>
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Last Activity
+                        Phone
                       </th>
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Email
@@ -54,30 +65,51 @@
                       <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Role
                       </th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
                       <th scope="col" class="relative px-6 py-3">
                         <span class="sr-only">Edit</span>
                       </th>
                     </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
+                    <tr v-for="(user) in allUsers" :key="user.id">
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         <input class="rounded" type="checkbox">
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Jane doe
+                        <router-link :to="`/users/${user.id}`">
+                          {{ user.firstName }} {{ user.lastName }}
+                        </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        1 hour ago
+                        <router-link :to="`/users/${user.id}`">
+                          {{ user.phoneNumber }}
+                        </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        jane.doe@example.com
+                        <router-link :to="`/users/${user.id}`">
+                          {{ user.email }}
+                        </router-link>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
+                        <router-link :to="`/users/${user.id}`">
+                          {{ user.userType }}
+                        </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        Admin
+                        <router-link :to="`/users/${user.id}`">
+                          <span v-if="user.isEnabled" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Enabled
+                          </span>
+                          <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Disabled
+                          </span>
+                        </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="#" class="text-blue-600 hover:text-blue-900">Edit</a>
+                        <router-link :to="`/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
                       </td>
                     </tr>
 

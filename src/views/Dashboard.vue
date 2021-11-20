@@ -1,3 +1,43 @@
+<script setup lang="ts">
+import {getAccessToken, getRoles, getUsers} from '@/modules/all'
+import { ref, computed } from "vue"
+import { useStore } from "vuex"
+
+const store = useStore()
+// defineProps<{ user: object }>()
+
+const user = computed(() => {
+  return store.state.user ? store.state.user : null
+})
+
+const userCount = ref(0)
+const roleCount = ref(0)
+
+getAccessToken()
+    .then(async (token: string) => {
+
+      try {
+        const users: any[] = await getUsers(token)
+        userCount.value = users.length
+      } catch (e) {
+        console.log(e)
+        alert("Users dashboard fetch Error")
+      }
+
+      try {
+        const roles: any[] = await getRoles(token)
+        roleCount.value = roles.length
+      } catch (e) {
+        console.log(e)
+        alert("Roles dashboard fetch Error")
+      }
+
+    }).catch((e: any) => {
+        console.log(e)
+        alert("Token fetch Error")
+    })
+
+</script>
 <template>
   <div class="flex-col h-screen w-full overflow-y-auto" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
@@ -5,23 +45,13 @@
         <div class="flex-1 min-w-0">
           <div class="ml-3 flex items-center border-b border-gray-200">
             <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
-              IAM Dashboard
+              IAM Resources
             </h1>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
-            <div class="font-semibold">Sign-in URL for IAM users in this account</div>
-            <div class="text-xs pt-3 opacity-75 flex">
-              <code>https://iam.presta.co.ke/0000120/</code>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-              </svg>
-            </div>
-          </div>
-          <div class="ml-3 mt-4 text-sm block ">
-            <div class="font-normal border-b border-gray-200 py-2">IAM resources</div>
-            <div class="text-xs pt-3 opacity-75 flex space-x-16">
-              <router-link to="/users" class="flex text-blue-600"><span class="pr-3">Users:</span>  0</router-link>
-              <router-link to="/roles" class="flex text-blue-600"><span class="pr-3">Roles:</span>  0</router-link>
+            <div class="text-xs opacity-75 flex space-x-16">
+              <router-link to="/users" class="flex text-blue-600"><span class="pr-3">Users:</span>  {{ userCount }}</router-link>
+              <router-link to="/roles" class="flex text-blue-600"><span class="pr-3">Roles:</span>  {{ roleCount }}</router-link>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
@@ -43,15 +73,15 @@
           </div>
           <div class="ml-3 text-sm block ">
             <div class="text-xs pt-3 opacity-75 space-y-2">
-              <a href="#" class="flex text-blue-600">IAM documentation</a>
-              <a href="#" class="flex text-blue-600">Additional resources</a>
+              <a href="https://support.presta.co.ke/portal/en/home" rel="noopener noreferrer" target="_blank" class="flex text-blue-600">IAM documentation</a>
+              <a href="https://support.presta.co.ke/portal/en/home" rel="noopener noreferrer" target="_blank" class="flex text-blue-600">Additional resources</a>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
             <div class="font-normal border-b border-gray-200 py-2">Quick links</div>
             <div class="text-xs pt-2 opacity-75 flex flex-col space-y-2">
-              <a href="#" class="flex text-blue-600">Contact us</a>
-              <a href="#" class="flex text-blue-600">Support</a>
+              <a href="https://www.presta.co.ke/contact-us" rel="noopener noreferrer" target="_blank" class="flex text-blue-600">Contact us</a>
+              <a href="https://support.presta.co.ke/portal/en/home" rel="noopener noreferrer" target="_blank" class="flex text-blue-600">Support</a>
             </div>
           </div>
         </div>
@@ -59,6 +89,3 @@
     </div>
   </div>
 </template>
-<script setup lang="ts">
-
-</script>

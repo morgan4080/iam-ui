@@ -196,7 +196,7 @@ function createUser() {
 </script>
 
 <template>
-  <div class="flex-col h-screen w-full overflow-y-scroll pb-12" style="min-height: 640px;">
+  <div class="flex-col h-screen w-full pb-12" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
       <div class="py-3 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">
