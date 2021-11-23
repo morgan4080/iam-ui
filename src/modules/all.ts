@@ -70,7 +70,7 @@ export function getPermissions(access_token: string): any {
     return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions", requestOptions)
         .then(response => response.json())
         .then((data: any) => {
-            return data
+            return data.records
         })
 }
 
@@ -99,6 +99,10 @@ export function postUser(access_token: string, body: any): any {
     myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     myHeaders.append("Content-Type", "application/json")
+
+    myHeaders.append("Accept", "*/*")
+
+
 
     let raw: string
 
@@ -140,10 +144,7 @@ export function postUser(access_token: string, body: any): any {
 
     return new Promise((resolve,reject) => {
         fetch(uri, reqOptions)
-            .then(response => {
-                if (body.userType.toLowerCase() === 'admin') return response.text()
-                return response.json()
-            })
+            .then(response => response.json())
             .then((data) => {
                 resolve(data)
             }).catch(e => {

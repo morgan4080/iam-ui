@@ -9,18 +9,25 @@ const store = useStore()
 
 const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
 
-const available_roles = ref(<any[]>[])
+const available_roles = ref(<{roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]>[])
 
-let access_token: string;
+const available_permissions = ref(<any[]>[])
 
 getAccessToken()
-    .then((token: string) => {
-      access_token = token
-      getPermissions(token)
-      return getRoles(token)
-    })
-    .then((roles: {roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]) => {
-      available_roles.value = roles
+    .then(async (token: string) => {
+      try {
+        available_roles.value = await getRoles(token)
+      } catch (e) {
+        throw e
+      }
+      try {
+        available_permissions.value = await getPermissions(token)
+      } catch (e) {
+        throw e
+      }
+    }).catch((e: any) => {
+      console.log(e)
+      alert("Check Console")
     })
 
 const formStep1 = reactive({
@@ -215,7 +222,7 @@ function setEventVal(event: any) {
 
 const loading = ref(false)
 
-async function createUser() {
+function createUser() {
   loading.value = true
   console.log(formStep1)
   console.log(formStep2)
@@ -247,16 +254,21 @@ async function createUser() {
     emailAddress: formStep1.email
   } : null ;
 
-
-  try {
-    const response: any = await postUser(access_token, payload)
-    console.log(response)
-    // move to final stage
-  } catch (e) {
+  getAccessToken()
+  .then(async (token: string) => {
+    try {
+      const response: any = await postUser(token, payload)
+      console.log("create user response", response)
+      // move to final stage
+    } catch (e) {
+      throw e
+    }
+  }).catch((e: any) => {
     console.log(e)
-  } finally {
+    alert("check console")
+  }).finally(() => {
     loading.value = false
-  }
+  })
 }
 
 function checkUserTypeAccessType() {
@@ -594,7 +606,7 @@ function checkUserTypeAccessType() {
                 <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 border-b pb-8">
                   <div class="flex flex-col ml-8 pt-4 space-y-2">
                     <div class="flex flex-row space-x-4 tracking-wide text-sm ">
-                        <h6 class="font-medium text-gray-900">Names</h6>
+                        <h6 class="font-medium text-gray-900">Full name</h6>
                         <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.firstName }} {{ formStep1.lastName }}</span>
                     </div>
 
@@ -615,7 +627,7 @@ function checkUserTypeAccessType() {
                     </div>
 
                     <div class="flex flex-row space-x-4 tracking-wide text-sm">
-                        <h6 class="font-medium text-gray-900">User type</h6>
+                        <h6 class="font-medium text-gray-900">Phone number</h6>
                         <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.phoneNumber }}</span>
                     </div>
 

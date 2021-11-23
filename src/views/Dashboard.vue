@@ -20,21 +20,19 @@ getAccessToken()
         const users: any[] = await getUsers(token)
         userCount.value = users.length
       } catch (e) {
-        console.log(e)
-        alert("Users dashboard fetch Error")
+        throw e
       }
 
       try {
         const roles: any[] = await getRoles(token)
         roleCount.value = roles.length
       } catch (e) {
-        console.log(e)
-        alert("Roles dashboard fetch Error")
+        throw e
       }
 
     }).catch((e: any) => {
         console.log(e)
-        alert("Token fetch Error")
+        alert("Check Console")
     })
 
 </script>

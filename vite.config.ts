@@ -12,35 +12,47 @@ export default defineConfig({
   envDir: path.resolve(__dirname, './'),
   server: {
     proxy: {
+      // authentication for supplied token
       '/authentication': {
         target: 'https://accounts.presta.co.ke',
         changeOrigin: true,
-        secure: false,
-        ws: true,
+        secure: true
       },
+      // to get single user by id
       '^/users-admin/api/users/.*': {
         target: 'https://accounts.presta.co.ke',
         changeOrigin: true,
-        secure: false,
-        ws: true,
+        secure: true
       },
-      '^/users-admin/api/.*': {
+      '/users-admin/api/users': {
         target: 'https://accounts.presta.co.ke',
         changeOrigin: true,
-        secure: false,
-        ws: true,
+        secure: true
+      },
+      '/users-admin/api/register': {
+        target: 'https://accounts.presta.co.ke',
+        changeOrigin: true,
+        secure: true
+      },
+      '/users-admin/api/permissions': {
+        target: 'https://accounts.presta.co.ke',
+        changeOrigin: true,
+        secure: true
       },
       '/auth/realms/t74209/protocol/openid-connect/token': {
         target: 'https://iam.presta.co.ke',
         changeOrigin: true,
-        secure: false,
-        ws: true,
+        secure: true
+      },
+      '/users-admin/api/roles': {
+        target: 'https://accounts.presta.co.ke',
+        changeOrigin: true,
+        secure: true
       },
       '^/users-admin/api/roles/.*': {
         target: 'https://accounts.presta.co.ke',
         changeOrigin: true,
-        secure: false,
-        ws: true,
+        secure: true
       }
     }
   }
