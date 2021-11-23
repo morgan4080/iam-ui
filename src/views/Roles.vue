@@ -6,7 +6,7 @@
 
   getAccessToken()
       .then((token: string) => getRoles(token))
-      .then((roles: {roleName: string, roleType: string, description: string, id: string }[]) => {
+      .then((roles: {roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]) => {
         all_roles.value = roles
       })
 
@@ -60,7 +60,7 @@
                           {{ role.roleType }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {{ role.description ? role.description : 'customer or admin role description' }}
+                          {{ role.roleDescription ? role.roleDescription : 'customer or admin role description' }}
                         </td>
                       </tr>
                       </tbody>

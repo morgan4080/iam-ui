@@ -2,7 +2,7 @@
   import { useRoute } from "vue-router"
   import { computed, reactive, ref } from "vue"
   import { getAccessToken, getUser } from '@/modules/all'
-  import { useStore } from "vuex";
+  import { useStore } from "vuex"
 
   const store = useStore()
 

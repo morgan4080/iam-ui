@@ -2,7 +2,26 @@
   import { getAccessToken, getUsers } from '@/modules/all'
   import { ref } from "vue"
 
-  const allUsers = ref(<any[]>[])
+  const allUsers = ref(<any[]>[
+    {
+      isEnabled: '',
+      userType: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      id: ''
+    },
+    {
+      isEnabled: '',
+      userType: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      id: ''
+    }
+  ])
 
   getAccessToken()
   .then((token: string) => getUsers(token))
@@ -80,21 +99,25 @@
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         <router-link :to="`/users/${user.id}`">
+                          <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-200 block rounded animate-pulse"></span>
                           {{ user.firstName }} {{ user.lastName }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <router-link :to="`/users/${user.id}`">
+                          <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-200 block rounded animate-pulse"></span>
                           {{ user.phoneNumber }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <router-link :to="`/users/${user.id}`">
+                          <span v-if="user.email === ''" class="h-4 w-12 bg-gray-200 block rounded animate-pulse"></span>
                           {{ user.email }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
                         <router-link :to="`/users/${user.id}`">
+                          <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-200 block rounded animate-pulse"></span>
                           {{ user.userType }}
                         </router-link>
                       </td>
@@ -109,7 +132,7 @@
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <router-link :to="`/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
+                        <router-link v-if="user.id" :to="`/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
                       </td>
                     </tr>
 

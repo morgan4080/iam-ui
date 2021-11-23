@@ -1,32 +1,42 @@
 <script setup lang="ts">
 import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
-import {ref, reactive} from "vue"
+import {ref, reactive, computed} from "vue"
+import {getAccessToken, getPermissions, getRoles, postUser} from "@/modules/all"
+import { useStore } from "vuex"
 
-const available_roles = reactive([
-  {
-    id: 1,
-    name: 'user',
-    permissions: 'Read',
-    description: 'Nulla facilisis aliquam orci vel gravida.'
-  },
-  {
-    id: 2,
-    name: 'admin',
-    permissions: 'Read/Write',
-    description: 'Nulla facilisis aliquam orci vel gravida.'
-  },
-  {
-    id: 3,
-    name: 'super-admin',
-    permissions: 'Full access',
-    description: 'Nulla facilisis aliquam orci vel gravida.'
-  }
-])
+const store = useStore()
+
+const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
+
+const available_roles = ref(<any[]>[])
+
+let access_token: string;
+
+getAccessToken()
+    .then((token: string) => {
+      access_token = token
+      getPermissions(token)
+      return getRoles(token)
+    })
+    .then((roles: {roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]) => {
+      available_roles.value = roles
+    })
 
 const formStep1 = reactive({
+  firstName: null,
+  lastName: null,
   username: null,
-  user_type: null
+  email: null,
+  password: null,
+  passwordConfirmation: null,
+  pinSecret: null,
+  pinSecretConfirmation: null,
+  phoneNumber: null,
+  user_type: null,
+  access_type: null,
+  tenantId: null,
+  enabled: true
 })
 
 const formStep2: {user_has_roles: any, user_roles: any} = reactive({
@@ -36,7 +46,17 @@ const formStep2: {user_has_roles: any, user_roles: any} = reactive({
 
 const rulesStep1 = {
   username: { required },
-  user_type: { required }
+  user_type: { required },
+  access_type: { required },
+  firstName: { required },
+  lastName: { required },
+  email: { required },
+  password: { required },
+  passwordConfirmation: { required },
+  phoneNumber: { required },
+  pinSecret: { required },
+  pinSecretConfirmation: { required },
+  tenantId: { required },
 }
 
 const rulesStep2 = {
@@ -78,6 +98,7 @@ const errorUserHasRoles = ref(false)
 const errorUserRoles = ref(false)
 
 async function validate(current: number, stepInput: number) {
+  const userType: any = formStep1.user_type
 
   if (current === 1) {
     vuelidateStep1.value.username.$touch()
@@ -94,7 +115,12 @@ async function validate(current: number, stepInput: number) {
     if (!result && !result0) {
       return
     }
-    launchSpecific(stepInput)
+
+    if (userType === "customer") {
+      launchSpecific(steps.value[steps.value.length - 2].stage)
+    } else {
+      launchSpecific(stepInput)
+    }
   }
 
   if (current === 2) {
@@ -112,7 +138,11 @@ async function validate(current: number, stepInput: number) {
     if (!result00 && !result01) {
       return
     }
-    launchSpecific(stepInput)
+    if (userType === "customer") {
+      launchSpecific(steps.value[steps.value.length - 2].stage)
+    } else {
+      launchSpecific(stepInput)
+    }
   }
 
   /*
@@ -185,12 +215,53 @@ function setEventVal(event: any) {
 
 const loading = ref(false)
 
-function createUser() {
+async function createUser() {
   loading.value = true
   console.log(formStep1)
   console.log(formStep2)
 
   // upload to server
+
+  const userType: any = formStep1.user_type
+
+  const payload: any = (userType === 'admin') ?  {
+    userType,
+    firstName: formStep1.firstName,
+    lastName: formStep1.lastName,
+    password: formStep1.password,
+    phoneNumber: formStep1.phoneNumber,
+    email: formStep1.email,
+    username: formStep1.username,
+    userRoles: formStep2.user_roles.map((role: {roleName: string}) => role.roleName),
+    userRoleIds: formStep2.user_roles.map((role: {id: string}) => role.id),
+    tenantId: tenantId.value,
+    enabled: true
+  } : (userType === 'customer') ? {
+    userType,
+    firstName: formStep1.firstName,
+    lastName: formStep1.lastName,
+    pinSecret: formStep1.pinSecret,
+    username: formStep1.username,
+    password: formStep1.pinSecret,
+    phoneNumber: formStep1.phoneNumber,
+    emailAddress: formStep1.email
+  } : null ;
+
+
+  try {
+    const response: any = await postUser(access_token, payload)
+    console.log(response)
+    // move to final stage
+  } catch (e) {
+    console.log(e)
+  } finally {
+    loading.value = false
+  }
+}
+
+function checkUserTypeAccessType() {
+  if (!formStep1.access_type) return true
+  return !formStep1.user_type;
 }
 
 </script>
@@ -241,53 +312,148 @@ function createUser() {
                 leave-to-class="transform opacity-0 translate-x-full"
             >
               <div v-if="currentStep === 1" class="flex flex-col min-h-screen">
-                <div class="flex flex-row justify-between pt-5 border-b pb-2">
-                  <div class="font-medium text-lg text-gray-700">
-                    <h3>Set user details</h3>
+                <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 border-b pb-8">
+                  <div class="flex flex-col col-span-1">
+                    <div class="flex flex-row justify-between pt-5 border-b pb-2">
+                      <div class="font-medium text-lg text-gray-700">
+                        <h3>Set user type</h3>
+                      </div>
+                    </div>
+                    <div class="flex text-sm text-gray-500 pt-1">
+                      <p>Select how these users will access lending services. Mobile USSD or Web</p>
+                    </div>
+                    <div class="flex flex-row items-center pt-5 pb-20 w-full">
+                      <div class="flex flex-col items-start mx-auto">
+                        <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 w-full">
+                          <div class="col-span-1 flex flex-row items-center space-x-3">
+                            <input @focus="errorUserType = false" id="admin" v-model="formStep1.user_type" value="admin" name="user_type" class="border-gray-400 rounded-md" type="radio">
+                            <label for="admin" class="text-base text-gray-700 flex flex-col">
+                              <span class="font-semibold">Admin user</span>
+                              <span class="font-medium text-sm text-gray-500">Create admin user</span>
+                            </label>
+                          </div>
+
+                          <div class="col-span-1 flex flex-row items-center space-x-3">
+                            <input @focus="errorUserType = false" id="customer" v-model="formStep1.user_type" value="customer" name="user_type" class="border-gray-400 rounded-md" type="radio">
+                            <label for="customer" class="text-base text-gray-700 flex flex-col">
+                              <span class="font-semibold">Customer user</span>
+                              <span class="font-medium text-sm text-gray-500">Create customer account</span>
+                            </label>
+                          </div>
+
+                        </div>
+
+                        <div class="flex flex-row justify-between pt-8 border-b pb-2">
+                          <div class="font-medium text-lg text-gray-700">
+                            <h3>Set access type</h3>
+                          </div>
+                        </div>
+                        <div class="flex text-sm text-gray-500 pt-1">
+                          <p>Select how these users will access lending services. Mobile USSD or Web</p>
+                        </div>
+                        <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 w-full pt-5 relative">
+                          <div v-if="formStep1.user_type === null" class="absolute inset-0 h-full bg-gray-100 opacity-80 z-20"></div>
+
+                          <div v-if="formStep1.user_type === 'customer'" class="col-span-1 flex flex-row items-center space-x-3">
+                            <input @focus="errorUserType = false" id="ussd" v-model="formStep1.access_type" value="ussd" name="access_type" class="border-gray-400 rounded-md" type="radio">
+                            <label for="ussd" class="text-base text-gray-700 flex flex-col">
+                              <span class="font-semibold">USSD access</span>
+                              <span class="font-medium text-sm text-gray-500">Access account through USSD</span>
+                            </label>
+                          </div>
+
+                          <div v-if="formStep1.user_type === 'admin'" class="col-span-1 flex flex-row items-center space-x-3">
+                            <input @focus="errorUserType = false" id="web" v-model="formStep1.access_type" value="web" name="access_type" class="border-gray-400 rounded-md" type="radio">
+                            <label for="web" class="text-base text-gray-700 flex flex-col">
+                              <span class="font-semibold">Web access</span>
+                              <span class="font-medium text-sm text-gray-500">Access account through web</span>
+                            </label>
+                          </div>
+                        </div>
+                        <small v-if="errorUserType" class="text-red-400 ml-7 pt-4">User type is required</small>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div class="flex flex-col mx-auto pt-8">
-                  <div class="flex flex-row items-center space-x-4">
-                    <label for="username" class="text-base font-semibold text-gray-700">Username *</label>
-                    <div class="flex flex-col">
-                      <input @focus="errorUsername = false" id="username" v-model="formStep1.username" class="border-gray-400 rounded-md" type="text">
-                      <small v-if="errorUsername" class="text-red-400">Username is required</small>
+                  <div class="flex flex-col col-span-1 relative">
+                    <div v-if="checkUserTypeAccessType()" class="absolute inset-0 h-full bg-gray-100 opacity-80 z-20"></div>
+                    <div class="flex flex-row justify-between pt-5 border-b pb-2">
+                      <div class="font-medium text-lg text-gray-700">
+                        <h3>Set user details</h3>
+                      </div>
+                    </div>
+                    <div class="flex text-sm text-gray-500 pt-1">
+                      <p>All fields are required to create and manage user accounts</p>
+                    </div>
+                    <div class="flex flex-col pt-5">
+                      <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 md:max-w-5xl">
+                        <div>
+                          <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
+                          <div class="mt-1">
+                            <input type="text" id="first-name" v-model="formStep1.firstName" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" placeholder="John">
+                          </div>
+                        </div>
+                        <div>
+                          <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
+                          <div class="mt-1">
+                            <input type="text" id="last-name" v-model="formStep1.lastName" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" placeholder="Doe">
+                          </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                          <div class="mt-1">
+                            <input id="email" type="email" v-model="formStep1.email" @input="formStep1.username = formStep1.email" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                        <div class="hidden">
+                          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                          <div class="mt-1">
+                            <input hidden id="username" type="text" v-model="formStep1.username" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                        <div class="sm:col-span-2">
+                          <label for="phone-number" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                          <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 flex items-center">
+                              <label for="country" class="sr-only">Country</label>
+                              <select id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                                <option>KE</option>
+                              </select>
+                            </div>
+                            <input type="text" id="phone-number" v-model="formStep1.phoneNumber" class="py-3 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" placeholder="254722000654">
+                          </div>
+                        </div>
+                        <div v-if="formStep1.access_type === 'web'">
+                          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                          <div class="mt-1">
+                            <input id="password" type="password" v-model="formStep1.password" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                        <div v-if="formStep1.access_type === 'web'">
+                          <label for="password-confirmation" class="block text-sm font-medium text-gray-700">Password confirmation</label>
+                          <div class="mt-1">
+                            <input id="password-confirmation" type="password" v-model="formStep1.passwordConfirmation" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          </div>
+                        </div>
+
+                        <div v-if="formStep1.access_type === 'ussd'">
+                          <label for="pinSecret" class="block text-sm font-medium text-gray-700">Pin secret</label>
+                          <div class="mt-1">
+                            <input id="pinSecret" type="password" v-model="formStep1.pinSecret" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                        <div v-if="formStep1.access_type === 'ussd'">
+                          <label for="pinSecret-confirmation" class="block text-sm font-medium text-gray-700">Pin Secret confirmation</label>
+                          <div class="mt-1">
+                            <input id="pinSecret-confirmation" type="password" v-model="formStep1.pinSecretConfirmation" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
                 </div>
-                <div class="flex flex-row justify-between pt-5 border-b pb-1">
-                  <div class="font-medium text-lg text-gray-700">
-                    <h3>Set user access type</h3>
-                  </div>
-                </div>
-                <div class="flex text-sm text-gray-500 pt-1">
-                  <p>Select how these users will access lending services. Mobile USSD or Web</p>
-                </div>
-                <div class="flex flex-row items-center pt-5 pb-20 w-full border-b">
-                  <div class="flex items-start mx-auto">
-                    <h4 class="font-semibold pt-2 pr-4 text-gray-700">Select user type *</h4>
-                    <div class="flex flex-col space-y-3">
-                      <div class="flex flex-row items-center space-x-3">
-                        <input @focus="errorUserType = false" id="ussd" v-model="formStep1.user_type" value="ussd" name="user_type" class="border-gray-400 rounded-md" type="radio">
-                        <label for="ussd" class="text-base text-gray-700 flex flex-col">
-                          <span class="font-semibold">USSD access</span>
-                          <span class="font-medium text-sm text-gray-500">For lending customers using USSD</span>
-                        </label>
-                      </div>
-                      <div class="flex flex-row items-center space-x-3">
-                        <input @focus="errorUserType = false" id="web" v-model="formStep1.user_type" value="web" name="user_type" class="border-gray-400 rounded-md" type="radio">
-                        <label for="web" class="text-base text-gray-700 flex flex-col">
-                          <span class="font-semibold">Web access</span>
-                          <span class="font-medium text-sm text-gray-500">For lending organisation users</span>
-                        </label>
-                      </div>
-                      <small v-if="errorUserType" class="text-red-400 ml-7">User type is required</small>
-                    </div>
-                  </div>
-                </div>
                 <div class="flex">
-                  <div class="ml-auto py-6">
+                  <div class="ml-auto py-5">
                     <div class="space-x-3">
                       <button @click="$router.push('users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
                         Cancel
@@ -362,19 +528,19 @@ function createUser() {
                           </tr>
                           </thead>
                           <tbody>
-                            <!-- Odd row -->
-                            <tr v-for="(role,i) in available_roles" :key="i" :class="{'bg-white' : i % 2 === 0, 'bg-gray-50' : i % 2 !== 0 }">
+                            <!-- Odd row roleName: string, roleType: string, description: string, id: string -->
+                            <tr v-for="(role,i) in available_roles" :key="role.id" :class="{'bg-white' : i % 2 === 0, 'bg-gray-50' : i % 2 !== 0 }">
                               <td class="pl-4 py-4 whitespace-nowrap text-center text-sm font-medium">
                                 <input :id="'role'+i" @change="setEventVal" :value="role" :disabled="!formStep2.user_has_roles" :name="'role'+i" class="border-gray-400 rounded-md" type="checkbox">
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ role.name }}
+                                {{ role.roleName }}
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ role.permissions }}
+                                {{ role.roleType }}
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ role.description }}
+                                {{ role.roleDescription ? role.roleDescription : 'customer or admin role description' }}
                               </td>
                             </tr>
                           </tbody>
@@ -425,14 +591,38 @@ function createUser() {
                     <h3>User details</h3>
                   </div>
                 </div>
-                <div class="flex flex-col ml-8 pt-4 space-y-2">
-                  <div class="flex flex-row space-x-4 tracking-wide text-sm ">
-                      <h6 class="font-medium text-gray-900">Username</h6>
-                      <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.username }}</span>
-                  </div>
-                  <div class="flex flex-row space-x-4 tracking-wide text-sm">
+                <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 border-b pb-8">
+                  <div class="flex flex-col ml-8 pt-4 space-y-2">
+                    <div class="flex flex-row space-x-4 tracking-wide text-sm ">
+                        <h6 class="font-medium text-gray-900">Names</h6>
+                        <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.firstName }} {{ formStep1.lastName }}</span>
+                    </div>
+
+                    <div class="flex flex-row space-x-4 tracking-wide text-sm">
+                        <h6 class="font-medium text-gray-900">User type</h6>
+                        <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.user_type }}</span>
+                    </div>
+
+                    <div class="flex flex-row space-x-4 tracking-wide text-sm">
                       <h6 class="font-medium text-gray-900">Access type</h6>
-                      <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.user_type }}</span>
+                      <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.access_type }}</span>
+                    </div>
+                  </div>
+                  <div class="flex flex-col ml-8 pt-4 space-y-2">
+                    <div class="flex flex-row space-x-4 tracking-wide text-sm ">
+                        <h6 class="font-medium text-gray-900">Email</h6>
+                        <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.email }}</span>
+                    </div>
+
+                    <div class="flex flex-row space-x-4 tracking-wide text-sm">
+                        <h6 class="font-medium text-gray-900">User type</h6>
+                        <span class="text-gray-500 border-dotted border-b border-gray-600">{{ formStep1.phoneNumber }}</span>
+                    </div>
+
+                    <div class="flex flex-row space-x-4 tracking-wide text-sm">
+                      <h6 class="font-medium text-gray-900">Password/Pin Secret</h6>
+                      <span class="text-gray-500 border-dotted border-b border-gray-600">{{ (formStep1.password === '' || !formStep1.password) ? formStep1.pinSecret : formStep1.password }}</span>
+                    </div>
                   </div>
                 </div>
                 <div class="flex flex-row justify-between pt-4 border-b pb-1">
@@ -451,10 +641,10 @@ function createUser() {
                           <thead class="bg-gray-50">
                           <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Role
+                              Role name
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Permissions
+                              Role type
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Description
@@ -465,13 +655,13 @@ function createUser() {
                           <!-- Odd row -->
                           <tr v-for="(role,i) in formStep2.user_roles" :key="i" :class="{'bg-white' : i % 2 === 0, 'bg-gray-50' : i % 2 !== 0 }">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {{ role.name }}
+                              {{ role.roleName }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {{ role.permissions }}
+                              {{ role.roleType }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {{ role.description }}
+                              {{ role.roleDescription ? role.roleDescription : 'customer or admin role description' }}
                             </td>
                           </tr>
                           </tbody>
