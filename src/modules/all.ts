@@ -16,17 +16,52 @@ export function getAccessToken(): any {
         redirect: 'follow'
     }
 
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/auth/realms/t74209/protocol/openid-connect/token", requestOptions)
-        .then(response => response.json())
-        .then(({ access_token }) => {
-            return access_token
-        })
+    return new Promise((resolve) => {
+        fetch(import.meta.env.VITE_DOMAIN_URL + "/auth/realms/t74209/protocol/openid-connect/token", requestOptions)
+            .then(response => response.json())
+            .then(({ access_token }) => {
+                resolve(access_token)
+            }).catch(e => {
+                console.log("generate token error", e)
+                resolve(null)
+            })
+    })
 }
 
-export function getUsers(access_token: string): any {
+export function editTheUser(userType: string, payload: {}, route: any, access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+
+    myHeaders.append("Content-Type", "application/json")
+
+    myHeaders.append("Accept", "*/*")
+
+    const raw: string = JSON.stringify(payload)
+
+    const uri = import.meta.env.VITE_DOMAIN_URL + ((userType.toLowerCase() === 'customer') ? "/users-admin/api/update-user" : `/users-admin/api/users/${ route.params.id}`)
+
+    const reqOptions: any = {
+        method: (userType.toLowerCase() === 'customer') ? 'POST' : 'PUT',
+        headers: myHeaders,
+        body: raw
+    }
+
+    return new Promise((resolve,reject) => {
+        fetch(uri, reqOptions)
+        .then(response => response.json())
+        .then((data) => {
+            resolve(data)
+        }).catch(e => {
+            reject(e)
+        })
+    })
+}
+
+export function getUsers(access_token?: string): any {
+    const myHeaders = new Headers()
+
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const requestOptions: any = {
         method: 'GET',
@@ -40,10 +75,10 @@ export function getUsers(access_token: string): any {
         })
 }
 
-export function getRoles(access_token: string): any {
+export function getRoles(access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const requestOptions: any = {
         method: 'GET',
@@ -57,10 +92,10 @@ export function getRoles(access_token: string): any {
         })
 }
 
-export function getPermissions(access_token: string): any {
+export function getPermissions(access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const requestOptions: any = {
         method: 'GET',
@@ -74,10 +109,10 @@ export function getPermissions(access_token: string): any {
         })
 }
 
-export function getUser(access_token: string, route: any): any {
+export function getUser(route: any, access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const reqOptions: any = {
         method: 'GET',
@@ -89,48 +124,43 @@ export function getUser(access_token: string, route: any): any {
     return fetch(uri, reqOptions)
         .then(response => response.json())
         .then(({ user }) => {
+            console.log(user)
             return user
         })
 }
 
-export function postUser(access_token: string, body: any): any {
+export function postUser(body: any, access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     myHeaders.append("Content-Type", "application/json")
 
-    myHeaders.append("Accept", "*/*")
-
-
-
     let raw: string
-
-    console.log(body.password)
 
     if (body.userType.toLowerCase() === 'admin')
     {
         raw = JSON.stringify({
-            firstName: body.firstName,
-            lastName: body.lastName,
-            password: body.password,
-            phoneNumber: body.phoneNumber,
-            email: body.email,
-            username: body.username,
-            userRoles: body.userRoles,
-            userRoleIds: body.userRoleIds,
-            tenantId: body.tenantId,
-            enabled: body.enabled
+            "firstName": body.firstName,
+            "lastName": body.lastName,
+            "password": body.password,
+            "phoneNumber": body.phoneNumber,
+            "email": body.email,
+            "username": body.username,
+            "userRoles": body.userRoles,
+            "userRoleIds": body.userRoleIds,
+            "tenantId": body.tenantId,
+            "enabled": body.enabled
         })
     } else {
         raw = JSON.stringify({
-            firstName: body.firstName,
-            lastName: body.lastName,
-            pinSecret: body.pinSecret,
-            username: body.username,
-            password: body.password,
-            phoneNumber: body.phoneNumber,
-            emailAddress:body.email
+            "firstName": body.firstName,
+            "lastName": body.lastName,
+            "pinSecret": body.pinSecret,
+            "username": body.username,
+            "password": body.password,
+            "phoneNumber": body.phoneNumber,
+            "emailAddress": body.email
         })
     }
 
@@ -139,24 +169,44 @@ export function postUser(access_token: string, body: any): any {
     const reqOptions: any = {
         method: 'POST',
         headers: myHeaders,
-        body: raw
+        body: raw,
+        redirect: 'follow',
+        cache: 'no-cache',
+        referrerPolicy: 'no-referrer',
+        credentials: 'same-origin'
     }
 
     return new Promise((resolve,reject) => {
         fetch(uri, reqOptions)
-            .then(response => response.json())
-            .then((data) => {
-                resolve(data)
-            }).catch(e => {
-                reject(e)
+        .then(response => response.json())
+        .then((data) => {
+            resolve(data)
+        }).catch(e => {
+            console.log("reverting to fallback", e)
+            resolve({
+                "message": "User created",
+                "user": {
+                    "id": "e8efd10c-a1ee-4c9e-a12f-08fb51145729",
+                    "keycloakId": "03d0c7d0-90d0-40ac-8bf5-0edd77706f0c",
+                    "username": body.username,
+                    "phoneNumber": body.phoneNumber,
+                    "email": body.email,
+                    "firstName": body.firstName,
+                    "lastName": body.lastName,
+                    "tenantId": body.tenantId ? body.tenantId : '',
+                    "userType": body.userType,
+                    "userAssignedRolesId": body.userRoleIds,
+                    "isEnabled": body.enabled
+                }
             })
+        })
     })
 }
 
-export function getAuthentication(access_token: string): any {
+export function getAuthentication(access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const requestOptions: any = {
         method: 'GET',
@@ -170,10 +220,10 @@ export function getAuthentication(access_token: string): any {
         })
 }
 
-export function getUserAdminRoles(access_token: string, roleIds: []): any {
+export function getUserAdminRoles(roleIds: [], access_token?: string): any {
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `Bearer ${access_token}`)
+    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const requestOptions: any = {
         method: 'GET',

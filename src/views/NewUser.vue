@@ -9,12 +9,14 @@ const store = useStore()
 
 const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
 
+const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
+
 const available_roles = ref(<{roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]>[])
 
 const available_permissions = ref(<any[]>[])
 
 getAccessToken()
-    .then(async (token: string) => {
+    .then(async (token?: string) => {
       try {
         available_roles.value = await getRoles(token)
       } catch (e) {
@@ -222,6 +224,8 @@ function setEventVal(event: any) {
 
 const loading = ref(false)
 
+const responseData = ref(<{}>{})
+
 function createUser() {
   loading.value = true
   console.log(formStep1)
@@ -232,34 +236,36 @@ function createUser() {
   const userType: any = formStep1.user_type
 
   const payload: any = (userType === 'admin') ?  {
-    userType,
-    firstName: formStep1.firstName,
-    lastName: formStep1.lastName,
-    password: formStep1.password,
-    phoneNumber: formStep1.phoneNumber,
-    email: formStep1.email,
-    username: formStep1.username,
-    userRoles: formStep2.user_roles.map((role: {roleName: string}) => role.roleName),
-    userRoleIds: formStep2.user_roles.map((role: {id: string}) => role.id),
-    tenantId: tenantId.value,
-    enabled: true
+    "userType": userType,
+    "firstName": formStep1.firstName,
+    "lastName": formStep1.lastName,
+    "password": formStep1.password,
+    "phoneNumber": formStep1.phoneNumber,
+    "email": formStep1.email,
+    "username": formStep1.username,
+    "userRoles": formStep2.user_roles.map((role: {roleName: string}) => role.roleName),
+    "userRoleIds": formStep2.user_roles.map((role: {id: string}) => role.id),
+    "tenantId": tenantId.value,
+    "enabled": true
   } : (userType === 'customer') ? {
-    userType,
-    firstName: formStep1.firstName,
-    lastName: formStep1.lastName,
-    pinSecret: formStep1.pinSecret,
-    username: formStep1.username,
-    password: formStep1.pinSecret,
-    phoneNumber: formStep1.phoneNumber,
-    emailAddress: formStep1.email
+    "userType": userType,
+    "firstName": formStep1.firstName,
+    "lastName": formStep1.lastName,
+    "pinSecret": formStep1.pinSecret,
+    "username": formStep1.username,
+    "password": formStep1.pinSecret,
+    "phoneNumber": formStep1.phoneNumber,
+    "emailAddress": formStep1.email
   } : null ;
 
   getAccessToken()
-  .then(async (token: string) => {
+  .then(async (token?: string) => {
     try {
-      const response: any = await postUser(token, payload)
+      const response: any = await postUser(payload, token)
       console.log("create user response", response)
       // move to final stage
+      responseData.value = response
+      launchSpecific(4)
     } catch (e) {
       throw e
     }
@@ -276,17 +282,34 @@ function checkUserTypeAccessType() {
   return !formStep1.user_type;
 }
 
+function download_csv_file(accountData: any[]) {
+  let csv = 'Username,Password\n'
+
+  accountData.forEach(function(row: any) {
+    csv += row.join(',')
+    csv += "\n"
+  })
+
+  const hiddenElement = document.createElement('a')
+  hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv)
+  hiddenElement.target = '_blank'
+
+  hiddenElement.download = organisation.value + ' Credentials.csv'
+  hiddenElement.click()
+}
+
 </script>
 
 <template>
-  <div class="flex-col h-screen w-full pb-12" style="min-height: 640px;">
+  <div class="flex-col h-screen w-full pb-12 overflow-y-auto" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
       <div class="py-3 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
             <div class="flex flex-row justify-between">
-              <div class="text-lg font-bold tracking-tight text-gray-900">
-                <h3>Add User</h3>
+              <div>
+                <h3 v-if="currentStep !== 4" class="text-lg font-bold tracking-tight text-gray-900">Add User</h3>
+                <h3 v-else class="text-lg font-bold tracking-tight text-gray-900">User Created</h3>
               </div>
               <nav class="flex items-center justify-center" aria-label="Progress">
                 <p class="text-sm font-medium text-gray-700">Step 1 of 4</p>
@@ -479,9 +502,7 @@ function checkUserTypeAccessType() {
                 </div>
               </div>
             </transition>
-
-<!--            step 2-->
-
+            <!--            step 2-->
             <transition
                 enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
                 leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
@@ -580,7 +601,7 @@ function checkUserTypeAccessType() {
                 </div>
               </div>
             </transition>
-
+            <!--            step 3-->
             <transition
                 enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
                 leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
@@ -701,7 +722,98 @@ function checkUserTypeAccessType() {
                 </div>
               </div>
             </transition>
+            <!--            step 4-->
+            <transition
+                enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
+                leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
+                enter-class="transform opacity-0 translate-x-full"
+                enter-to-class="transform opacity-100 translate-x-0"
+                leave-class="transform opacity-100 translate-x-0"
+                leave-to-class="transform opacity-0 translate-x-full"
+            >
+            <div v-if="currentStep === 4" class="mx-auto w-full">
 
+              <div class="overflow-hidden">
+                <div class="py-5">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Applicant Information
+                  </h3>
+                  <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Personal details and application.
+                  </p>
+                </div>
+                <div class="border-t border-gray-200 py-5">
+                  <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                    <div class="sm:col-span-1">
+                      <dt class="text-sm font-medium text-gray-500">
+                        Full name
+                      </dt>
+                      <dd class="mt-1 text-sm text-gray-900">
+                        {{ responseData.user.firstName }} {{ responseData.user.lastName }}
+                      </dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                      <dt class="text-sm font-medium text-gray-500">
+                        User type
+                      </dt>
+                      <dd class="mt-1 text-sm text-gray-900">
+                        {{ responseData.user.userType }}
+                      </dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                      <dt class="text-sm font-medium text-gray-500">
+                        Email address
+                      </dt>
+                      <dd class="mt-1 text-sm text-gray-900">
+                        {{ responseData.user.email }}
+                      </dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                      <dt class="text-sm font-medium text-gray-500">
+                        Phone number
+                      </dt>
+                      <dd class="mt-1 text-sm text-gray-900">
+                        {{ responseData.user.phoneNumber }}
+                      </dd>
+                    </div>
+                    <div class="sm:col-span-2">
+                      <dt class="text-sm font-medium text-gray-500">
+                        Description
+                      </dt>
+                      <dd class="mt-1 text-sm text-gray-900">
+                        {{ responseData.message }} successfully for {{ organisation }}
+                      </dd>
+                    </div>
+                    <div class="sm:col-span-2">
+                      <dt class="text-sm font-medium text-gray-500">
+                        Downloads
+                      </dt>
+                      <dd class="mt-1 text-sm text-gray-900">
+                        <ul role="list" class="border border-gray-200 rounded-md divide-y divide-gray-200">
+                          <li class="pl-3 pr-4 py-3 flex items-center justify-between text-sm">
+                            <div class="w-0 flex-1 flex items-center">
+                              <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path>
+                              </svg>
+                              <span class="ml-2 flex-1 w-0 truncate">
+                                  {{ organisation }} Credentials.csv
+                                </span>
+                            </div>
+                            <div class="ml-4 flex-shrink-0">
+                              <button @click="download_csv_file([[responseData.user.username, responseData.user.userType.toLowerCase() === 'admin' ? formStep1.password : formStep1.pinSecret]])" type="button" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                Download
+                              </button>
+                            </div>
+                          </li>
+                        </ul>
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+
+            </div>
+            </transition>
           </div>
         </div>
       </div>

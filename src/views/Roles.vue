@@ -5,14 +5,14 @@
   const all_roles = ref(<any[]>[])
 
   getAccessToken()
-      .then((token: string) => getRoles(token))
+      .then((token?: string) => getRoles(token))
       .then((roles: {roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]) => {
         all_roles.value = roles
       })
 
 </script>
 <template>
-  <div class="flex-col h-screen w-full overflow-y-auto" style="min-height: 640px;">
+  <div class="flex-col h-screen w-full overflow-y-auto pb-28" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
       <div class="py-3 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">

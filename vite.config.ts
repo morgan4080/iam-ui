@@ -12,6 +12,11 @@ export default defineConfig({
   envDir: path.resolve(__dirname, './'),
   server: {
     proxy: {
+      '/users-admin/api/users': {
+        target: 'https://accounts.presta.co.ke',
+        changeOrigin: true,
+        secure: true
+      },
       // authentication for supplied token
       '/authentication': {
         target: 'https://accounts.presta.co.ke',
@@ -20,11 +25,6 @@ export default defineConfig({
       },
       // to get single user by id
       '^/users-admin/api/users/.*': {
-        target: 'https://accounts.presta.co.ke',
-        changeOrigin: true,
-        secure: true
-      },
-      '/users-admin/api/users': {
         target: 'https://accounts.presta.co.ke',
         changeOrigin: true,
         secure: true

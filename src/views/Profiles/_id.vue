@@ -27,9 +27,9 @@
   const accessToken: any = ref(<string>'')
 
   getAccessToken()
-      .then((token: string) => {
+      .then((token?: string) => {
         accessToken.value = token
-        return getUser(token, route)
+        return getUser(route, token)
       })
       .then((user: any[]) => {
         userData.value = {
@@ -40,7 +40,7 @@
         return user
       })
       .then((user: any) => {
-        return getUserAdminRoles(accessToken.value, user.userAssignedRolesId)
+        return getUserAdminRoles(user.userAssignedRolesId, accessToken.value)
       })
       .then((role: any[]) => {
         userRoles.value = <never[]>[...userRoles.value, ...role]
@@ -56,7 +56,7 @@
 
 <template>
 <div class="w-full">
-  <div class="flex-col h-screen w-full overflow-y-auto" style="min-height: 640px;">
+  <div class="flex-col h-screen w-full overflow-y-auto pb-28" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:mx-auto lg:px-8">
       <div class="py-3 md:flex md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">

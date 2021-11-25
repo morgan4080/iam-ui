@@ -20,11 +20,29 @@
       lastName: '',
       phoneNumber: '',
       id: ''
+    },
+    {
+      isEnabled: '',
+      userType: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      id: ''
+    },
+    {
+      isEnabled: '',
+      userType: '',
+      email: '',
+      firstName: '',
+      lastName: '',
+      phoneNumber: '',
+      id: ''
     }
   ])
 
   getAccessToken()
-  .then((token: string) => getUsers(token))
+  .then((token?: string) => getUsers(token))
   .then((users: {isEnabled: boolean,userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[]) => {
     allUsers.value = users
   }).catch((e: any) => {
@@ -34,8 +52,8 @@
 </script>
 
 <template>
-  <div class="flex-col h-screen w-full overflow-y-auto" style="min-height: 640px;">
-    <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
+  <div class="flex-col h-screen w-full overflow-y-auto pb-28" style="min-height: 640px;">
+    <div class="pb-20 px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
       <div class="py-3 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
@@ -99,25 +117,25 @@
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         <router-link :to="`/users/${user.id}`">
-                          <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-200 block rounded animate-pulse"></span>
+                          <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.firstName }} {{ user.lastName }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <router-link :to="`/users/${user.id}`">
-                          <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-200 block rounded animate-pulse"></span>
+                          <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.phoneNumber }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <router-link :to="`/users/${user.id}`">
-                          <span v-if="user.email === ''" class="h-4 w-12 bg-gray-200 block rounded animate-pulse"></span>
+                          <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.email }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
                         <router-link :to="`/users/${user.id}`">
-                          <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-200 block rounded animate-pulse"></span>
+                          <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.userType }}
                         </router-link>
                       </td>

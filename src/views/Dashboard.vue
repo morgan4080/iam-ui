@@ -11,10 +11,11 @@ const user = computed(() => {
 })
 
 const userCount = ref(0)
+
 const roleCount = ref(0)
 
 getAccessToken()
-    .then(async (token: string) => {
+    .then(async (token?: string) => {
 
       try {
         const users: any[] = await getUsers(token)
@@ -37,7 +38,7 @@ getAccessToken()
 
 </script>
 <template>
-  <div class="flex-col h-screen w-full overflow-y-auto" style="min-height: 640px;">
+  <div class="flex-col h-screen w-full overflow-y-auto pb-28" style="min-height: 640px;">
     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
       <div class="py-3 md:flex md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">

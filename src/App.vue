@@ -7,8 +7,6 @@
 
   const store = useStore()
 
-  console.log(import.meta.env)
-
   getAccessToken()
       .then(getAuthentication)
       .then((data: any) => store.commit('set_current_user', data))
