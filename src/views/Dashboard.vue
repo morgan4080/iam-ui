@@ -18,8 +18,8 @@ getAccessToken()
     .then(async (token?: string) => {
 
       try {
-        const users: any[] = await getUsers(token)
-        userCount.value = users.length
+        const data: {records: []} = await getUsers(token)
+        userCount.value = data.records.length
       } catch (e) {
         throw e
       }

@@ -71,7 +71,7 @@ export function getUsers(access_token?: string): any {
     return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users", requestOptions)
         .then(response => response.json())
         .then((data) => {
-            return data.records
+            return data
         })
 }
 
