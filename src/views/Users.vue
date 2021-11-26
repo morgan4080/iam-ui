@@ -1,8 +1,19 @@
 <script setup lang="ts">
   import { getAccessToken, getUsers } from '@/modules/all'
   import { ref } from "vue"
+  import {useRoute} from "vue-router";
+
+  const route = useRoute()
 
   const allUsers = ref(<any[]>[])
+
+  const totalRecords = ref(<number>0)
+
+  const totalPages = ref(<number>0)
+
+  const currentPage = ref(<number>0)
+
+  const totalPagesArray = ref(<number[]>[])
 
   const refresh = () => {
     allUsers.value = [
@@ -46,7 +57,12 @@
     getAccessToken()
     .then((token?: string) => getUsers(token))
     .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
-      console.log(data)
+      totalRecords.value = data.totalRecords
+      totalPages.value = data.totalPages
+      for (let i = 1; i <= totalPages.value; i++ ) {
+        totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+      }
+      currentPage.value = data.currentPage + 1
       allUsers.value = data.records
     }).catch((e: any) => {
       console.log(e)
@@ -179,11 +195,11 @@
                     <div>
                       <p class="text-sm text-gray-700">
                         Showing
-                        <span class="font-medium">1</span>
+                        <span class="font-medium">{{ currentPage === 1 ? 1 : currentPage * 10 - 9 }}</span>
                         to
-                        <span class="font-medium">10</span>
+                        <span class="font-medium">{{ totalRecords < 10 ? totalRecords : (10 * currentPage) }}</span>
                         of
-                        <span class="font-medium">97</span>
+                        <span class="font-medium">{{ totalRecords }}</span>
                         results
                       </p>
                     </div>
@@ -197,27 +213,10 @@
                           </svg>
                         </a>
                         <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" -->
-                        <a href="#" aria-current="page" class="z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                          1
+                        <a v-for="(page, i) in totalPagesArray" :key="i" href="#" aria-current="page" :class="{'z-10 bg-indigo-50 border-indigo-500 text-indigo-600': currentPage === page, 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50' : currentPage !== page }" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                          {{ page }}
                         </a>
-                        <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                          2
-                        </a>
-                        <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hidden md:inline-flex relative items-center px-4 py-2 border text-sm font-medium">
-                          3
-                        </a>
-                        <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                            ...
-                          </span>
-                        <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hidden md:inline-flex relative items-center px-4 py-2 border text-sm font-medium">
-                          8
-                        </a>
-                        <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                          9
-                        </a>
-                        <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                          10
-                        </a>
+
                         <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                           <span class="sr-only">Next</span>
                           <!-- Heroicon name: solid/chevron-right -->

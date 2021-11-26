@@ -17,7 +17,7 @@ export function getAccessToken(): any {
     }
 
     return new Promise((resolve) => {
-        fetch(import.meta.env.VITE_DOMAIN_URL + "/auth/realms/t74209/protocol/openid-connect/token", requestOptions)
+        fetch(import.meta.env.VITE_AUTHENTICATION_URL + "/auth/realms/t74209/protocol/openid-connect/token", requestOptions)
             .then(response => response.json())
             .then(({ access_token }) => {
                 resolve(access_token)
@@ -58,7 +58,7 @@ export function editTheUser(userType: string, payload: {}, route: any, access_to
     })
 }
 
-export function getUsers(access_token?: string): any {
+export function getUsers(access_token?: string, route?: any): any {
     const myHeaders = new Headers()
 
     if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
@@ -158,7 +158,6 @@ export function postUser(body: any, access_token?: string): any {
             "lastName": body.lastName,
             "pinSecret": body.pinSecret,
             "username": body.username,
-            "password": body.password,
             "phoneNumber": body.phoneNumber,
             "emailAddress": body.email
         })
@@ -195,10 +194,25 @@ export function postUser(body: any, access_token?: string): any {
                     "lastName": body.lastName,
                     "tenantId": body.tenantId ? body.tenantId : '',
                     "userType": body.userType,
-                    "userAssignedRolesId": body.userRoleIds,
-                    "isEnabled": body.enabled
+                    "userAssignedRolesId": body.userRoleIds
                 }
             })
+
+            /*{
+                "message": "User created",
+                "user": {
+                    "id": "9ce91542-561a-41dc-b820-afce11884ede",
+                    "keycloakId": "b3ff203b-84bd-4928-887e-dd27926cd193",
+                    "username": "254765456456",
+                    "phoneNumber": "254765456456",
+                    "email": "morganmutugi@aol.com",
+                    "firstName": "Mutugi",
+                    "lastName": "Morgan",
+                    "tenantId": "t74209",
+                    "userType": "CUSTOMER",
+                    "userAssignedRolesId": []
+            }
+            }*/
         })
     })
 }

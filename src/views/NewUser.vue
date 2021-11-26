@@ -224,7 +224,7 @@ function setEventVal(event: any) {
 
 const loading = ref(false)
 
-const responseData = ref(<{ user: {username: string, isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }, message: string }>{})
+const responseData = ref(<{ user: {username: string, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }, message: string }>{})
 
 function createUser() {
   loading.value = true
