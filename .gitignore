@@ -6,3 +6,4 @@ dist
 prestaui
 dist-ssr
 *.local
+.vscode

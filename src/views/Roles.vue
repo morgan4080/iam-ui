@@ -1,13 +1,13 @@
 <script setup lang="ts">
-  import {ref} from "vue";
+  import { ref } from "vue";
   import { getAccessToken, getRoles } from '@/modules/all'
 
-  const all_roles = ref(<any[]>[])
+  const all_roles = ref(<{ id: string, keycloakRoleId: string, roleName: string, roleType: string }[]>[])
 
   getAccessToken()
       .then((token?: string) => getRoles(token))
-      .then((roles: {roleName: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]) => {
-        all_roles.value = roles
+      .then((data: {records: { id: string, keycloakRoleId: string, roleName: string, roleType: string }[]}) => {
+        all_roles.value = data.records
       })
 
 </script>

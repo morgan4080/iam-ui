@@ -58,7 +58,7 @@ export function editTheUser(userType: string, payload: {}, route: any, access_to
     })
 }
 
-export function getUsers(access_token?: string, route?: any): any {
+export function getUsers(access_token?: string, query?: string): any {
     const myHeaders = new Headers()
 
     if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
@@ -68,7 +68,7 @@ export function getUsers(access_token?: string, route?: any): any {
         headers: myHeaders
     }
 
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users", requestOptions)
+    return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users" + query, requestOptions)
         .then(response => response.json())
         .then((data) => {
             return data
@@ -86,10 +86,10 @@ export function getRoles(access_token?: string): any {
     }
 
     return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", requestOptions)
-        .then(response => response.json())
-        .then(({ records }): any[] => {
-            return records
-        })
+    .then(response => response.json())
+    .then((data): {totalRecords: number, totalPages: number, currentPage: number, records: { id: string, keycloakRoleId: string, roleName: string, roleType: string }[]} => {
+        return data
+    })
 }
 
 export function getPermissions(access_token?: string): any {

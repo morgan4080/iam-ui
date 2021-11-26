@@ -14,19 +14,21 @@ const userCount = ref(0)
 
 const roleCount = ref(0)
 
+const query = ref(<string>"?order=ASC&sort=ASC&pageSize=1")
+
 getAccessToken()
     .then(async (token?: string) => {
 
       try {
-        const data: {records: []} = await getUsers(token)
-        userCount.value = data.records.length
+        const data: {totalRecords: number} = await getUsers(token, query.value)
+        userCount.value = data.totalRecords
       } catch (e) {
         throw e
       }
 
       try {
-        const roles: any[] = await getRoles(token)
-        roleCount.value = roles.length
+        const { totalRecords } = await getRoles(token)
+        roleCount.value = totalRecords
       } catch (e) {
         throw e
       }

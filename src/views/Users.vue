@@ -5,9 +5,15 @@
 
   const route = useRoute()
 
-  const allUsers = ref(<any[]>[])
+  const allUsers = ref(<{ isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[]>[])
 
   const totalRecords = ref(<number>0)
+
+  const pageCountOpen = ref(<boolean>false)
+
+  const hovering = ref(<boolean>false)
+
+  const lots = ref(<number[]>[10, 30, 50, 100])
 
   const totalPages = ref(<number>0)
 
@@ -15,10 +21,14 @@
 
   const totalPagesArray = ref(<number[]>[])
 
+  const recordsPerPage = ref(<number>10)
+
+  const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${recordsPerPage.value}`)
+
   const refresh = () => {
     allUsers.value = [
       {
-        isEnabled: '',
+        isEnabled: true,
         userType: '',
         email: '',
         firstName: '',
@@ -27,7 +37,7 @@
         id: ''
       },
       {
-        isEnabled: '',
+        isEnabled: true,
         userType: '',
         email: '',
         firstName: '',
@@ -36,7 +46,7 @@
         id: ''
       },
       {
-        isEnabled: '',
+        isEnabled: true,
         userType: '',
         email: '',
         firstName: '',
@@ -45,7 +55,7 @@
         id: ''
       },
       {
-        isEnabled: '',
+        isEnabled: true,
         userType: '',
         email: '',
         firstName: '',
@@ -55,7 +65,7 @@
       }
     ]
     getAccessToken()
-    .then((token?: string) => getUsers(token))
+    .then((token?: string) => getUsers(token, query.value))
     .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
       totalRecords.value = data.totalRecords
       totalPages.value = data.totalPages
@@ -80,10 +90,71 @@
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
             <div class="py-4 space-y-4 sm:py-6 flex flex-wrap items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
-              <div class="space-x-2">
+              <div class="space-x-2 flex justify-between">
                 <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
                   Add user
                 </button>
+                <!-- This example requires Tailwind CSS v2.0+ -->
+                <div>
+                  <label id="listbox-label" class="sr-only">
+                    Change records count
+                  </label>
+                  <div class="relative">
+                    <div class="inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
+                      <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
+                        <div class="relative inline-flex items-center bg-indigo-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
+                          <p class="ml-2.5 text-sm font-medium">
+                            {{ recordsPerPage }}
+                          </p>
+                        </div>
+                        <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-indigo-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                          <span class="sr-only">Change records count</span>
+                          <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!--
+                      Select popover, show/hide based on select state.
+
+                      Entering: ""
+                        From: ""
+                        To: ""
+                      Leaving: "transition ease-in duration-100"
+                        From: "opacity-100"
+                        To: "opacity-0"
+                    -->
+                    <transition
+                        enter-active-class=""
+                        leave-active-class="transition ease-in duration-100"
+                        enter-class=""
+                        enter-to-class=""
+                        leave-class="opacity-100"
+                        leave-to-class="opacity-0"
+                    >
+                      <ul v-if="pageCountOpen" class="origin-top-right absolute z-10 right-0 mt-2 w-12 rounded-md shadow-lg overflow-hidden bg-white divide-y divide-gray-200 ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
+                        <!--
+                          Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
+
+                          Highlighted: "text-white bg-indigo-500", Not Highlighted: "text-gray-900"
+                        -->
+                        <li v-for="(lot, i) in lots" :key="i" @mouseenter="hovering = true" @mouseleave="hovering = false" :class="{ 'text-white bg-indigo-500' : hovering, 'text-gray-900': !hovering }" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
+                          <div class="flex flex-col">
+                            <div class="flex justify-between">
+                              <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
+                              <p class="font-normal">
+                                {{ lot }}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+
+                      </ul>
+                    </transition>
+                  </div>
+                </div>
               </div>
 
               <div class="relative z-0 inline-flex rounded-md ml-auto">
