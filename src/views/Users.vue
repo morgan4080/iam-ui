@@ -11,7 +11,9 @@
 
   const pageCountOpen = ref(<boolean>false)
 
-  const hovering = ref(<boolean>false)
+  const activeIndex = ref(<any>null)
+
+  const selectedIndex = ref(<any>null)
 
   const lots = ref(<number[]>[10, 30, 50, 100])
 
@@ -80,6 +82,12 @@
     })
   }
 
+  const choose = (index: number) => {
+    selectedIndex.value = index
+    recordsPerPage.value = lots.value[index]
+    pageCountOpen.value = !pageCountOpen.value
+  }
+
   refresh()
 </script>
 
@@ -90,12 +98,12 @@
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
             <div class="py-4 space-y-4 sm:py-6 flex flex-wrap items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
-              <div class="space-x-2 flex justify-between">
-                <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+              <div class="space-x-2 flex-1 flex justify-between">
+                <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
                   Add user
                 </button>
-                <!-- This example requires Tailwind CSS v2.0+ -->
-                <div>
+
+                <div class="flex-grow ml-auto">
                   <label id="listbox-label" class="sr-only">
                     Change records count
                   </label>
@@ -103,7 +111,7 @@
                     <div class="inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
                       <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
                         <div class="relative inline-flex items-center bg-indigo-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
-                          <p class="ml-2.5 text-sm font-medium">
+                          <p class="ml-2.5 text-xs sm:text-sm font-medium">
                             {{ recordsPerPage }}
                           </p>
                         </div>
@@ -116,16 +124,6 @@
                       </div>
                     </div>
 
-                    <!--
-                      Select popover, show/hide based on select state.
-
-                      Entering: ""
-                        From: ""
-                        To: ""
-                      Leaving: "transition ease-in duration-100"
-                        From: "opacity-100"
-                        To: "opacity-0"
-                    -->
                     <transition
                         enter-active-class=""
                         leave-active-class="transition ease-in duration-100"
@@ -135,16 +133,11 @@
                         leave-to-class="opacity-0"
                     >
                       <ul v-if="pageCountOpen" class="origin-top-right absolute z-10 right-0 mt-2 w-12 rounded-md shadow-lg overflow-hidden bg-white divide-y divide-gray-200 ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
-                        <!--
-                          Select option, manage highlight styles based on mouseenter/mouseleave and keyboard navigation.
 
-                          Highlighted: "text-white bg-indigo-500", Not Highlighted: "text-gray-900"
-                        -->
-                        <li v-for="(lot, i) in lots" :key="i" @mouseenter="hovering = true" @mouseleave="hovering = false" :class="{ 'text-white bg-indigo-500' : hovering, 'text-gray-900': !hovering }" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
+                        <li v-for="(lot, i) in lots" :key="i" @click="choose(i)" @mouseenter="activeIndex = i" @mouseleave="activeIndex = null" :class="{ 'text-white bg-indigo-500': activeIndex === i, 'text-gray-900': !(activeIndex === i) }" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
                           <div class="flex flex-col">
                             <div class="flex justify-between">
-                              <!-- Selected: "font-semibold", Not Selected: "font-normal" -->
-                              <p class="font-normal">
+                              <p :class="{ 'font-semibold': selectedIndex === i, 'font-normal': !(selectedIndex === i) }" class="font-normal text-xs sm:text-sm">
                                 {{ lot }}
                               </p>
                             </div>
@@ -157,8 +150,8 @@
                 </div>
               </div>
 
-              <div class="relative z-0 inline-flex rounded-md ml-auto">
-                <div class="relative h-8 rounded-md mr-2 shadow-sm">
+              <div class="relative flex-none z-0 inline-flex rounded-md ml-auto">
+                <div class="relative h-10 rounded-md mr-2 shadow-sm">
                   <div class="absolute inset-y-0 left-0 flex items-center">
                     <label for="filter" class="sr-only">Filter</label>
                     <select id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md text-sm">
