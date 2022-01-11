@@ -2,10 +2,10 @@
   "name": "prestaui",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vue-tsc --noEmit && vite build",
+    "dev": "vite --base=/admin --host 0.0.0.0",
+    "build": "vue-tsc --noEmit && vite build --base=/admin",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.vue",
-    "deploy": "vue-tsc --noEmit && vite build --base '/prestaui/'",
+    "deploy": "vue-tsc --noEmit && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
