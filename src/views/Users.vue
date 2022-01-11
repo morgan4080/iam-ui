@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { getAccessToken, getUsers } from '@/modules/all'
-  import { ref } from "vue"
-  import {useRoute} from "vue-router";
+  import { ref, reactive, watch } from "vue"
+  import { useRoute } from "vue-router";
 
   const route = useRoute()
 
@@ -23,9 +23,27 @@
 
   const totalPagesArray = ref(<number[]>[])
 
-  const recordsPerPage = ref(<number>10)
+  const filterForm = reactive({
+    recordsPerPage: 10,
+    searchTerm: '',
+    order: 'ASC',
+    page: currentPage.value
+  })
 
-  const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${recordsPerPage.value}`)
+  watch(
+      () =>[ filterForm.recordsPerPage, filterForm.searchTerm, filterForm.order, filterForm.page ],
+      () => {
+        console.log("watching", filterForm)
+      }
+  )
+
+  const choose = (index: number) => {
+    selectedIndex.value = index
+    filterForm.recordsPerPage = lots.value[index]
+    pageCountOpen.value = !pageCountOpen.value
+  }
+
+  const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
 
   const refresh = () => {
     allUsers.value = [
@@ -67,25 +85,19 @@
       }
     ]
     getAccessToken()
-    .then((token?: string) => getUsers(token, query.value))
-    .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
-      totalRecords.value = data.totalRecords
-      totalPages.value = data.totalPages
-      for (let i = 1; i <= totalPages.value; i++ ) {
-        totalPagesArray.value = [...totalPagesArray.value, ...[i]]
-      }
-      currentPage.value = data.currentPage + 1
-      allUsers.value = data.records
-    }).catch((e: any) => {
+        .then((token?: string) => getUsers(token, query.value))
+        .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
+          totalRecords.value = data.totalRecords
+          totalPages.value = data.totalPages
+          for (let i = 1; i <= totalPages.value; i++ ) {
+            totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+          }
+          currentPage.value = data.currentPage + 1
+          allUsers.value = data.records
+        }).catch((e: any) => {
       console.log(e)
       alert("User fetch Error")
     })
-  }
-
-  const choose = (index: number) => {
-    selectedIndex.value = index
-    recordsPerPage.value = lots.value[index]
-    pageCountOpen.value = !pageCountOpen.value
   }
 
   refresh()
@@ -98,12 +110,12 @@
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
             <div class="py-4 space-y-4 sm:py-6 flex flex-wrap items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
-              <div class="space-x-2 flex-1 flex justify-between">
+              <div class="space-x-2 flex justify-between">
                 <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
                   Add user
                 </button>
 
-                <div class="flex-grow ml-auto">
+                <div>
                   <label id="listbox-label" class="sr-only">
                     Change records count
                   </label>
@@ -112,7 +124,7 @@
                       <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
                         <div class="relative inline-flex items-center bg-indigo-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
                           <p class="ml-2.5 text-xs sm:text-sm font-medium">
-                            {{ recordsPerPage }}
+                            {{ filterForm.recordsPerPage }}
                           </p>
                         </div>
                         <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-indigo-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">

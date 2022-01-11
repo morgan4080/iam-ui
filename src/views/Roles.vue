@@ -2,11 +2,11 @@
   import { ref } from "vue";
   import { getAccessToken, getRoles } from '@/modules/all'
 
-  const all_roles = ref(<{ id: string, keycloakRoleId: string, roleName: string, roleType: string }[]>[])
+  const all_roles = ref(<{ id: string, keycloakRoleId: string, roleName: string, roleType: string, roleDescription: string }[]>[])
 
   getAccessToken()
       .then((token?: string) => getRoles(token))
-      .then((data: {records: { id: string, keycloakRoleId: string, roleName: string, roleType: string }[]}) => {
+      .then((data: {records: { id: string, keycloakRoleId: string, roleName: string, roleType: string, roleDescription: string }[]}) => {
         all_roles.value = data.records
       })
 
