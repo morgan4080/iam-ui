@@ -11,7 +11,7 @@ export default defineConfig({
   },
   envDir: path.resolve(__dirname, './'),
   server: {
-    proxy: {
+    /*proxy: {
       '/users-admin/api/users': {
         target: 'https://accounts.presta.co.ke',
         changeOrigin: true,
@@ -54,6 +54,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: true
       }
-    }
+    }*/
   }
 })
