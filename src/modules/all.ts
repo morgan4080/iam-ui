@@ -1,5 +1,5 @@
 export function getAccessToken(): any {
-    const myHeaders = new Headers()
+    /*const myHeaders = new Headers()
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded")
 
     const urlencoded = new URLSearchParams()
@@ -25,7 +25,8 @@ export function getAccessToken(): any {
                 console.log("generate token error", e)
                 resolve(null)
             })
-    })
+    })*/
+    return new Promise(resolve => resolve(null))
 }
 
 export function editTheUser(userType: string, payload: {}, route: any, access_token?: string): any {
