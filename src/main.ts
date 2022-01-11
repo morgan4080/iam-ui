@@ -13,17 +13,10 @@ const requestOptions: any = {
 fetch(import.meta.env.VITE_DOMAIN_URL + "/authentication", requestOptions)
     .then(response => response.json())
     .then((response: any) => {
-        console.log("authentication url response", response)
-
-        if (response.status === 401) {
-            // Redirect to appropriate page
-            window.location.href = `/signin`
-        } else if (response.status === 200) {
-            createApp(App)
-                .use(router)
-                .use(store)
-                .mount('#app')
-        }
+        createApp(App)
+            .use(router)
+            .use(store)
+            .mount('#app')
     })
     .catch((e: any) => {
         console.error(e)
