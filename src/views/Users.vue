@@ -214,25 +214,25 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                     <tr v-for="(user) in allUsers" :key="user.id">
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`admin/users/${user.id}`">
                           <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.firstName }} {{ user.lastName }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`admin/users/${user.id}`">
                           <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.phoneNumber }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`admin/users/${user.id}`">
                           <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.email }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`admin/users/${user.id}`">
                           <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.userType }}
                         </router-link>
