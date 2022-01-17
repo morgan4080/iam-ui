@@ -18,6 +18,9 @@
         <div class="flex-1 min-w-0">
           <div class="flex flex-col">
             <div class="pt-12 flex flex-row items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
+              <button @click="$router.push('/admin/roles/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+                Add roles
+              </button>
               <span class="relative z-0 inline-flex shadow-sm rounded-md ml-auto">
                 <button type="button" class="relative inline-flex items-center px-2.5 py-1.5 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

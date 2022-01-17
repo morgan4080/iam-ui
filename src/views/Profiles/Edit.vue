@@ -175,7 +175,7 @@
 
             <div class="flex-1 min-w-0">
               <div class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate border-b border-gray-200">
-                <router-link :to="`/profiles/${route.params.id}`" class="text-teal-500 capitalize">
+                <router-link :to="`/admin/profiles/${route.params.id}`" class="text-teal-500 capitalize">
                   {{ userData.firstName + ' ' + userData.lastName }} /
                 </router-link>
                 &nbsp;Profile edit

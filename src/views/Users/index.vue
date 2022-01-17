@@ -111,7 +111,7 @@
           <div class="flex flex-col">
             <div class="py-4 space-y-4 sm:py-6 flex flex-wrap items-center justify-start sm:space-y-0 sm:flex-row sm:items-end">
               <div class="space-x-2 flex justify-between">
-                <button @click="$router.push('/new-users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+                <button @click="$router.push('/admin/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
                   Add user
                 </button>
 
@@ -214,25 +214,25 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                     <tr v-for="(user) in allUsers" :key="user.id">
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`/admin/users/${user.id}`">
                           <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.firstName }} {{ user.lastName }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`/admin/users/${user.id}`">
                           <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.phoneNumber }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`/admin/users/${user.id}`">
                           <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.email }}
                         </router-link>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
-                        <router-link :to="`/users/${user.id}`">
+                        <router-link :to="`/admin/users/${user.id}`">
                           <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
                           {{ user.userType }}
                         </router-link>
@@ -246,7 +246,7 @@
                           </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                        <router-link v-if="user.id" :to="`/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
+                        <router-link v-if="user.id" :to="`/admin/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
                       </td>
                     </tr>
 

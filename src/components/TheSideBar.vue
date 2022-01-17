@@ -34,7 +34,7 @@ const setWidth = ref(true)
 
 
           <div>
-            <router-link to="/dashboard" class="text-gray-900 group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-gray-900" >
+            <router-link to="/admin/dashboard" class="text-gray-900 group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-gray-900" >
               Dashboard
             </router-link>
           </div>
@@ -49,11 +49,11 @@ const setWidth = ref(true)
             </button>
             <div :class="{'block' : open0, 'hidden' : !open0 }" class="space-y-1" id="sub-menu-1" >
 
-              <router-link to="/users" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
+              <router-link to="/admin/users" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
                 Users
               </router-link>
 
-              <router-link to="/roles" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
+              <router-link to="/admin/roles" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
                 Roles
               </router-link>
 
