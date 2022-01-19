@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function getAccessToken(): any {
     /*const myHeaders = new Headers()
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded")
@@ -66,6 +68,7 @@ export function getUsers(access_token?: string, query?: string): any {
 
     const requestOptions: any = {
         method: 'GET',
+        mode: 'no-cors',
         headers: myHeaders
     }
 
@@ -76,21 +79,51 @@ export function getUsers(access_token?: string, query?: string): any {
         })
 }
 
-export function getRoles(access_token?: string): any {
+export async function getRoles(access_token?: string): Promise<any> {
     const myHeaders = new Headers()
 
     if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
 
     const requestOptions: any = {
         method: 'GET',
+        mode: 'no-cors',
         headers: myHeaders
     }
 
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", requestOptions)
-    .then(response => response.json())
-    .then((data): {totalRecords: number, totalPages: number, currentPage: number, records: { id: string, keycloakRoleId: string, roleName: string, roleType: string }[]} => {
+    try {
+        const { data } = await axios.get(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", { withCredentials: false })
         return data
-    })
+    } catch (e: any) {
+        console.log(e.message)
+    }
+}
+
+export async function getServices(): Promise<any> {
+    try {
+        // /api/organizations/services
+        const { data } = await axios.get(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/organizations/services", { withCredentials: false })
+        return data
+    } catch (e: any) {
+        console.log(e.message)
+    }
+}
+
+export async function createRole(payload: any): Promise<any> {
+    try {
+        const options: any = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            data: payload,
+            config: {
+                withCredentials: false
+            },
+            url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles",
+        };
+        const { data } = await axios(options)
+        return data
+    } catch (e: any) {
+        console.log(e.message)
+    }
 }
 
 export function getPermissions(access_token?: string): any {
@@ -100,6 +133,7 @@ export function getPermissions(access_token?: string): any {
 
     const requestOptions: any = {
         method: 'GET',
+        mode: 'no-cors',
         headers: myHeaders
     }
 
@@ -225,6 +259,7 @@ export function getAuthentication(access_token?: string): any {
 
     const requestOptions: any = {
         method: 'GET',
+        mode: 'no-cors',
         headers: myHeaders
     }
 
@@ -242,6 +277,7 @@ export function getUserAdminRoles(roleIds: [], access_token?: string): any {
 
     const requestOptions: any = {
         method: 'GET',
+        mode: 'no-cors',
         headers: myHeaders
     }
 
