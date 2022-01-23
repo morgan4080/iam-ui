@@ -14,7 +14,8 @@ module.exports = {
         pink: colors.fuchsia,
         white: colors.white,
         indigo: colors.indigo,
-        teal: colors.teal
+        teal: colors.teal,
+        yellow: colors.yellow
       },
       width: {
         'w-[45.875rem]' : '45.875rem'

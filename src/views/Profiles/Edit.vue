@@ -257,9 +257,9 @@
                 <dl class="space-y-6 divide-y divide-gray-200">
                   <div class="pt-5" v-for="(role, i) in all_roles">
                     <dt class="text-base">
-                      <label :for="'role' + i" type="button" class="text-left w-full flex justify-between items-start text-gray-400" aria-controls="faq-0" aria-expanded="false">
+                      <label :for="`role${i}}`" type="button" class="text-left w-full flex justify-between items-start text-gray-400" aria-controls="faq-0" aria-expanded="false">
                         <span class="font-medium text-gray-900 flex items-center space-x-2">
-                          <input :id="'role'+i" @change="setEventVal" :value="role" :name="'role' + i" class="border-gray-400 rounded-md" type="checkbox">
+                          <input :id="`role${i}}`" @change="setEventVal" :value="role" :name="'role' + i" class="border-gray-400 rounded-md" type="checkbox">
                           <span>{{ role.roleName }}</span>
                         </span>
                       </label>

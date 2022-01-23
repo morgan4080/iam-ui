@@ -2,9 +2,10 @@
   import { ref } from "vue"
   import { useStore } from "vuex"
   import {createRole, getServices} from '@/modules/all'
+  import PermissionsList from '@/components/PermissionsList.vue'
   const store = useStore()
 
-  interface permissionInterface { id: number, name: string, description: string, keycloakRoleId: string, roleType: string, clientName: string, clientId: string }
+  interface permissionInterface { id: number, checked: boolean, name: string, description: string, keycloakRoleId: string, roleType: string, clientName: string, clientId: string }
 
   interface serviceInterface { id: number, clientId: string, name: string, description: string, permissions: permissionInterface[]}
 
@@ -19,16 +20,19 @@
         permissions: [
           {
             id: 1,
+            checked: false,
             name: "Full kopesha access",
             description: "full service access"
           },
           {
             id: 2,
+            checked: false,
             name: "Read kopesha access",
             description: "Read service access"
           },
           {
             id: 3,
+            checked: false,
             name: "Write kopesha access",
             description: "Write service access"
           }
@@ -41,16 +45,19 @@
         permissions: [
           {
             id: 1,
+            checked: false,
             name: "Full guarantorship access",
             description: "full service access"
           },
           {
             id: 2,
+            checked: false,
             name: "Read guarantorship access",
             description: "Read service access"
           },
           {
             id: 3,
+            checked: false,
             name: "Write guarantorship access",
             description: "Write service access"
           }
@@ -63,16 +70,19 @@
         permissions: [
           {
             id: 1,
+            checked: false,
             name: "Full b2c access",
             description: "full service access"
           },
           {
             id: 2,
+            checked: false,
             name: "Read b2c access",
             description: "Read service access"
           },
           {
             id: 3,
+            checked: false,
             name: "Write b2c access",
             description: "Write service access"
           }
@@ -85,16 +95,19 @@
         permissions: [
           {
             id: 1,
+            checked: false,
             name: "Full c2b access",
             description: "full service access"
           },
           {
             id: 2,
+            checked: false,
             name: "Read c2b access",
             description: "Read service access"
           },
           {
             id: 3,
+            checked: false,
             name: "Write c2b access",
             description: "Write service access"
           }
@@ -107,16 +120,19 @@
         permissions: [
           {
             id: 1,
+            checked: false,
             name: "Full ussd access",
             description: "full service access"
           },
           {
             id: 2,
+            checked: false,
             name: "Read ussd access",
             description: "Read service access"
           },
           {
             id: 3,
+            checked: false,
             name: "Write ussd access",
             description: "Write service access"
           }
@@ -125,10 +141,17 @@
     ]
   )
 
-  getServices()
+  /*getServices()
       .then((response: serviceInterface[]) => {
-        services.value = response
-      })
+        services.value = response.map((service: serviceInterface) => {
+          return {
+            ...service,
+            checked: false
+          }
+        })
+      }).catch(e => {
+    store.dispatch("defineNotification", { message: e.message, error: true })
+  })*/
 
   const form = ref(< formInterface >
     {
@@ -163,7 +186,8 @@
     console.log(form.value.services)
   }
 
-  function setPermissionToService(e: any, serviceIndex: number, permission: permissionInterface) {
+  function setPermissionToService(e: any, permission: permissionInterface, serviceIndex: number = currentServiceIndex.value) {
+    console.log(serviceIndex)
     if (form.value.services[serviceIndex]) {
       if (e.target.checked) {
         form.value.services[serviceIndex].permissions.push(permission)
@@ -171,30 +195,29 @@
         let index = form.value.services[serviceIndex].permissions.findIndex((item): boolean => item.id === permission.id)
         form.value.services[serviceIndex].permissions.splice(index, 1)
       }
-      console.log(form.value.services[serviceIndex].permissions)
+      console.log(form.value.services[serviceIndex])
     } else {
       e.target.checked = false
-      store.dispatch("defineNotification", "Choose a service first")
+      store.dispatch("defineNotification", { message: "Choose a service first", warning: true })
     }
   }
 
   function saveToState() {
     console.log("request payload", form.value)
-    createRole(form.value).then(response => store.dispatch("defineNotification", response.message))
+    createRole(form.value)
+        .then(response => {
+          store.dispatch("defineNotification", response.message)
+        })
+        .catch(e => {
+          store.dispatch("defineNotification", e.message)
+        })
   }
 
 </script>
 <template>
   <div class="w-full lg:max-w-6xl max-h-screen overflow-y-scroll">
     <form @submit.prevent="saveToState">
-      <transition
-          enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-          leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-          enter-class="transform opacity-0 translate-x-full"
-          enter-to-class="transform opacity-100 translate-x-0"
-          leave-class="transform opacity-100 translate-x-0"
-          leave-to-class="transform opacity-0 translate-x-full"
-      >
+
         <div v-if="!reviewed" class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
           <section>
             <div class="shadow sm:overflow-hidden">
@@ -244,11 +267,11 @@
                     <div class="divide-y divide-gray-200">
                       <div @click="displayService(i)" v-for="(service, i) in services" :key="i" :class="{'bg-blue-50 relative ' : currentServiceIndex === i }" class="relative flex items-center px-2 py-4 cursor-pointer">
                         <div class="min-w-0 flex-1 text-sm">
-                          <label for="comments" class="font-medium text-gray-700">{{ service.name }}</label>
+                          <label :for="`service${service.id}`" class="font-medium text-gray-700">{{ service.name }}</label>
                           <p id="comments-description" class="text-gray-500">{{ service.description }}</p>
                         </div>
                         <div class="ml-3 flex items-center h-5">
-                          <input @change="addServiceToForm($event,service)" id="comments" aria-describedby="comments-description" name="comments" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                          <input @change="addServiceToForm($event,service)" :id="`service${service.id}`" aria-describedby="service-selector" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         </div>
                         <div v-if="currentServiceIndex === i" class="absolute top-0 -right-9">
                           <div class="w-0 h-0" style="border-top: 36px solid transparent;border-bottom: 36px solid transparent;border-left: 36px solid rgba(240, 249, 255, 1);"></div>
@@ -260,16 +283,8 @@
                     <h6 class="absolute -top-10 text-sm text-gray-500">Permissions</h6>
                     <fieldset class="bg-blue-50 px-2 border-t border-b border-gray-200">
                       <legend class="sr-only">Permissions</legend>
-                      <div v-if="services[currentServiceIndex]" class="divide-y divide-gray-200">
-                        <div v-for="(permission, i) in services[currentServiceIndex].permissions" :key="i" class="relative flex items-start py-4">
-                          <div class="min-w-0 flex-1 text-sm">
-                            <label for="comments" class="font-medium text-gray-700">{{ permission.name }}</label>
-                            <p class="text-gray-500">{{ permission.description }}</p>
-                          </div>
-                          <div class="ml-3 flex items-center h-5">
-                            <input @change="setPermissionToService($event,currentServiceIndex, permission)" aria-describedby="service-permissions" name="permission" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                          </div>
-                        </div>
+                      <div class="divide-y divide-gray-200">
+                        <PermissionsList v-for="(permission, i) in services[currentServiceIndex].permissions" :key="`${currentServiceIndex}${i}`"  :permission="permission" @change="setPermissionToService"/>
                       </div>
                     </fieldset>
                   </div>
@@ -278,16 +293,8 @@
             </div>
           </section>
         </div>
-      </transition>
 
-      <transition
-          enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-          leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-          enter-class="transform opacity-0 translate-x-full"
-          enter-to-class="transform opacity-100 translate-x-0"
-          leave-class="transform opacity-100 translate-x-0"
-          leave-to-class="transform opacity-0 translate-x-full"
-      >
+
         <div v-if="reviewed" class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
           <section>
             <div class="shadow sm:overflow-hidden">
@@ -332,7 +339,7 @@
                 </div>
                 <div class="mt-5 border-t border-gray-200">
                   <dl class="sm:divide-y sm:divide-gray-200">
-                    <div v-for="(service, i) in form.services" class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                    <div v-for="(service, i) in form.services" :key="i" class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                       <dt class="text-sm font-medium text-gray-500">
                         {{ service.name }}
                       </dt>
@@ -349,7 +356,7 @@
             </div>
           </section>
         </div>
-      </transition>
+
 
 
       <div v-if="!reviewed" class="flex pb-20 bg-gray-100">

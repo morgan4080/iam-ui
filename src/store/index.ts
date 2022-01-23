@@ -4,7 +4,12 @@ const store = createStore({
     state () {
         return {
             user: null,
-            notification: null,
+            notification: {
+                message: null,
+                success: false,
+                warning: false,
+                error: false,
+            },
         }
     },
     getters: {
@@ -14,10 +19,18 @@ const store = createStore({
         set_current_user(state: any, payload: object) {
             state.user = payload
         },
-        set_notification(state: any, payload: string) {
-            state.notification = payload
+        set_notification(state: any, payload: { message: string, success?: boolean, warning?: boolean, error?: boolean }) {
+            state.notification = {
+                ...state.notification,
+                ...payload
+            }
             setTimeout(() => {
-                state.notification = null
+                state.notification = {
+                    message: null,
+                    success: false,
+                    warning: false,
+                    error: false,
+                }
             }, 4000)
         },
 
