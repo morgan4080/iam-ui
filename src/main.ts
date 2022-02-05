@@ -2,33 +2,47 @@ import { createApp } from 'vue'
 import router from './router/'
 import store from './store/'
 import App from './App.vue'
-
+import apiCall from "@/utils/api"
 import './index.css'
 
-const requestOptions: any = {
-    method: 'GET',
+const url = `${import.meta.env.VITE_DOMAIN_URL}/authentication`
+
+const myHeaders = new Headers()
+
+myHeaders.append("Authorization", `*/*`)
+
+const headers = myHeaders
+
+const method = 'GET'
+
+function progress (progressEvent: any): void {
+    console.log(Math.round((progressEvent.loaded * 100) / progressEvent.total))
+    let percent: any = document.getElementById("percent")
+    if (percent) {
+        percent.innerText = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+    }
 }
 
-if (import.meta.env.DEV) {
-    createApp(App)
-        .use(router)
-        .use(store)
-        .mount('#app')
-} else {
-    fetch(import.meta.env.VITE_DOMAIN_URL + "/authentication", requestOptions)
-        .then(response => response.json())
-        .then((response: any) => {
-            createApp(App)
-                .use(router)
-                .use(store)
-                .mount('#app')
-        })
-        .catch((e: any) => {
-            console.error(e)
-            const currentUrl = window.location.href
-            // console.log("authentication", `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`)
-            // alert(`${import.meta.env.VITE_APP_ROOT_AUTH}`);
+const spinner: any = document.getElementById("spinner")
 
-            window.location.href = `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`
-        })
+if (spinner) {
+    spinner.style.display = "block"
 }
+
+apiCall({ url, method, headers}, { withCredentials: true, onUploadProgress: progress }).then((response: any): void => {
+    function instantiateApp () {
+        createApp(App)
+            .use(router)
+            .use(store)
+            .mount('#app')
+    }
+    instantiateApp()
+    store.commit('set_current_user', response)
+    const loader: any = document.getElementById("loader")
+    if (loader) {
+        loader.style.display = "none"
+    }
+}).catch((e: any) => {
+    const currentUrl = window.location.href
+    window.location.href = `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`
+})

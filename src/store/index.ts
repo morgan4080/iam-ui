@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import apiCall from "@/utils/api"
 
 const store = createStore({
     state () {
@@ -38,6 +39,25 @@ const store = createStore({
     actions: {
         defineNotification({ commit }, payload) {
             commit("set_notification", payload)
+        },
+        async editTheUser({}, payload: { userType: string, data: {}, route: any }) {
+            const { userType, data, route } = payload
+
+            let method = userType.toLowerCase() === 'customer' ? 'POST' : 'PUT'
+
+            let url = `${import.meta.env.VITE_DOMAIN_URL}${ userType.toLowerCase() === 'customer' ? '/users-admin/api/update-user' : '/users-admin/api/users/' + route.params.id }`
+
+            const myHeaders = new Headers()
+
+            myHeaders.append("Authorization", `*/*`)
+
+            const headers = myHeaders
+
+            try {
+               return await apiCall({ url, data, method, headers})
+            } catch (e: any) {
+               alert(e.message)
+            }
         }
     }
 })

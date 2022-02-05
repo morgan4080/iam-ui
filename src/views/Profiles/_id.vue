@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useRoute} from "vue-router"
   import {ref, computed} from "vue"
-  import { getAccessToken, getUser, getUserAdminRoles } from '@/modules/all'
+  import { getUser, getUserAdminRoles } from '@/modules/all'
   import { useStore } from "vuex"
 
   const route = useRoute()
@@ -24,14 +24,9 @@
 
   const userRoles = ref(<any[]>[])
 
-  const accessToken: any = ref(<string>'')
-
-  getAccessToken()
-      .then((token?: string) => {
-        accessToken.value = token
-        return getUser(route, token)
-      })
-      .then((user: any[]) => {
+  getUser(route)
+      .then((data) => {
+        const { user } = data
         userData.value = {
           ...userData.value,
           ...user
@@ -40,7 +35,7 @@
         return user
       })
       .then((user: any) => {
-        return getUserAdminRoles(user.userAssignedRolesId, accessToken.value)
+        return getUserAdminRoles(user.userAssignedRolesId)
       })
       .then((role: any[]) => {
         userRoles.value = <never[]>[...userRoles.value, ...role]

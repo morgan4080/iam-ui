@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {getAccessToken, getRoles, getUsers} from '@/modules/all'
+import {getRoles, getUsers} from '@/modules/all'
 import { ref, computed } from "vue"
 import { useStore } from "vuex"
 
@@ -16,27 +16,17 @@ const roleCount = ref(0)
 
 const query = ref(<string>"?order=ASC&sort=ASC&pageSize=1")
 
-getAccessToken()
-    .then(async (token?: string) => {
+getUsers(query.value).then((data: {totalRecords: number}) => {
+  userCount.value = data.totalRecords
+}).catch((e: any) => {
+  alert(e.message)
+})
 
-      try {
-        const data: {totalRecords: number} = await getUsers(token, query.value)
-        userCount.value = data.totalRecords
-      } catch (e) {
-        throw e
-      }
-
-      try {
-        const { totalRecords } = await getRoles(token)
-        roleCount.value = totalRecords
-      } catch (e) {
-        throw e
-      }
-
-    }).catch((e: any) => {
-        console.log(e)
-        alert("Check Console")
-    })
+getRoles().then(({ totalRecords }) => {
+  roleCount.value = totalRecords
+}).catch((e: any) => {
+  alert(e.message)
+})
 
 </script>
 <template>

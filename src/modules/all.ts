@@ -1,111 +1,74 @@
-import axios from "axios";
+import axios from "axios"
+import apiCall from "@/utils/api";
+import {rejects} from "assert";
 
-export function getAccessToken(): any {
-    /*const myHeaders = new Headers()
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded")
+export function syncRoles() {
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
+    const method = `POST`
+    const myHeaders = new Headers()
+    myHeaders.append("Authorization", `*/*`)
+    const headers = myHeaders
 
-    const urlencoded = new URLSearchParams()
-    urlencoded.append("client_id", "direct-access")
-    urlencoded.append("client_secret", "cd846c8f-2863-4481-817f-460fb86c527e")
-    urlencoded.append("grant_type", "password")
-    urlencoded.append("username", "p.juma@onepaycredit.co.ke")
-    urlencoded.append("password", "pass1")
+    return apiCall({url, method, headers}, {withCredentials: true})
+}
+export function syncServices() {
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services/sync`
+    const method = `POST`
+    const myHeaders = new Headers()
+    myHeaders.append("Authorization", `*/*`)
+    const headers = myHeaders
 
-    const requestOptions: any = {
-        method: 'POST',
-        headers: myHeaders,
-        body: urlencoded,
-        redirect: 'follow'
-    }
-
-    return new Promise((resolve) => {
-        fetch(import.meta.env.VITE_AUTHENTICATION_URL + "/auth/realms/t74209/protocol/openid-connect/token", requestOptions)
-            .then(response => response.json())
-            .then(({ access_token }) => {
-                resolve(access_token)
-            }).catch(e => {
-                console.log("generate token error", e)
-                resolve(null)
-            })
-    })*/
-    return new Promise(resolve => resolve(null))
+    return apiCall({url, method, headers}, {withCredentials: true})
 }
 
-export function editTheUser(userType: string, payload: {}, route: any, access_token?: string): any {
-    const myHeaders = new Headers()
+export function editTheUser(userType: string, payload: {}, route: any): any {
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    const url = import.meta.env.VITE_DOMAIN_URL + ((userType.toLowerCase() === 'customer') ? "/users-admin/api/update-user" : `/users-admin/api/users/${ route.params.id}`)
+
+    const myHeaders = new Headers()
 
     myHeaders.append("Content-Type", "application/json")
 
-    myHeaders.append("Accept", "*/*")
+    myHeaders.append("Accept", "*!/!*")
 
-    const raw: string = JSON.stringify(payload)
+    myHeaders.append("Authorization", `*/*`)
 
-    const uri = import.meta.env.VITE_DOMAIN_URL + ((userType.toLowerCase() === 'customer') ? "/users-admin/api/update-user" : `/users-admin/api/users/${ route.params.id}`)
+    const headers = myHeaders
 
-    const reqOptions: any = {
-        method: (userType.toLowerCase() === 'customer') ? 'POST' : 'PUT',
-        headers: myHeaders,
-        body: raw
-    }
+    const method: string = (userType.toLowerCase() === 'customer') ? 'POST' : 'PUT'
 
-    return new Promise((resolve,reject) => {
-        fetch(uri, reqOptions)
-        .then(response => response.json())
-        .then((data) => {
-            resolve(data)
-        }).catch(e => {
-            reject(e)
-        })
-    })
+    return apiCall({ url, method, headers}, { withCredentials: true })
 }
 
-export function getUsers(access_token?: string, query?: string): any {
-    const myHeaders = new Headers()
+export function getUsers(query: string = ''): Promise<any> {
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users${query}`
 
-    const requestOptions: any = {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: myHeaders
-    }
+    const method = 'GET'
 
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users" + query, requestOptions)
-        .then(response => response.json())
-        .then((data) => {
-            return data
-        })
+    return apiCall({ url, method }, { withCredentials: true })
 }
 
-export async function getRoles(access_token?: string): Promise<any> {
-    const myHeaders = new Headers()
+export async function getRoles(): Promise<any> {
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles`
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    const method = 'GET'
 
-    const requestOptions: any = {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: myHeaders
-    }
-
-    try {
-        const { data } = await axios.get(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", { withCredentials: false })
-        return data
-    } catch (e: any) {
-        console.log(e.message)
-    }
+    return apiCall({ url, method }, { withCredentials: true })
 }
 
 export async function getServices(): Promise<any> {
-    try {
-        // /api/organizations/services
-        const { data } = await axios.get(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/organizations/services", { withCredentials: false })
-        return data
-    } catch (e: any) {
-        console.log(e.message)
-    }
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services`
+
+    const myHeaders = new Headers()
+
+    myHeaders.append("Authorization", `*/*`)
+
+    const headers = myHeaders
+
+    const method = 'GET'
+
+    return apiCall({ url, method, headers}, { withCredentials: true })
 }
 
 export async function createRole(payload: any): Promise<any> {
@@ -126,56 +89,45 @@ export async function createRole(payload: any): Promise<any> {
     }
 }
 
-export function getPermissions(access_token?: string): any {
+export function getPermissions():  Promise<any> {
+
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions"
+
     const myHeaders = new Headers()
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    myHeaders.append("Authorization", `*/*`)
 
-    const requestOptions: any = {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: myHeaders
-    }
+    const headers = myHeaders
 
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions", requestOptions)
-        .then(response => response.json())
-        .then((data: any) => {
-            return data.records
-        })
+    const method = 'GET'
+
+    return apiCall({ url, method, headers}, { withCredentials: true })
 }
 
-export function getUser(route: any, access_token?: string): any {
+export function getUser(route: any ): Promise<any> {
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
+
     const myHeaders = new Headers()
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    myHeaders.append("Authorization", `*/*`)
 
-    const reqOptions: any = {
-        method: 'GET',
-        headers: myHeaders
-    }
+    const headers = myHeaders
 
-    const uri = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
+    const method = 'GET'
 
-    return fetch(uri, reqOptions)
-        .then(response => response.json())
-        .then(({ user }) => {
-            console.log(user)
-            return user
-        })
+    return apiCall({ url, method, headers}, { withCredentials: true })
 }
 
-export function postUser(body: any, access_token?: string): any {
-    const myHeaders = new Headers()
+export function postUser(body: any, ): any {
+    const headers = new Headers()
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    headers.append("Content-Type", "application/json")
 
-    myHeaders.append("Content-Type", "application/json")
-
-    let raw: string
+    let raw: any
 
     if (body.userType.toLowerCase() === 'admin')
     {
-        raw = JSON.stringify({
+        raw = {
             "firstName": body.firstName,
             "lastName": body.lastName,
             "password": body.password,
@@ -186,108 +138,46 @@ export function postUser(body: any, access_token?: string): any {
             "userRoleIds": body.userRoleIds,
             "tenantId": body.tenantId,
             "enabled": body.enabled
-        })
+        }
     } else {
-        raw = JSON.stringify({
+        raw = {
             "firstName": body.firstName,
             "lastName": body.lastName,
             "pinSecret": body.pinSecret,
             "username": body.username,
             "phoneNumber": body.phoneNumber,
             "emailAddress": body.email
-        })
+        }
     }
 
-    const uri = import.meta.env.VITE_DOMAIN_URL + ((body.userType.toLowerCase() === 'customer') ? "/users-admin/api/register" : "/users-admin/api/users")
+    const method = 'POST'
 
-    const reqOptions: any = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow',
-        cache: 'no-cache',
-        referrerPolicy: 'no-referrer',
-        credentials: 'same-origin'
-    }
+    const url = import.meta.env.VITE_DOMAIN_URL + ((body.userType.toLowerCase() === 'customer') ? "/users-admin/api/register" : "/users-admin/api/users")
 
-    return new Promise((resolve,reject) => {
-        fetch(uri, reqOptions)
-        .then(response => response.json())
-        .then((data) => {
-            resolve(data)
-        }).catch(e => {
-            console.log("reverting to fallback", e)
-            resolve({
-                "message": "User created",
-                "user": {
-                    "id": "e8efd10c-a1ee-4c9e-a12f-08fb51145729",
-                    "keycloakId": "03d0c7d0-90d0-40ac-8bf5-0edd77706f0c",
-                    "username": body.username,
-                    "phoneNumber": body.phoneNumber,
-                    "email": body.email,
-                    "firstName": body.firstName,
-                    "lastName": body.lastName,
-                    "tenantId": body.tenantId ? body.tenantId : '',
-                    "userType": body.userType,
-                    "userAssignedRolesId": body.userRoleIds
-                }
-            })
-
-            /*{
-                "message": "User created",
-                "user": {
-                    "id": "9ce91542-561a-41dc-b820-afce11884ede",
-                    "keycloakId": "b3ff203b-84bd-4928-887e-dd27926cd193",
-                    "username": "254765456456",
-                    "phoneNumber": "254765456456",
-                    "email": "morganmutugi@aol.com",
-                    "firstName": "Mutugi",
-                    "lastName": "Morgan",
-                    "tenantId": "t74209",
-                    "userType": "CUSTOMER",
-                    "userAssignedRolesId": []
-            }
-            }*/
-        })
-    })
+    return apiCall({ url, method, headers}, { withCredentials: true })
 }
 
-export function getAuthentication(access_token?: string): any {
+export function getUserAdminRoles(roleIds: [], ): Promise<any> {
+
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all"
+
     const myHeaders = new Headers()
 
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
+    myHeaders.append("Authorization", `*/*`)
 
-    const requestOptions: any = {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: myHeaders
-    }
+    const headers = myHeaders
 
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/authentication", requestOptions)
-        .then(response => response.json())
-        .then((data) => {
-            return data
-        })
-}
+    const method = 'GET'
 
-export function getUserAdminRoles(roleIds: [], access_token?: string): any {
-    const myHeaders = new Headers()
-
-    if (access_token) myHeaders.append("Authorization", `Bearer ${access_token}`)
-
-    const requestOptions: any = {
-        method: 'GET',
-        mode: 'no-cors',
-        headers: myHeaders
-    }
-
-    return fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all", requestOptions)
-        .then(response => response.json())
-        .then((data: any[]) => {
-            return data.filter((role: { name: string, roleId: never }) => {
+    return new Promise((resolve, reject) => {
+        apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
+            resolve(data.filter((role: { name: string, roleId: never }) => {
                 if (roleIds.indexOf(role.roleId) !== -1) {
                     return role
                 }
-            })
+            }))
+        }).catch((e: any) => {
+            reject(e)
         })
+    })
 }

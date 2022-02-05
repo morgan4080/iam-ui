@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useRoute} from "vue-router"
   import {computed, reactive, ref} from "vue"
-  import {getAccessToken, getRoles, getUser, editTheUser} from '@/modules/all'
+  import {getRoles, getUser, editTheUser} from '@/modules/all'
   import {useStore} from "vuex"
 
   const store = useStore()
@@ -53,34 +53,28 @@
 
   const all_roles = ref(<any[]>[])
 
-  getAccessToken()
-  .then(async (token?: string) => {
-    try {
-
-      const user: User = await getUser(route, token)
+  getUser(route).then((data) => {
+      // User
+      const { user } = data
       userData.value = {
         ...userData.value,
         ...user
       }
-
       form.firstName = user.firstName
       form.lastName = user.lastName
       form.emailAddress = user.email
       form.username = user.username
       form.phoneNumber = user.phoneNumber
       form.company = organisation
-    } catch (e) {
-      throw e
-    }
-    try {
-      all_roles.value = await getRoles(token)
-    } catch (e) {
-      throw e
-    }
-  }).catch((e: any) => {
-    console.log(e)
-    alert("Check Console")
-  })
+    }).catch((e: any) => {
+      alert(e.message)
+    })
+
+  getRoles()
+      .then((roles: any) => all_roles.value = roles)
+      .catch((e: any) => {
+        alert(e.message)
+      })
 
   const rolesExpanded =  ref(<boolean>false)
 
@@ -149,20 +143,14 @@
 
     console.log("submit data", payload)
 
-    getAccessToken()
-    .then(async (token?: string) => {
-      try {
-        const response: any = await editTheUser(userType, payload, route, token)
-        console.log("edit response", response)
-      } catch (e) {
-        throw e
-      }
+    editTheUser(userType, payload, route).then((response: any) => {
+      console.log("edit response", response)
     }).catch((e: any) => {
-      console.log(e)
-      alert("Check Console")
+      alert(e.message)
     }).finally(() => {
       loading.value = false
     })
+
   }
 </script>
 

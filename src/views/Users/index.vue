@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { createPopper } from '@popperjs/core'
-  import { getAccessToken, getUsers } from '@/modules/all'
+  import { getUsers } from '@/modules/all'
   import { ref, reactive, watch } from "vue"
   import { useRoute } from "vue-router";
 
@@ -31,13 +31,6 @@ import { createPopper } from '@popperjs/core'
     page: currentPage.value
   })
 
-  /*watch(
-      () =>[ filterForm.recordsPerPage, filterForm.searchTerm, filterForm.order, filterForm.page ],
-      () => {
-        console.log("watching", filterForm)
-      }
-  )
-*/
   const popcorn = ref(<any>null)
   const tooltip = ref(<any>null)
 
@@ -79,112 +72,21 @@ import { createPopper } from '@popperjs/core'
         lastName: '',
         phoneNumber: '',
         id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      },
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
       }
     ]
-    getAccessToken()
-        .then((token?: string) => getUsers(token, query.value))
-        .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
-          totalRecords.value = data.totalRecords
-          totalPages.value = data.totalPages
-          for (let i = 1; i <= totalPages.value; i++ ) {
-            totalPagesArray.value = [...totalPagesArray.value, ...[i]]
-          }
-          currentPage.value = data.currentPage + 1
-          allUsers.value = data.records
-        }).catch((e: any) => {
-      console.log(e)
-      alert("User fetch Error")
-    })
+    getUsers(query.value)
+      .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
+        totalRecords.value = data.totalRecords
+        totalPages.value = data.totalPages
+        for (let i = 1; i <= totalPages.value; i++ ) {
+          totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+        }
+        currentPage.value = data.currentPage + 1
+        allUsers.value = data.records
+      }).catch((e: any) => {
+          console.log(e)
+          alert("User fetch Error")
+      })
   }
 
   refresh()
@@ -195,12 +97,9 @@ import { createPopper } from '@popperjs/core'
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
-          <div class="space-x-2 flex justify-between">
-            <button @click="$router.push('/admin/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
-              Add user
-            </button>
-          </div>
-
+          <button @click="$router.push('/admin/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+            Add user
+          </button>
           <div class="relative flex-none z-0 inline-flex rounded-md ml-auto">
             <div class="relative h-8 rounded-md mr-2 shadow-sm">
               <div class="absolute inset-y-0 left-0 flex items-center">
@@ -221,7 +120,7 @@ import { createPopper } from '@popperjs/core'
         </div>
       </section>
       <section>
-        <div class="py-6 px-4 sm:p-6">
+        <div class="pb-6 px-4">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
             <tr>
@@ -246,45 +145,46 @@ import { createPopper } from '@popperjs/core'
             </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="(user) in allUsers" :key="user.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                <router-link :to="`/admin/users/${user.id}`">
-                  <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                  {{ user.firstName }} {{ user.lastName }}
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <router-link :to="`/admin/users/${user.id}`">
-                  <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                  {{ user.phoneNumber }}
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <router-link :to="`/admin/users/${user.id}`">
-                  <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                  {{ user.email }}
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
-                <router-link :to="`/admin/users/${user.id}`">
-                  <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
-                  {{ user.userType }}
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <span v-if="user.isEnabled" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Enabled
-                          </span>
-                <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            Disabled
-                          </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                <router-link v-if="user.id" :to="`/admin/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
-              </td>
-            </tr>
-
-            <!-- More people... -->
+              <tr v-if="allUsers.length > 0" v-for="(user) in allUsers" :key="user.id">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <router-link :to="`/admin/users/${user.id}`">
+                    <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                    {{ user.firstName }} {{ user.lastName }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <router-link :to="`/admin/users/${user.id}`">
+                    <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                    {{ user.phoneNumber }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <router-link :to="`/admin/users/${user.id}`">
+                    <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                    {{ user.email }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
+                  <router-link :to="`/admin/users/${user.id}`">
+                    <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
+                    {{ user.userType }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span v-if="user.isEnabled" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Enabled
+                            </span>
+                  <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Disabled
+                            </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                  <router-link v-if="user.id" :to="`/admin/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
+                </td>
+              </tr>
+              <tr v-else>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">No Data Available</td>
+              </tr>
             </tbody>
           </table>
         </div>
