@@ -118,43 +118,32 @@ export function getUser(route: any ): Promise<any> {
     return apiCall({ url, method, headers}, { withCredentials: true })
 }
 
-export function postUser(body: any, ): any {
+export async function postUser(payload: any): Promise<any> {
+    try {
+        const options: any = {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            data: payload,
+            config: {
+                withCredentials: false
+            },
+            url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/admin",
+        };
+        const { data } = await axios(options)
+        return data
+    } catch (e: any) {
+        alert(e.message)
+    }
+}
+
+export async function getRole(keyCloakId: any): Promise<any> {
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/"+keyCloakId
+
     const headers = new Headers()
 
-    headers.append("Content-Type", "application/json")
+    const method = 'GET'
 
-    let raw: any
-
-    if (body.userType.toLowerCase() === 'admin')
-    {
-        raw = {
-            "firstName": body.firstName,
-            "lastName": body.lastName,
-            "password": body.password,
-            "phoneNumber": body.phoneNumber,
-            "email": body.email,
-            "username": body.username,
-            "userRoles": body.userRoles,
-            "userRoleIds": body.userRoleIds,
-            "tenantId": body.tenantId,
-            "enabled": body.enabled
-        }
-    } else {
-        raw = {
-            "firstName": body.firstName,
-            "lastName": body.lastName,
-            "pinSecret": body.pinSecret,
-            "username": body.username,
-            "phoneNumber": body.phoneNumber,
-            "emailAddress": body.email
-        }
-    }
-
-    const method = 'POST'
-
-    const url = import.meta.env.VITE_DOMAIN_URL + ((body.userType.toLowerCase() === 'customer') ? "/users-admin/api/register" : "/users-admin/api/users")
-
-    return apiCall({ url, method, headers}, { withCredentials: true })
+    return  apiCall({ url, method, headers}, { withCredentials: true })
 }
 
 export function getUserAdminRoles(roleIds: [], ): Promise<any> {
@@ -171,13 +160,52 @@ export function getUserAdminRoles(roleIds: [], ): Promise<any> {
 
     return new Promise((resolve, reject) => {
         apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
-            resolve(data.filter((role: { name: string, roleId: never }) => {
-                if (roleIds.indexOf(role.roleId) !== -1) {
-                    return role
-                }
-            }))
+            resolve(data)
         }).catch((e: any) => {
             reject(e)
         })
     })
+}
+
+export function logout() {
+    const url = import.meta.env.VITE_DOMAIN_URL + '/'
+    const method = 'GET'
+    return apiCall({ url, method }, { withCredentials: true })
+}
+
+export function passReset(payload: any) {
+    const options: any = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        data: payload,
+        config: {
+            withCredentials: false
+        },
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/reset-password",
+    }
+    return axios(options)
+}
+
+export function passChange(payload: any) {
+    const options: any = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        data: payload,
+        config: {
+            withCredentials: false
+        },
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/update-password",
+    }
+    return axios(options)
+}
+
+export function getUsersRoles(payload: any) {
+    const options: any = {
+        method: 'GET',
+        config: {
+            withCredentials: false
+        },
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/user/" + payload,
+    }
+    return axios(options)
 }

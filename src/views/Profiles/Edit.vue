@@ -71,7 +71,10 @@
     })
 
   getRoles()
-      .then((roles: any) => all_roles.value = roles)
+      .then((roles: any) => {
+        console.log("all roles", roles)
+        all_roles.value = roles.records
+      })
       .catch((e: any) => {
         alert(e.message)
       })
@@ -107,42 +110,20 @@
   const loading = ref(false)
 
   function editUser () {
-    let payload: {}
+
 
     loading.value = true
 
     const userType: string = userData.value.userType.toLowerCase()
 
-    if (userType === 'admin') {
-      payload = {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.emailAddress,
-        username: form.username,
-        password: form.password,
-        phoneNumber: form.phoneNumber,
-        userRoles: form.user_roles.map((role: any) => role.roleName),
-        userRoleIds: form.user_roles.map((role: any) => role.id),
-        tenantId: userData.value.tenantId,
-        enabled: true
-      }
-    }
 
-    else {
-      payload = {
-        phoneNumber: form.phoneNumber,
-        username: form.username,
-        emailAddress: form.emailAddress,
-        firstName: form.firstName,
-        lastName: form.lastName,
-        isEnabled: true,
-        pinSecret: form.pinSecret,
-        customerId: userData.value.id
-      }
+    let payload: {} = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.emailAddress,
+      phoneNumber: form.phoneNumber
     }
-
     console.log("submit data", payload)
-
     editTheUser(userType, payload, route).then((response: any) => {
       console.log("edit response", response)
     }).catch((e: any) => {
@@ -155,108 +136,95 @@
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full bg-white">
     <div class="flex-col h-screen w-full overflow-y-auto pb-28" style="min-height: 640px;">
       <div class="px-4 pb-6 sm:px-6 lg:mx-auto lg:px-8">
         <form @submit.prevent="editUser" method="POST">
           <div class="py-3 md:flex md:flex-col md:justify-between">
 
             <div class="flex-1 min-w-0">
-              <div class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate border-b border-gray-200">
-                <router-link :to="`/admin/profiles/${route.params.id}`" class="text-teal-500 capitalize">
+              <div class="text-xl font-semibold leading-7 text-gray-900 py-2 sm:leading-9 sm:truncate border-b border-gray-200">
+                <router-link :to="`/admin/profiles/${route.params.id}`" class="text-teal-500 capitalize text-xl">
                   {{ userData.firstName + ' ' + userData.lastName }} /
                 </router-link>
-                &nbsp;Profile edit
+                &nbsp;User edit
               </div>
               <div class="py-3 md:flex md:justify-between">
-                <div class="mt-4 text-sm block w-full">
+                <div class="text-sm block w-full">
 
-                  <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                    <div>
-                      <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
-                      <div class="mt-1">
-                        <input v-model="form.firstName" type="text" id="first-name" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" placeholder="John">
-                      </div>
-                    </div>
-                    <div>
-                      <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
-                      <div class="mt-1">
-                        <input v-model="form.lastName" type="text" id="last-name" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" placeholder="Doe">
-                      </div>
-                    </div>
-                    <div class="sm:col-span-2">
-                      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                      <div class="mt-1">
-                        <input v-model="form.emailAddress" id="email" type="email" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-                      </div>
-                    </div>
-                    <div class="sm:col-span-2">
-                      <label for="phone-number" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                      <div class="mt-1 relative rounded-md shadow-sm">
-                        <div class="absolute inset-y-0 left-0 flex items-center">
-                          <label for="country" class="sr-only">Country</label>
-                          <select id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                            <option>KE</option>
-                          </select>
+                  <div class="space-y-2">
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="first-name" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        First Name
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg flex rounded-md shadow-sm">
+                          <input v-model="form.firstName" type="text" name="first-name" id="first-name" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                         </div>
-                        <input v-model="form.phoneNumber" type="text" id="phone-number" class="py-3 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" placeholder="254722000654">
                       </div>
                     </div>
-                    <div v-if="userData.userType ? userData.userType.toLowerCase() !== 'customer' : false">
-                      <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                      <div class="mt-1">
-                        <input v-model="form.password" id="password" type="password" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="last-name" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Last Name
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg flex rounded-md shadow-sm">
+                          <input v-model="form.lastName" type="text" name="last-name" id="last-name" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        </div>
                       </div>
                     </div>
-                    <div v-if="userData.userType ? userData.userType.toLowerCase() !== 'customer' : false">
-                      <label for="password-confirmation" class="block text-sm font-medium text-gray-700">Password confirmation</label>
-                      <div class="mt-1">
-                        <input v-model="form.passwordConfirmation" id="password-confirmation" type="password" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="email" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Email
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg flex rounded-md shadow-sm">
+                          <input v-model="form.emailAddress" type="email" name="email" id="email" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        </div>
                       </div>
                     </div>
-                    <div v-if="userData.userType ? userData.userType.toLowerCase() === 'customer' : false">
-                      <label for="pinSecret" class="block text-sm font-medium text-gray-700">Pin secret</label>
-                      <div class="mt-1">
-                        <input v-model="form.pinSecret" id="pinSecret" type="password" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="phone-number" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Phone number
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg relative rounded-md shadow-sm">
+                          <div class="absolute inset-y-0 left-0 flex items-center">
+                            <label for="country" class="sr-only">Country</label>
+                            <select id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                              <option>KE</option>
+                            </select>
+                          </div>
+                          <input type="text" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                        </div>
                       </div>
                     </div>
-                    <div v-if="userData.userType ? userData.userType.toLowerCase() === 'customer' : false">
-                      <label for="pinSecretConfirmation" class="block text-sm font-medium text-gray-700">Pin secret confirmation</label>
-                      <div class="mt-1">
-                        <input v-model="form.pinSecretConfirmation" id="pinSecretConfirmation" type="password" class="py-3 px-4 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="phone-number" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Assign Roles
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg relative">
+                          <dl class="space-y-3 divide-y divide-gray-200">
+                            <div class="pt-5" v-for="(role, i) in all_roles">
+                              <dt class="relative flex items-start">
+                                <div class="flex items-center h-5">
+                                  <input :id="`role${i}}`" @change="setEventVal" :value="role" :name="'role' + i" aria-describedby="roles-description" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                                </div>
+                                <div class="ml-3 text-sm">
+                                  <label :for="`role${i}}`" class="font-medium text-gray-700">{{ role.name }}</label>
+                                  <p id="comments-description" class="text-gray-500">{{ role.description }}</p>
+                                </div>
+                              </dt>
+                            </div>
+                          </dl>
+                        </div>
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
-
-            <div v-if="userData.userType ? userData.userType.toLowerCase() !== 'customer' : false" class="flex-1 min-w-0 pt-6 sm:pt-0">
-              <button type="button" @click="expandRoles" class="flex items-center">
-                <span class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">Change roles</span>
-                <span class="ml-6 h-7 flex items-center">
-                  <svg :class="{ 'rotate-0': !rolesExpanded, '-rotate-180': rolesExpanded }" class="h-6 w-6 transform text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </button>
-              <div v-if="rolesExpanded">
-                <dl class="space-y-6 divide-y divide-gray-200">
-                  <div class="pt-5" v-for="(role, i) in all_roles">
-                    <dt class="text-base">
-                      <label :for="`role${i}}`" type="button" class="text-left w-full flex justify-between items-start text-gray-400" aria-controls="faq-0" aria-expanded="false">
-                        <span class="font-medium text-gray-900 flex items-center space-x-2">
-                          <input :id="`role${i}}`" @change="setEventVal" :value="role" :name="'role' + i" class="border-gray-400 rounded-md" type="checkbox">
-                          <span>{{ role.roleName }}</span>
-                        </span>
-                      </label>
-                    </dt>
-                  </div>
-                </dl>
-              </div>
-            </div>
-
           </div>
           <div class="flex w-full">
             <button type="submit" :disabled="loading" class="inline-flex mt-4 ml-auto items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">

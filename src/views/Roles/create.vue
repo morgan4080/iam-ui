@@ -55,16 +55,17 @@
     loading.value = true
     try {
       const response = await createRole(form.value)
-      await store.dispatch("defineNotification", response.message)
+      await store.dispatch("defineNotification", { message: response.message, success: true })
       await router.push('/admin/roles')
     } catch (e: any) {
-      await store.dispatch("defineNotification", e.message)
+      await store.dispatch("defineNotification", { message: e.message, error: true })
     } finally {
       loading.value = false
     }
   }
 
 </script>
+
 <template>
   <div class="w-full lg:max-w-6xl max-h-screen overflow-y-scroll">
     <form @submit.prevent="saveToState">

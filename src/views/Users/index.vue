@@ -85,7 +85,7 @@ import { createPopper } from '@popperjs/core'
         allUsers.value = data.records
       }).catch((e: any) => {
           console.log(e)
-          alert("User fetch Error")
+          alert(e.message)
       })
   }
 
@@ -171,12 +171,12 @@ import { createPopper } from '@popperjs/core'
                   </router-link>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span v-if="user.isEnabled" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Enabled
-                            </span>
+                  <span v-if="user.isEnabled" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Enabled
+                  </span>
                   <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              Disabled
-                            </span>
+                    Disabled
+                  </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                   <router-link v-if="user.id" :to="`/admin/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>

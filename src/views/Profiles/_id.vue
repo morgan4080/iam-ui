@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useRoute} from "vue-router"
   import {ref, computed} from "vue"
-  import { getUser, getUserAdminRoles } from '@/modules/all'
+  import {getUser, getUsersRoles, passReset} from '@/modules/all'
   import { useStore } from "vuex"
 
   const route = useRoute()
@@ -25,25 +25,43 @@
   const userRoles = ref(<any[]>[])
 
   getUser(route)
-      .then((data) => {
-        const { user } = data
-        userData.value = {
-          ...userData.value,
-          ...user
-        }
-        console.log(userData.value)
-        return user
-      })
-      .then((user: any) => {
-        return getUserAdminRoles(user.userAssignedRolesId)
-      })
-      .then((role: any[]) => {
-        userRoles.value = <never[]>[...userRoles.value, ...role]
-      })
-      .catch((e: string) => {
-        console.log(e)
-        alert("Get a valid 0auth2 token")
-      })
+    .then((data) => {
+      const { user } = data
+      userData.value = {
+        ...userData.value,
+        ...user
+      }
+      console.log(userData.value)
+      return user
+    })
+    .then((user: any) => {
+      return getUsersRoles(user.keycloakId)
+    })
+    .then((roles: any) => {
+      userRoles.value = roles.data
+    })
+    .catch((e: any) => {
+      alert(e.message)
+    })
+
+  const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
+
+  async function doPasswordReset () {
+    confirm("You are about to send password reset email to: " + userData.value.email)
+    const payload = {
+        "username": userData.value.username,
+        "userRefId": userData.value.keycloakId,
+        "tenantId": tenantId.value
+    }
+
+    try {
+      const response = await passReset(payload)
+      console.log("password reset", response)
+      await store.dispatch("defineNotification", { message: "Password Reset Email Sent", success: true })
+    } catch (e: any) {
+      alert(e.message)
+    }
+  }
 
   const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
 
@@ -80,11 +98,23 @@
                 </p>
               </div>
               <div class="mt-4 flex space-x-3 md:mt-0">
-                <button @click="$router.push(`/profiles/${route.params.id}/edit`)" type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <button @click="$router.push(`/admin/profiles/${route.params.id}/edit`)" type="button" class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                   <svg class="-ml-1 mr-2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
-                  <span>Edit</span>
+                  <span>Edit User</span>
+                </button>
+                <button @click="$router.push(`/admin/users/${route.params.id}/change-password`)" type="button" class="inline-flex justify-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                  <span>Change Password</span>
+                </button>
+                <button @click="doPasswordReset" type="button" class="inline-flex justify-center px-4 py-2 border border-amber-300 shadow-sm text-sm font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Reset Password</span>
                 </button>
                 <button type="button" class="group inline-flex justify-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                   <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-red-700 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

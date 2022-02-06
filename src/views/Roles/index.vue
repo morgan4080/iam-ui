@@ -89,16 +89,22 @@
             <tbody>
             <tr v-if="all_roles.length > 0" v-for="(role,i) in all_roles" :key="i" :class="{'bg-white' : i % 2 === 0, 'bg-gray-50' : i % 2 !== 0 }">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                <span v-if="role.name === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                {{ role.name }}
+                <router-link :to="`/admin/roles/${role.keycloakRoleId}`">
+                  <span v-if="role.name === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                  {{ role.name }}
+                </router-link>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <span v-if="role.roleType === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                {{ role.roleType }}
+                <router-link :to="`/admin/roles/${role.keycloakRoleId}`">
+                  <span v-if="role.roleType === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                  {{ role.roleType }}
+                </router-link>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <span v-if="role.description === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                {{ role.description }}
+                <router-link :to="`/admin/roles/${role.keycloakRoleId}`">
+                  <span v-if="role.description === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                  {{ role.description }}
+                </router-link>
               </td>
             </tr>
             <tr v-else>
