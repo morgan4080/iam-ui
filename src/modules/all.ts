@@ -186,6 +186,19 @@ export function passReset(payload: any) {
     return axios(options)
 }
 
+export function pinChange(payload: any) {
+    const options: any = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        data: payload,
+        config: {
+            withCredentials: false
+        },
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/update-pin",
+    }
+    return axios(options)
+}
+
 export function passChange(payload: any) {
     const options: any = {
         method: 'POST',

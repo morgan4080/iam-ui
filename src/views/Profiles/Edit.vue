@@ -116,14 +116,15 @@
 
     const userType: string = userData.value.userType.toLowerCase()
 
-
     let payload: {} = {
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.emailAddress,
       phoneNumber: form.phoneNumber
     }
+
     console.log("submit data", payload)
+
     editTheUser(userType, payload, route).then((response: any) => {
       console.log("edit response", response)
     }).catch((e: any) => {

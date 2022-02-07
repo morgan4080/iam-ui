@@ -545,22 +545,28 @@ function setupFormUSSDAccess() {
                     </p>
                   </div>
                   <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                    <label for="pin" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                      Pin
-                    </label>
+                    <div>
+                      <label for="pin" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Pin
+                      </label>
+                      <p class="mt-2 text-xs text-gray-500">Maximum of 4 numbers</p>
+                    </div>
                     <div class="mt-1 sm:mt-0 sm:col-span-2">
                       <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input v-model="formUSSDAccess.pin" type="password" name="password" id="pin" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <input v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" autocomplete="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                       </div>
                     </div>
                   </div>
                   <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                    <label for="pin-c" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                      Pin Confirmation
-                    </label>
+                    <div>
+                      <label for="pin-c" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Pin Confirmation
+                      </label>
+                      <p class="mt-2 text-xs text-gray-500">Ensure it matches the pin above</p>
+                    </div>
                     <div class="mt-1 sm:mt-0 sm:col-span-2">
                       <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input v-model="formUSSDAccess.pinConfirmation" type="password" name="pin-c" id="pin-c" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <input v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" autocomplete="pin-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                       </div>
                     </div>
                   </div>

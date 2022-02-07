@@ -54,13 +54,14 @@ import { createPopper } from '@popperjs/core'
       }
   )
 
+  const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
+
   const choose = (index: number) => {
     selectedIndex.value = index
     filterForm.recordsPerPage = lots.value[index]
     pageCountOpen.value = !pageCountOpen.value
+    refresh()
   }
-
-  const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
 
   const refresh = () => {
     allUsers.value = [
