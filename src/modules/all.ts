@@ -21,23 +21,27 @@ export function syncServices() {
     return apiCall({url, method, headers}, {withCredentials: true})
 }
 
-export function editTheUser(userType: string, payload: {}, route: any): any {
+export async function editTheUser(payload: {}, route: any): Promise<any> {
 
-    const url = import.meta.env.VITE_DOMAIN_URL + ((userType.toLowerCase() === 'customer') ? "/users-admin/api/update-user" : `/users-admin/api/users/${ route.params.id}`)
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
 
-    const myHeaders = new Headers()
+    const method: string = 'PUT'
 
-    myHeaders.append("Content-Type", "application/json")
-
-    myHeaders.append("Accept", "*!/!*")
-
-    myHeaders.append("Authorization", `*/*`)
-
-    const headers = myHeaders
-
-    const method: string = (userType.toLowerCase() === 'customer') ? 'POST' : 'PUT'
-
-    return apiCall({ url, method, headers}, { withCredentials: true })
+    try {
+        const options: any = {
+            method,
+            headers: { 'content-type': 'application/json' },
+            data: payload,
+            config: {
+                withCredentials: false
+            },
+            url,
+        };
+        const { data } = await axios(options)
+        return data
+    } catch (e: any) {
+        alert(e.message)
+    }
 }
 
 export function getUsers(query: string = ''): Promise<any> {

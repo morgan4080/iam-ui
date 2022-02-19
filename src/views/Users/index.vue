@@ -54,8 +54,6 @@ import { createPopper } from '@popperjs/core'
       }
   )
 
-  const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
-
   const choose = (index: number) => {
     selectedIndex.value = index
     filterForm.recordsPerPage = lots.value[index]
@@ -75,8 +73,10 @@ import { createPopper } from '@popperjs/core'
         id: ''
       }
     ]
+    const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
     getUsers(query.value)
       .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
+        console.log("all users", data)
         totalRecords.value = data.totalRecords
         totalPages.value = data.totalPages
         for (let i = 1; i <= totalPages.value; i++ ) {
@@ -260,7 +260,7 @@ import { createPopper } from '@popperjs/core'
                     </transition>
                   </div>
                 </div>
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px hidden" aria-label="Pagination">
                   <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                     <span class="sr-only">Previous</span>
                     <!-- Heroicon name: solid/chevron-left -->

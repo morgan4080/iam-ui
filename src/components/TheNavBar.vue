@@ -54,7 +54,7 @@ function doLogout() {
         </div>
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
           <div class="flex-shrink-0 flex items-center">
-            <router-link to="/admin/" class="navbar p-1 flex items-center justify-center">
+            <router-link to="/admin/" class="navbar p-1 flex items-center justify-center" style="background: transparent;">
               <TheLogo class="h-8 w-auto" />
               <span class="text-white ml-4 mt-2 hidden sm:block font-semibold">{{ organisation }}</span>
             </router-link>
