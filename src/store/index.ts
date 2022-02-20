@@ -1,5 +1,18 @@
 import { createStore } from 'vuex'
 import apiCall from "@/utils/api"
+import axios, {AxiosResponse} from "axios"
+
+const api = axios.create()
+
+api.interceptors.response.use((response:AxiosResponse) => {
+    if (response.status === 302) {
+        const currentUrl = window.location.href
+        window.location.href = `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`
+        return
+    }
+
+    return response
+})
 
 const store = createStore({
     state () {
@@ -40,12 +53,60 @@ const store = createStore({
         defineNotification({ commit }, payload) {
             commit("set_notification", payload)
         },
-        async editTheUser({}, payload: { userType: string, data: {}, route: any }) {
-            const { userType, data, route } = payload
+        logout({  }) {
+            const url = import.meta.env.VITE_DOMAIN_URL + '/'
+            const method = 'GET'
+            return apiCall({ url, method }, { withCredentials: true })
+        },
+        getUsersRoles({ }, payload: any) {
+            const options: any = {
+                method: 'GET',
+                config: {
+                    withCredentials: false
+                },
+                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/user/" + payload,
+            }
+            return axios(options)
+        },
+        passChange({ }, payload: any) {
+            const options: any = {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                data: payload,
+                config: {
+                    withCredentials: false
+                },
+                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/update-password",
+            }
+            return axios(options)
+        },
+        pinChange({ }, payload: any) {
+            const options: any = {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                data: payload,
+                config: {
+                    withCredentials: false
+                },
+                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/update-pin",
+            }
+            return axios(options)
+        },
+        passReset({ }, payload: any) {
+            const options: any = {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                data: payload,
+                config: {
+                    withCredentials: false
+                },
+                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/reset-password",
+            }
+            return axios(options)
+        },
+        getUserAdminRoles({ }, roleIds: []): Promise<any> {
 
-            let method = userType.toLowerCase() === 'customer' ? 'POST' : 'PUT'
-
-            let url = `${import.meta.env.VITE_DOMAIN_URL}${ userType.toLowerCase() === 'customer' ? '/users-admin/api/update-user' : '/users-admin/api/users/' + route.params.id }`
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all"
 
             const myHeaders = new Headers()
 
@@ -53,11 +114,165 @@ const store = createStore({
 
             const headers = myHeaders
 
+            const method = 'GET'
+
+            return new Promise((resolve, reject) => {
+                apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
+                    resolve(data)
+                }).catch((e: any) => {
+                    reject(e)
+                })
+            })
+        },
+        getRole({ }, keyCloakId: any): Promise<any> {
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/"+keyCloakId
+
+            const headers = new Headers()
+
+            const method = 'GET'
+
+            return  apiCall({ url, method, headers}, { withCredentials: true })
+        },
+        async postUser({}, payload: any): Promise<any> {
             try {
-               return await apiCall({ url, data, method, headers})
+                const options: any = {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    data: payload,
+                    config: {
+                        withCredentials: false
+                    },
+                    url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
+                };
+                const { data } = await api(options)
+                return data
             } catch (e: any) {
-               alert(e.message)
+                alert(e.message)
             }
+        },
+        getUser({ }, route: any ): Promise<any> {
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
+
+            const myHeaders = new Headers()
+
+            myHeaders.append("Authorization", `*/*`)
+
+            const headers = myHeaders
+
+            const method = 'GET'
+
+            return apiCall({ url, method, headers}, { withCredentials: true })
+        },
+        getPermissions({ }):  Promise<any> {
+
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions"
+
+            const myHeaders = new Headers()
+
+            myHeaders.append("Authorization", `*/*`)
+
+            const headers = myHeaders
+
+            const method = 'GET'
+
+            return apiCall({ url, method, headers}, { withCredentials: true })
+        },
+        async createRole({ }, payload: any): Promise<any> {
+            try {
+                const options: any = {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    data: payload,
+                    config: {
+                        withCredentials: false
+                    },
+                    url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles",
+                };
+                const { data } = await axios(options)
+                return data
+            } catch (e: any) {
+                console.log(e.message)
+            }
+        },
+        getServices({ }): Promise<any> {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services`
+
+            const myHeaders = new Headers()
+
+            myHeaders.append("Authorization", `*/*`)
+
+            const headers = myHeaders
+
+            const method = 'GET'
+
+            return apiCall({ url, method, headers}, { withCredentials: true })
+        },
+        getRoles({ }): Promise<any> {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles`
+
+            const method = 'GET'
+
+            return apiCall({ url, method }, { withCredentials: true })
+        },
+        getUsers({ }, query: string = ''): Promise<any> {
+
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users${query}`
+
+            const method = 'GET'
+
+            return apiCall({ url, method }, { withCredentials: true })
+        },
+        async editTheUser({}, { payload, route }): Promise<any> {
+
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users"
+
+            const method: string = 'PUT'
+
+            try {
+                const options: any = {
+                    method,
+                    headers: { 'content-type': 'application/json' },
+                    data: {
+                        userRefId: route.params.id,
+                        ...payload
+                    },
+                    config: {
+                        withCredentials: false
+                    },
+                    url,
+                };
+                const { data } = await axios(options)
+                return data
+            } catch (e: any) {
+                alert(e.message)
+            }
+        },
+        syncServices({}) {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services/sync`
+            const method = `POST`
+            const myHeaders = new Headers()
+            myHeaders.append("Authorization", `*/*`)
+            const headers = myHeaders
+
+            return apiCall({url, method, headers}, {withCredentials: true})
+        },
+        syncRoles({}) {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
+            const method = `POST`
+            const myHeaders = new Headers()
+            myHeaders.append("Authorization", `*/*`)
+            const headers = myHeaders
+
+            return apiCall({url, method, headers}, {withCredentials: true})
+        },
+        assignRoles({}, { userRefId, payload }) {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/users/${userRefId}/assign`
+            const method = `POST`
+            const myHeaders = new Headers()
+            myHeaders.append("Authorization", `*/*`)
+            const headers = myHeaders
+
+            return apiCall({url, method, data: payload, headers}, {withCredentials: true})
         }
     }
 })

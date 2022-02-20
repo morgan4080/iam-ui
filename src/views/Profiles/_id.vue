@@ -18,7 +18,7 @@
     phoneNumber: '',
     tenantId: '',
     userAssignedRolesId: [],
-    userType: '',
+    pinStatus: '',
     username: ''
   })
 
@@ -91,9 +91,6 @@
                   </span>
                 </h1>
                 <p class="mt-2 text-sm text-gray-500">
-                  User type
-                  <a href="#" class="font-medium text-gray-900 lowercase underline">{{ userData.userType }}</a>
-                  of
                   <a href="#" class="font-medium text-gray-900 lowercase">{{ organisation }}</a>
                 </p>
               </div>
@@ -104,13 +101,19 @@
                   </svg>
                   <span>Edit User</span>
                 </button>
-                <button v-if="userData.userType === 'ADMIN'" @click="$router.push(`/admin/users/${route.params.id}/change-password`)" type="button" class="inline-flex justify-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button @click="$router.push(`/admin/users/${route.params.id}/assign-roles`)" type="button" class="inline-flex justify-center px-4 py-2 border border-green-300 shadow-sm text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  <svg class="-ml-1 mr-2 h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  <span>Assign Roles</span>
+                </button>
+                <button v-if="userData.pinStatus === 'NOT_SET'" @click="$router.push(`/admin/users/${route.params.id}/change-password`)" type="button" class="inline-flex justify-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                   <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                   <span>Change Password</span>
                 </button>
-                <button v-if="userData.userType === 'CUSTOMER'" @click="$router.push(`/admin/users/${route.params.id}/change-pin`)" type="button" class="inline-flex justify-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button v-if="userData.pinStatus === 'SET'" @click="$router.push(`/admin/users/${route.params.id}/change-pin`)" type="button" class="inline-flex justify-center px-4 py-2 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                   <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>

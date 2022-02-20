@@ -10,6 +10,7 @@ const routes = [
     {path:'/admin/users/:id/edit', name: 'UsersEdit', component: () => import("@/views/Profiles/Edit.vue")},
     {path:'/admin/users/:id/change-password', name: 'UsersChangePassword', component: () => import("@/views/Users/change-password.vue")},
     {path:'/admin/users/:id/change-pin', name: 'UsersChangePin', component: () => import("@/views/Users/change-pin.vue")},
+    {path:'/admin/users/:id/assign-roles', name: 'UsersAssignRoles', component: () => import("@/views/Users/assign-roles.vue")},
     {path:'/admin/profiles/:id', name: 'ProfileView', component: () => import("@/views/Profiles/_id.vue")},
     {path:'/admin/profiles/:id/edit', name: 'ProfilesEdit', component: () => import("@/views/Profiles/Edit.vue")},
     {path:'/admin/roles', name: 'Roles', component: () => import("@/views/Roles/index.vue")},

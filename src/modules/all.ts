@@ -1,6 +1,5 @@
 import axios from "axios"
-import apiCall from "@/utils/api";
-import {rejects} from "assert";
+import apiCall from "@/utils/api"
 
 export function syncRoles() {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
@@ -11,6 +10,17 @@ export function syncRoles() {
 
     return apiCall({url, method, headers}, {withCredentials: true})
 }
+
+export function syncUsers() {
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`
+    const method = `POST`
+    const myHeaders = new Headers()
+    myHeaders.append("Authorization", `*/*`)
+    const headers = myHeaders
+
+    return apiCall({url, method, headers}, {withCredentials: true})
+}
+
 export function syncServices() {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services/sync`
     const method = `POST`

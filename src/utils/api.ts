@@ -1,25 +1,37 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 
+const api = axios.create()
+
+api.interceptors.response.use((response:AxiosResponse) => {
+    if (response.status === 302) {
+        const currentUrl = window.location.href
+        window.location.href = `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`
+        return
+    }
+
+    return response
+})
+
 interface Params {url: string, data?: object, method: string, headers?: object}
 
 const apiCall = ({ url, data, method, headers }: Params, configuration?: AxiosRequestConfig<{}>) => new Promise((resolve, reject) => {
     setTimeout(() => {
         try {
-            // axios.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
+            // api.defaults.headers.common['Authorization'] = localStorage.getItem('user-token');
             if (method === 'GET') {
-                axios.get(url, configuration).then((response: AxiosResponse<any>) => {
+                api.get(url, configuration).then((response: AxiosResponse<any>) => {
                     resolve(response.data)
                 }).catch((error) => {
                     reject(new Error(error))
                 })
             } else if (method === 'POST'){
-                axios.post(url,data,configuration).then((response: AxiosResponse<any>) => {
+                api.post(url,data,configuration).then((response: AxiosResponse<any>) => {
                     resolve(response.data)
                 }).catch((error) => {
                     reject(new Error(error))
                 });
             } else if (method === 'PUT'){
-                axios.put(url,data,configuration).then((response: AxiosResponse<any>) => {
+                api.put(url,data,configuration).then((response: AxiosResponse<any>) => {
                     resolve(response.data)
                 }).catch((error) => {
                     reject(new Error(error))

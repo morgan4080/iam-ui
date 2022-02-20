@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { createPopper } from '@popperjs/core'
-  import { getUsers } from '@/modules/all'
+  import { getUsers, syncUsers } from '@/modules/all'
   import { ref, reactive, watch } from "vue"
-  import { useRoute } from "vue-router";
+  import { useRoute } from "vue-router"
 
   const route = useRoute()
 
-  const allUsers = ref(<{ isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[]>[])
+  const allUsers = ref(<{ isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[]>[])
 
   const totalRecords = ref(<number>0)
 
@@ -61,33 +61,38 @@ import { createPopper } from '@popperjs/core'
     refresh()
   }
 
-  const refresh = () => {
-    allUsers.value = [
-      {
-        isEnabled: true,
-        userType: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        phoneNumber: '',
-        id: ''
-      }
-    ]
-    const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
-    getUsers(query.value)
-      .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] }) => {
-        console.log("all users", data)
-        totalRecords.value = data.totalRecords
-        totalPages.value = data.totalPages
-        for (let i = 1; i <= totalPages.value; i++ ) {
-          totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+  const refresh = async () => {
+    try {
+      allUsers.value = [
+        {
+          isEnabled: true,
+          username: '',
+          email: '',
+          firstName: '',
+          lastName: '',
+          phoneNumber: '',
+          id: ''
         }
-        currentPage.value = data.currentPage + 1
-        allUsers.value = data.records
-      }).catch((e: any) => {
-          console.log(e)
-          alert(e.message)
-      })
+      ]
+
+      const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
+
+      await syncUsers()
+
+      const data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] } = await getUsers(query.value)
+
+      console.log("all users", data)
+      totalRecords.value = data.totalRecords
+      totalPages.value = data.totalPages
+      for (let i = 1; i <= totalPages.value; i++) {
+        totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+      }
+      currentPage.value = data.currentPage + 1
+      allUsers.value = data.records
+    } catch (e: any) {
+      alert(e.message)
+    }
+
   }
 
   refresh()
@@ -135,7 +140,7 @@ import { createPopper } from '@popperjs/core'
                 Email
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
+                Username
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
@@ -167,8 +172,8 @@ import { createPopper } from '@popperjs/core'
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
                   <router-link :to="`/admin/users/${user.id}`">
-                    <span v-if="user.userType === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
-                    {{ user.userType }}
+                    <span v-if="user.username === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
+                    {{ user.username }}
                   </router-link>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

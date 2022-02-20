@@ -117,10 +117,11 @@
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.emailAddress,
-      phoneNumber: form.phoneNumber
+      phoneNumber: form.phoneNumber,
+      isEnabled: true
     }
 
-    editTheUser(payload, route).then((response: any) => {
+    store.dispatch("editTheUser", { payload, route }).then((response: any) => {
       console.log("edit response", response)
     }).catch((e: any) => {
       alert(e.message)

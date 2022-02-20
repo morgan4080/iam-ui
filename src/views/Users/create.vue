@@ -1,7 +1,5 @@
 <script setup lang="ts" xmlns="http://www.w3.org/1999/html">
-import useVuelidate from '@vuelidate/core'
-import { required } from '@vuelidate/validators'
-import {ref, reactive, computed} from "vue"
+import {ref, computed} from "vue"
 import {getPermissions, getRoles, postUser} from "@/modules/all"
 import { useStore } from "vuex"
 import router from "@/router"
@@ -130,7 +128,41 @@ function nextStep () {
   currentStep.value = currentStep.value + 1
 }
 
-async function saveUser(rolesPayload: string[]) {
+const saveUser = async (rolesPayload: string[]) => {
+  /*
+    {
+      "tenantId": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "contact": {
+        "email": "string",
+        "phone": "string"
+      },
+      "webCredentials": {
+        "username": "string",
+        "password": "string"
+      },
+      "ussdCredentials": {
+        "phoneNumber": "string",
+        "pin": "string"
+      },
+      "enabled": true,
+      "permissions": [
+        "string"
+      ],
+      "pinStatus": "SET",
+      "invitationStatus": "PENDING",
+      "userTypes": [
+        "WEB"
+      ],
+      "userRoles": [
+        "string"
+      ],
+      "userRoleIds": [
+        "string"
+      ]
+    }
+  */
   let payload
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
     payload = {
@@ -159,12 +191,18 @@ async function saveUser(rolesPayload: string[]) {
       lastName: formContacts.value.lastName,
       contact: {
         email: formContacts.value.email,
-        phone: formContacts.value.phoneNumber
+        phone: `254${formContacts.value.phoneNumber}`
       },
-      ussdCredentials: formUSSDAccess.value,
+      webCredentials: {
+        username: `254${formUSSDAccess.value.phoneNumber}`,
+        password: formUSSDAccess.value.pin,
+      },
+      ussdCredentials: {
+        ...formUSSDAccess.value,
+        phoneNumber: `254${formUSSDAccess.value.phoneNumber}`,
+      },
       enabled: true,
       userTypes: formContacts.value.user_types,
-      permissions: [],
       userRoles: [],
       userRoleIds: rolesPayload,
     }
@@ -177,12 +215,11 @@ async function saveUser(rolesPayload: string[]) {
       lastName: formContacts.value.lastName,
       contact: {
         email: formContacts.value.email,
-        phone: formContacts.value.phoneNumber
+        phone: `254${formContacts.value.phoneNumber}`
       },
       webCredentials: formWebAccess.value,
       enabled: true,
       userTypes: formContacts.value.user_types,
-      permissions: [],
       userRoles: [],
       userRoleIds: rolesPayload,
     }
@@ -195,15 +232,15 @@ async function saveUser(rolesPayload: string[]) {
   try {
     loading.value = true
 
-    const response = await postUser(payload)
+    const response = await store.dispatch("postUser", payload)
 
-    console.log("response data", response)
-
+    await store.dispatch("defineNotification", { message: response.messages[0].message, success: true })
     await router.push('/admin/users')
   } catch (e: any) {
     alert(e.message)
   } finally {
     loading.value = false
+    await router.push('/admin/users')
   }
 }
 
