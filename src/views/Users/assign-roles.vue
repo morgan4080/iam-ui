@@ -10,7 +10,7 @@
   const store = useStore()
 
   const userRoles = ref(<any[]>[])
-  const userData = ref({})
+  const userData = ref(<any>{})
   const userId = ref(null)
   const all_roles = ref(<{ id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[]>[])
 
