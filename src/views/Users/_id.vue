@@ -74,9 +74,29 @@
       <div class="py-3 md:flex md:justify-between lg:border-t lg:border-gray-200">
         <div class="flex-1 min-w-0">
           <div class="ml-3 flex items-center border-b border-gray-200">
-            <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
-              User Profile
-            </h1>
+
+            <nav class="flex" aria-label="Breadcrumb">
+              <ol role="list" class="flex items-center space-x-4">
+
+                <li>
+                  <div class="flex items-center">
+                    <router-link to="/admin/users" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">Users</router-link>
+                  </div>
+                </li>
+
+                <li>
+                  <div class="flex items-center">
+                    <!-- Heroicon name: solid/chevron-right -->
+                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
+                      User Profile
+                    </h1>
+                  </div>
+                </li>
+              </ol>
+            </nav>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
             <div class="md:flex md:items-center md:justify-between md:space-x-4 xl:border-b xl:pb-6">

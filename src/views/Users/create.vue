@@ -292,37 +292,10 @@ function setupFormUSSDAccess() {
 </script>
 
 <template>
-  <div class="w-full lg:max-w-6xl max-h-screen overflow-y-scroll">
+  <div class="w-full max-h-screen overflow-y-scroll">
     <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
       <div class="shadow sm:overflow-hidden">
         <div class="bg-white py-6 px-4 sm:p-6">
-          <div class="relative">
-            <nav class="absolute right-0 flex items-center justify-center" aria-label="Progress">
-              <p class="text-sm font-medium text-gray-700">Step 1 of 4</p>
-              <ol role="list" class="ml-8 flex items-center space-x-5">
-                <li v-for="(step, i) in steps" :key="i">
-                  <!-- Completed Step -->
-                  <a  v-if="step.state === 'Completed'" href="#" class="block w-2.5 h-2.5 bg-indigo-600 rounded-full hover:bg-indigo-900">
-                    <span class="sr-only">Step {{ step.stage }}</span>
-                  </a>
-
-                  <!-- Current Step -->
-                  <a v-if="step.state === 'Current'" href="#" class="relative flex items-center justify-center" aria-current="step">
-                      <span class="absolute w-5 h-5 p-px flex" aria-hidden="true">
-                        <span class="w-full h-full rounded-full bg-indigo-200"></span>
-                      </span>
-                    <span class="relative block w-2.5 h-2.5 bg-indigo-600 rounded-full" aria-hidden="true"></span>
-                    <span class="sr-only">Step {{ step.stage }}</span>
-                  </a>
-
-                  <!-- Upcoming Step -->
-                  <a v-if="step.state === 'Upcoming'" href="#" class="block w-2.5 h-2.5 bg-gray-200 rounded-full hover:bg-gray-400">
-                    <span class="sr-only">Step {{ step.stage }}</span>
-                  </a>
-                </li>
-              </ol>
-            </nav>
-          </div>
           <div>
             <h3 class="text-lg leading-6 font-medium text-gray-900">
               Create User

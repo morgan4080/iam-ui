@@ -99,7 +99,7 @@ import { createPopper } from '@popperjs/core'
 </script>
 
 <template>
-  <div class="w-full bg-white lg:max-w-6xl max-h-screen overflow-y-scroll ">
+  <div class="w-full bg-white max-h-screen overflow-y-scroll ">
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
@@ -185,7 +185,7 @@ import { createPopper } from '@popperjs/core'
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                  <router-link v-if="user.id" :to="`/admin/users/${user.id}/edit`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
+                  <router-link v-if="user.id" :to="`/admin/users/${user.id}`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
                 </td>
               </tr>
               <tr v-else>

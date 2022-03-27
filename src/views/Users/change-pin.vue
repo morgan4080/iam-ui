@@ -65,7 +65,7 @@ async function changePin() {
 </script>
 <template>
 
-  <div class="w-full lg:max-w-6xl max-h-screen overflow-y-scroll">
+  <div class="w-full max-h-screen overflow-y-scroll">
     <form @submit.prevent="changePin">
       <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
         <section>

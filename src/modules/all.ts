@@ -86,21 +86,24 @@ export async function getServices(): Promise<any> {
 }
 
 export async function createRole(payload: any): Promise<any> {
-    try {
-        const options: any = {
+    return new Promise(async (resolve, reject) => {
+        const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", {
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            data: payload,
-            config: {
-                withCredentials: false
+            headers: {
+                'Content-Type': 'application/json'
             },
-            url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles",
-        };
-        const { data } = await axios(options)
-        return data
-    } catch (e: any) {
-        console.log(e.message)
-    }
+            body: JSON.stringify(payload)
+        })
+
+        const data = await response.json()
+
+        if (response.status !== 200) {
+            reject(data)
+        } else {
+            resolve(data)
+        }
+    })
+
 }
 
 export function getPermissions():  Promise<any> {
