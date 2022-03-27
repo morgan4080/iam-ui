@@ -1,6 +1,6 @@
 echo '===> Compiling & Packaging prestaapps/presta-iam-ui ...'
-yarn install
-yarn run build
+npm install
+npm run deploy
 
 GIT_BRANCH=$(git name-rev --name-only HEAD | sed "s/~.*//")
 GIT_COMMIT=$(git rev-parse HEAD)
