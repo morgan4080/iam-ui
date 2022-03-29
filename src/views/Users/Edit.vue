@@ -136,8 +136,31 @@
   <div class="w-full bg-white">
     <div class="flex-col h-screen w-full overflow-y-auto pb-28" style="min-height: 640px;">
       <div class="px-4 pb-6 sm:px-6 lg:mx-auto lg:px-8">
+        <div class="pt-3 flex items-center">
+          <nav class="flex" aria-label="Breadcrumb">
+            <ol role="list" class="flex items-center space-x-4">
+
+              <li>
+                <div class="flex items-center">
+                  <router-link :to="`/admin/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+                </div>
+              </li>
+
+              <li>
+                <div class="flex items-center">
+                  <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                  </svg>
+                  <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
+                    Assign Roles
+                  </h1>
+                </div>
+              </li>
+            </ol>
+          </nav>
+        </div>
         <form @submit.prevent="editUser" method="POST">
-          <div class="py-3 md:flex md:flex-col md:justify-between">
+          <div class="md:flex md:flex-col md:justify-between">
 
             <div class="flex-1 min-w-0">
               <div class="text-xl font-semibold leading-7 text-gray-900 py-2 sm:leading-9 sm:truncate border-b border-gray-200">
