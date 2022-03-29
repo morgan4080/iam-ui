@@ -75,8 +75,29 @@
     <form @submit.prevent="assignRoles">
       <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
         <section>
-          <div class="shadow sm:overflow-hidden">
-            <div class="bg-white py-6 px-4 sm:p-6">
+          <div class="bg-white shadow sm:overflow-hidden">
+            <nav class="mt-4 flex px-5" aria-label="Breadcrumb">
+              <ol role="list" class="flex items-center space-x-4">
+
+                <li>
+                  <div class="flex items-center">
+                    <router-link to="/admin/users" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+                  </div>
+                </li>
+
+                <li>
+                  <div class="flex items-center">
+                    <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
+                      Assign Roles
+                    </h1>
+                  </div>
+                </li>
+              </ol>
+            </nav>
+            <div class="py-2 px-4 sm:p-6">
               <div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                   Assign Roles
@@ -86,7 +107,7 @@
                 </p>
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <label for="email" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Email
                   </label>
@@ -96,26 +117,42 @@
                     </div>
                   </div>
                 </div>
-                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 col-span-1">
                     Roles
                   </label>
-                  <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <div class="max-w-lg">
-                      <fieldset class="space-y-5">
-                        <legend class="sr-only">Roles</legend>
-                        <div class="grid grid-cols-2 gap-4">
-                          <div v-for="(role, i) in all_roles" :key="i" class="relative flex items-start">
-                            <div class="flex items-center h-5">
-                              <input @change="setRoleIds($event,role.id)" :id="`roles` + i" :checked="userRoles.findIndex(r => r.id === role.id) !== -1" aria-describedby="comments-description" name="userRoles[]" type="checkbox" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <label :for="`roles` + i" class="font-medium text-gray-700">{{ role.name }}</label>
-                              <p id="role_description" class="text-gray-500">{{ role.description }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </fieldset>
+                  <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8 col-span-2">
+                    <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                      <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                          <thead class="bg-gray-50">
+                          <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Select
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Role
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Description
+                            </th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr v-for="(role,i) in all_roles" :key="role.id" :class="{'bg-white' : i % 2 === 0, 'bg-gray-50' : i % 2 !== 0 }">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              <input @change="setRoleIds($event,role.id)" :id="`roles` + i" :checked="userRoles.findIndex(r => r.id === role.id) !== -1" name="userRoles[]" class="border-gray-400 rounded-md" type="checkbox">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {{ role.name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {{ role.description ? role.description : 'customer or admin role description' }}
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>

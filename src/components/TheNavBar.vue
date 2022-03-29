@@ -26,7 +26,7 @@ async function doLogout() {
         'Content-Type': 'multipart/form-data'
       },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(e.message)
   } finally {
     window.location.reload()
