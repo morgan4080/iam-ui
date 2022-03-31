@@ -64,7 +64,7 @@ export function getUsers(query: string = ''): Promise<any> {
 }
 
 export async function getRoles(): Promise<any> {
-    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles`
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles`
 
     const method = 'GET'
 
@@ -72,7 +72,7 @@ export async function getRoles(): Promise<any> {
 }
 
 export async function getServices(): Promise<any> {
-    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services`
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services`
 
     const myHeaders = new Headers()
 
@@ -87,7 +87,7 @@ export async function getServices(): Promise<any> {
 
 export async function createRole(payload: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
-        const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", {
+        const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/api/roles", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -108,7 +108,7 @@ export async function createRole(payload: any): Promise<any> {
 
 export function getPermissions():  Promise<any> {
 
-    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions"
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/permissions"
 
     const myHeaders = new Headers()
 
@@ -122,7 +122,7 @@ export function getPermissions():  Promise<any> {
 }
 
 export function getUser(route: any ): Promise<any> {
-    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/users/" + route.params.id
 
     const myHeaders = new Headers()
 
@@ -144,7 +144,7 @@ export async function postUser(payload: any): Promise<any> {
             config: {
                 withCredentials: false
             },
-            url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/admin",
+            url: import.meta.env.VITE_DOMAIN_URL + "/api/users/admin",
         };
         const { data } = await axios(options)
         return data
@@ -154,7 +154,7 @@ export async function postUser(payload: any): Promise<any> {
 }
 
 export async function getRole(keyCloakId: any): Promise<any> {
-    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/"+keyCloakId
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/"+keyCloakId
 
     const headers = new Headers()
 
@@ -165,7 +165,7 @@ export async function getRole(keyCloakId: any): Promise<any> {
 
 export function getUserAdminRoles(roleIds: [], ): Promise<any> {
 
-    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all"
+    const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
 
     const myHeaders = new Headers()
 
@@ -198,7 +198,7 @@ export function passReset(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/reset-password",
+        url: import.meta.env.VITE_DOMAIN_URL + "/api/users/reset-password",
     }
     return axios(options)
 }
@@ -211,7 +211,7 @@ export function pinChange(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/update-pin",
+        url: import.meta.env.VITE_DOMAIN_URL + "/api/update-pin",
     }
     return axios(options)
 }
@@ -224,7 +224,7 @@ export function passChange(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/update-password",
+        url: import.meta.env.VITE_DOMAIN_URL + "/api/users/update-password",
     }
     return axios(options)
 }
@@ -235,7 +235,7 @@ export function getUsersRoles(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/user/" + payload,
+        url: import.meta.env.VITE_DOMAIN_URL + "/api/roles/user/" + payload,
     }
     return axios(options)
 }

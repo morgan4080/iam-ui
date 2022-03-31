@@ -64,7 +64,7 @@ const store = createStore({
                 config: {
                     withCredentials: false
                 },
-                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/user/" + payload,
+                url: import.meta.env.VITE_DOMAIN_URL + "/api/roles/user/" + payload,
             }
             return axios(options)
         },
@@ -76,7 +76,7 @@ const store = createStore({
                 config: {
                     withCredentials: false
                 },
-                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/update-password",
+                url: import.meta.env.VITE_DOMAIN_URL + "/api/users/update-password",
             }
             return axios(options)
         },
@@ -88,7 +88,7 @@ const store = createStore({
                 config: {
                     withCredentials: false
                 },
-                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/update-pin",
+                url: import.meta.env.VITE_DOMAIN_URL + "/api/update-pin",
             }
             return axios(options)
         },
@@ -100,13 +100,13 @@ const store = createStore({
                 config: {
                     withCredentials: false
                 },
-                url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/reset-password",
+                url: import.meta.env.VITE_DOMAIN_URL + "/api/users/reset-password",
             }
             return axios(options)
         },
         getUserAdminRoles({ }, roleIds: []): Promise<any> {
 
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all"
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
 
             const myHeaders = new Headers()
 
@@ -125,7 +125,7 @@ const store = createStore({
             })
         },
         getRole({ }, keyCloakId: any): Promise<any> {
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/"+keyCloakId
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/"+keyCloakId
 
             const headers = new Headers()
 
@@ -142,7 +142,7 @@ const store = createStore({
                     config: {
                         withCredentials: false
                     },
-                    url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
+                    url: import.meta.env.VITE_DOMAIN_URL + "/api/v1/users",
                 };
                 const { data } = await api(options)
                 return data
@@ -151,7 +151,7 @@ const store = createStore({
             }
         },
         getUser({ }, route: any ): Promise<any> {
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/users/" + route.params.id
 
             const myHeaders = new Headers()
 
@@ -165,7 +165,7 @@ const store = createStore({
         },
         getPermissions({ }):  Promise<any> {
 
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions"
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/permissions"
 
             const myHeaders = new Headers()
 
@@ -186,7 +186,7 @@ const store = createStore({
                     config: {
                         withCredentials: false
                     },
-                    url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles",
+                    url: import.meta.env.VITE_DOMAIN_URL + "/api/roles",
                 };
                 const { data } = await axios(options)
                 return data
@@ -195,7 +195,7 @@ const store = createStore({
             }
         },
         getServices({ }): Promise<any> {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services`
 
             const myHeaders = new Headers()
 
@@ -208,7 +208,7 @@ const store = createStore({
             return apiCall({ url, method, headers}, { withCredentials: true })
         },
         getRoles({ }): Promise<any> {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles`
 
             const method = 'GET'
 
@@ -216,7 +216,7 @@ const store = createStore({
         },
         getUsers({ }, query: string = ''): Promise<any> {
 
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users${query}`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/users${query}`
 
             const method = 'GET'
 
@@ -224,7 +224,7 @@ const store = createStore({
         },
         async editTheUser({}, { payload, route }): Promise<any> {
 
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users"
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/v1/users"
 
             const method: string = 'PUT'
 
@@ -248,7 +248,7 @@ const store = createStore({
             }
         },
         syncServices({}) {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services/sync`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services/sync`
             const method = `POST`
             const myHeaders = new Headers()
             myHeaders.append("Authorization", `*/*`)
@@ -257,7 +257,7 @@ const store = createStore({
             return apiCall({url, method, headers}, {withCredentials: true})
         },
         syncRoles({}) {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles/sync-roles`
             const method = `POST`
             const myHeaders = new Headers()
             myHeaders.append("Authorization", `*/*`)
@@ -266,7 +266,7 @@ const store = createStore({
             return apiCall({url, method, headers}, {withCredentials: true})
         },
         assignRoles({}, { userRefId, payload }) {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/users/${userRefId}/assign`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/v1/roles/users/${userRefId}/assign`
             const method = `POST`
             const myHeaders = new Headers()
             myHeaders.append("Authorization", `*/*`)
