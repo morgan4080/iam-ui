@@ -34,7 +34,7 @@ export function syncServices() {
     return apiCall({url, method, headers}, {withCredentials: true})
 }
 
-// lenny
+// moved
 export async function editTheUser(payload: {}, route: any): Promise<any> {
 
     const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
@@ -57,7 +57,7 @@ export async function editTheUser(payload: {}, route: any): Promise<any> {
         alert(e.message)
     }
 }
-
+//moved
 export function getUsers(query: string = ''): Promise<any> {
 
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users${query}`
@@ -66,7 +66,7 @@ export function getUsers(query: string = ''): Promise<any> {
 
     return apiCall({ url, method }, { withCredentials: true })
 }
-
+//moved
 export async function getRoles(): Promise<any> {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles`
 
@@ -74,7 +74,7 @@ export async function getRoles(): Promise<any> {
 
     return apiCall({ url, method }, { withCredentials: true })
 }
-
+//moved
 export async function getServices(): Promise<any> {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services`
 
@@ -88,7 +88,7 @@ export async function getServices(): Promise<any> {
 
     return apiCall({ url, method, headers}, { withCredentials: true })
 }
-
+//moved
 export async function createRole(payload: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
         const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles", {
@@ -109,7 +109,7 @@ export async function createRole(payload: any): Promise<any> {
     })
 
 }
-
+//moved
 export function getPermissions():  Promise<any> {
 
     const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions"
@@ -138,7 +138,7 @@ export function getUser(route: any ): Promise<any> {
 
     return apiCall({ url, method, headers}, { withCredentials: true })
 }
-
+//moved
 export async function postUser(payload: any): Promise<any> {
     try {
         const options: any = {
