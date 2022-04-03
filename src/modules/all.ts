@@ -1,6 +1,8 @@
 import axios from "axios"
 import apiCall from "@/utils/api"
 
+
+//moved
 export function syncRoles() {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
     const method = `POST`
@@ -10,7 +12,7 @@ export function syncRoles() {
 
     return apiCall({url, method, headers}, {withCredentials: true})
 }
-
+// lenny
 export function syncUsers() {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`
     const method = `POST`
@@ -21,6 +23,7 @@ export function syncUsers() {
     return apiCall({url, method, headers}, {withCredentials: true})
 }
 
+// moved
 export function syncServices() {
     const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services/sync`
     const method = `POST`
@@ -31,6 +34,7 @@ export function syncServices() {
     return apiCall({url, method, headers}, {withCredentials: true})
 }
 
+// lenny
 export async function editTheUser(payload: {}, route: any): Promise<any> {
 
     const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
