@@ -87,31 +87,7 @@ const validatePin = async (e: any) => {
       e.target.classList.remove('focus:ring-red-400')
       e.target.classList.remove('focus:border-red-400')
     }
-    e.target.value = e.target.value.slice(0,-1)
-    await defineNotification({ message: "No more than 4 characters", error: true })
-  }
-}
-
-const validatePinConfirmation = async (e: any) => {
-  let numRegex = /^\d+$/;
-  if (!e.target.value.match(numRegex)) {
-    e.target.classList.add('focus:ring-red-400')
-    e.target.classList.add('focus:border-red-400')
-    e.target.onblur = () => {
-      e.target.classList.remove('focus:ring-red-400')
-      e.target.classList.remove('focus:border-red-400')
-    }
-    e.target.value = e.target.value.slice(0,-1)
-    await defineNotification({ message: "Pin must be a number", error: true })
-  }
-  if (e.target.value.length > 4) {
-    e.target.classList.add('focus:ring-red-400')
-    e.target.classList.add('focus:border-red-400')
-    e.target.onblur = () => {
-      e.target.classList.remove('focus:ring-red-400')
-      e.target.classList.remove('focus:border-red-400')
-    }
-    e.target.value = e.target.value.slice(0,-1)
+    e.target.value = e.target.value.slice(0, 4)
     await defineNotification({ message: "No more than 4 characters", error: true })
   }
 }
@@ -175,7 +151,7 @@ const validatePinConfirmation = async (e: any) => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input @input="validatePin($event)" v-model="form.pin" type="password" name="pin" id="pin" pattern="[0-9]{4,4}" autocomplete="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePin($event)" v-model.lazy="form.pin" type="password" name="pin" id="pin" pattern="[0-9]{4,4}" autocomplete="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -188,7 +164,7 @@ const validatePinConfirmation = async (e: any) => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input @input="validatePinConfirmation($event)" v-model="form.pinConfirmation" type="password" name="pin-confirmation" pattern="[0-9]{4,4}" id="pin-confirmation" autocomplete="pin-confirmation" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePin($event)" v-model.lazy="form.pinConfirmation" type="password" name="pin-confirmation" pattern="[0-9]{4,4}" id="pin-confirmation" autocomplete="pin-confirmation" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
