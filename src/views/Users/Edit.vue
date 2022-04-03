@@ -3,7 +3,7 @@
   import {computed, reactive, ref} from "vue"
   import {getRoles, getUser, editTheUser} from '@/modules/all'
   import {useStore} from "vuex"
-  import router from "@/router";
+  import router from "@/router"
 
   const store = useStore()
 
@@ -129,8 +129,9 @@
       await router.push(`/admin/users/${route.params.id}`)
     }).catch((e: any) => {
       alert(e.message)
-    }).finally(() => {
+    }).finally(async () => {
       loading.value = false
+      await router.push(`/admin/users/${route.params.id}`)
     })
 
   }

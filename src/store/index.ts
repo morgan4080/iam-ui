@@ -129,7 +129,7 @@ const store = createStore({
             })
         },
         passChange({ }, payload: any) {
-            const url = import.meta.env.VITE_DOMAIN_URL + '/api/users/update-password'
+            const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/users/update-password'
             const method = 'POST'
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {

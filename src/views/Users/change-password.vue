@@ -3,6 +3,7 @@
   import {ref, computed} from "vue"
   import {getUser, getUsersRoles, passChange, passReset} from '@/modules/all'
   import { useStore } from "vuex"
+  import router from "@/router"
 
   const route = useRoute()
 
@@ -51,13 +52,18 @@
         "newPassword": form.value.password,
         "confirmPassword": form.value.passwordConfirmation
       }
+      if (form.value.password !== form.value.passwordConfirmation) {
+        await store.dispatch("defineNotification", { message: "Passwords don't match", error: true })
+        return
+      }
       const response = await passChange(payload)
-      console.log(response)
       await store.dispatch("defineNotification", { message: "Password Change Successful", success: true })
+      await router.push(`/admin/users/${route.params.id}`)
     } catch (e: any) {
       alert(e.message)
     } finally {
       loading.value = false
+      await router.push(`/admin/users/${route.params.id}`)
     }
   }
 </script>
