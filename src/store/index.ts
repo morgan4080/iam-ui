@@ -50,6 +50,16 @@ const store = createStore({
 
     },
     actions: {
+        //from all.ts
+        syncUsers() {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`
+            const method = `POST`
+            const myHeaders = new Headers()
+            myHeaders.append("Authorization", `*/*`)
+            const headers = myHeaders
+
+            return apiCall({url, method, headers}, {withCredentials: true})
+        },
         defineNotification({ commit }, payload) {
             commit("set_notification", payload)
         },
