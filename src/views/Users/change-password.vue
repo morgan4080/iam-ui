@@ -5,6 +5,10 @@
   import { useStore } from "vuex"
   import router from "@/router"
 
+  import { mapActions } from "@/modules/mapStore"
+
+  const { defineNotification } = mapActions()
+
   const route = useRoute()
 
   const store = useStore()
@@ -41,7 +45,7 @@
 
   async function changePassword() {
     if (form.value.password !== form.value.passwordConfirmation) {
-      await store.dispatch("defineNotification", { message: "Make Sure the Passwords are the same", error: true })
+      await defineNotification( { message: "Make Sure the Passwords are the same", error: true })
       return
     }
     loading.value = true
@@ -53,11 +57,11 @@
         "confirmPassword": form.value.passwordConfirmation
       }
       if (form.value.password !== form.value.passwordConfirmation) {
-        await store.dispatch("defineNotification", { message: "Passwords don't match", error: true })
+        await defineNotification( { message: "Passwords don't match", error: true })
         return
       }
       const response = await passChange(payload)
-      await store.dispatch("defineNotification", { message: "Password Change Successful", success: true })
+      await defineNotification( { message: "Password Change Successful", success: true })
       await router.push(`/admin/users/${route.params.id}`)
     } catch (e: any) {
       alert(e.message)
