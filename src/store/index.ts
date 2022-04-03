@@ -151,7 +151,7 @@ const store = createStore({
         pinChange({ }, payload: any) {
             return new Promise(async (resolve, reject) => {
                 const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/auth/ussd/pin", {
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
