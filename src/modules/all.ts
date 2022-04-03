@@ -211,7 +211,7 @@ export function pinChange(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/update-pin",
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/auth/ussd/pin",
     }
     return axios(options)
 }
