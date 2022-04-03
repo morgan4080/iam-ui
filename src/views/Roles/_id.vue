@@ -41,7 +41,7 @@
                <h3 class="text-base font-medium text-gray-900">
                   <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                     <a href="#" class="focus:outline-none">
-                      <span class="absolute inset-0" aria-hidden="true" />
+                      <span aria-hidden="true" />
                       Name
                     </a>
                   </span>
@@ -52,7 +52,7 @@
                <h3 class="text-base font-medium text-gray-900">
                   <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                     <a href="#" class="focus:outline-none">
-                      <span class="absolute inset-0" aria-hidden="true" />
+                      <span aria-hidden="true" />
                       Role Type
                     </a>
                   </span>
