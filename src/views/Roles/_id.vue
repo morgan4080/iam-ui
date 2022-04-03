@@ -4,8 +4,8 @@
   import {ref} from "vue";
   const route = useRoute()
 
-  const role:any = ref()
-  getRole(route.params.id).then((r) => {
+  const role = ref(<any> {})
+  getRole(route.params.id).then((r: any) => {
     role.value = r
   })
 </script>
