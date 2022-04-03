@@ -53,6 +53,24 @@ const store = createStore({
         defineNotification({ commit }, payload) {
             commit("set_notification", payload)
         },
+        async verifyUnique({commit}, payload) {
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users/by-identifier", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+        },
         logout({  }) {
             const url = import.meta.env.VITE_DOMAIN_URL + '/'
             const method = 'GET'
