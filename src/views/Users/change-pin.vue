@@ -6,7 +6,7 @@ import { mapState, mapGetters, mapMutations, mapActions } from '@/modules/mapSto
 import router from "@/router";
 
 
-const { pinChange, defineNotification } = mapActions()
+const { pinChange, defineNotification, verifyUnique } = mapActions()
 
 const route = useRoute()
 
@@ -33,12 +33,14 @@ getUser(route)
     ...user
   }
   userData.value.phoneNumber =  user.phoneNumber
+  form.value.phoneNumber = user.phoneNumber
 }).catch((e: any) => {
   alert(e.message)
 })
 const form = ref(<any> {
   pin: '',
-  pinConfirmation: ''
+  pinConfirmation: '',
+  phoneNumber: ''
 })
 
 async function changePin() {
@@ -49,14 +51,15 @@ async function changePin() {
   loading.value = true
   try {
     const payload = {
-      "phoneNumber": userData.value.phoneNumber,
-      "pin": form.value.pin
+      phoneNumber: form.value.phoneNumber,
+      pin: parseInt(form.value.pin)
     }
     const response = await pinChange(payload)
     console.log(response)
     form.value = {
       pin: '',
-      pinConfirmation: ''
+      pinConfirmation: '',
+      phoneNumber: ''
     }
     await defineNotification({ message: "Pin Change Successful", success: true })
     await router.push(`/admin/users/${route.params.id}`)
@@ -89,6 +92,21 @@ const validatePin = async (e: any) => {
     }
     e.target.value = e.target.value.slice(0, 4)
     await defineNotification({ message: "No more than 4 characters", error: true })
+  }
+}
+
+const validatePhone = async (e: any) => {
+  let response = await verifyUnique(`?phoneNumber=${e.target.value}`)
+
+  if (response !== 'unique') {
+    e.target.value = userData.value.phoneNumber
+    e.target.classList.add('focus:ring-red-400')
+    e.target.classList.add('focus:border-red-400')
+    e.target.onblur = () => {
+      e.target.classList.remove('focus:ring-red-400')
+      e.target.classList.remove('focus:border-red-400')
+    }
+    await defineNotification({ message: "Phone Number already taken", error: true })
   }
 }
 </script>
@@ -138,7 +156,7 @@ const validatePin = async (e: any) => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input disabled type="text" name="phone" id="phone" autocomplete="phone" :value="userData.phoneNumber" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePhone($event)" v-model.lazy="form.phoneNumber" type="text" name="phone" id="phone" autocomplete="phone" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
