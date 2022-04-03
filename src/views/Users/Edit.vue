@@ -3,6 +3,7 @@
   import {computed, reactive, ref} from "vue"
   import {getRoles, getUser, editTheUser} from '@/modules/all'
   import {useStore} from "vuex"
+  import router from "@/router";
 
   const store = useStore()
 
@@ -114,6 +115,7 @@
     }*/
 
     let payload: {} = {
+      userRefId: userData.value.id,
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.emailAddress,
@@ -121,8 +123,10 @@
       isEnabled: true
     }
 
-    store.dispatch("editTheUser", { payload, route }).then((response: any) => {
+    store.dispatch("editTheUser", { payload, route }).then(async (response: any) => {
       console.log("edit response", response)
+      await store.dispatch("defineNotification", { message: `User Edited successfully`, success: true })
+      await router.push(`/admin/users/${route.params.id}`)
     }).catch((e: any) => {
       alert(e.message)
     }).finally(() => {
@@ -164,10 +168,7 @@
 
             <div class="flex-1 min-w-0">
               <div class="text-xl font-semibold leading-7 text-gray-900 py-2 sm:leading-9 sm:truncate border-b border-gray-200">
-                <router-link :to="`/admin/profiles/${route.params.id}`" class="text-teal-500 capitalize text-xl">
-                  {{ userData.firstName + ' ' + userData.lastName }} /
-                </router-link>
-                &nbsp;User edit
+                {{ userData.firstName + ' ' + userData.lastName }} edit
               </div>
               <div class="py-3 md:flex md:justify-between">
                 <div class="text-sm block w-full">
