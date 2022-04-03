@@ -99,16 +99,22 @@ const store = createStore({
             return axios(options)
         },
         pinChange({ }, payload: any) {
-            const options: any = {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                data: payload,
-                config: {
-                    withCredentials: false
-                },
-                url: import.meta.env.VITE_DOMAIN_URL + "/api/update-pin",
-            }
-            return axios(options)
+            return new Promise(async (resolve, reject) => {
+                const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/auth/ussd/pin", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         passReset({ }, payload: any) {
             const options: any = {
