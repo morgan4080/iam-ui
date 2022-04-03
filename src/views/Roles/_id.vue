@@ -67,34 +67,23 @@
            <h2 class="text-3xl tracking-tight pt-4 font-extrabold text-gray-900 sm:text-xl">Permissions</h2>
            <div class="mt-2 grid gap-16 pt-4 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-12">
              <div class="border border-gray-300 rounded-md p-2" v-for="post in role.services" :key="post.id">
-               <div>
-               </div>
                <p class="text-xl font-semibold text-gray-900">
                  {{ post.clientId }}
                </p>
-               <div v-for="permision in post.permissions">
-                 <div class="flex justify-between ">
+               <div class="p-1 rounded" v-for="(permission, i) in post.permissions" :class="{'bg-gray-100': i%2 === 0}">
+                 <div class="flex">
                    <p class="mt-3 text-xs text-gray-800">
-                     name
-                   </p>
-                   <p class="mt-3 mx-2 text-xs text-gray-500">
-                     {{ permision.name }}
+                     Name: <span class="mt-3 mx-2 text-xs text-gray-500">{{ permission.name }}</span>
                    </p>
                  </div>
-                 <div class="flex justify-between">
+                 <div class="flex">
                    <p class="mt-3 text-xs text-gray-800">
-                     Role Type
-                   </p>
-                   <p class="mt-3 mx-2 text-xs text-gray-500">
-                     {{ permision.roleType }}
+                     Role Type: <span class="mt-3 mx-2 text-xs text-gray-500">{{ permission.roleType }}</span>
                    </p>
                  </div>
-                 <div class="flex justify-between">
+                 <div class="flex">
                    <p class="mt-3 text-xs text-gray-800">
-                     description
-                   </p>
-                   <p class="mt-3 text-xs text-gray-500">
-                     {{ permision.description }}
+                     Description: <span class="mt-3 text-xs text-gray-500">{{ permission.description }}</span>
                    </p>
                  </div>
                </div>
