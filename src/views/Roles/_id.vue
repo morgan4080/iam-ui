@@ -9,7 +9,6 @@
     role.value = r
   })
 </script>
-  <!-- This example requires Tailwind CSS v2.0+ -->
   <template>
    <div>
      <nav class="mt-0 flex px-5 bg-white lg:px-8" aria-label="Breadcrumb">
