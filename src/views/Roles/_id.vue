@@ -86,7 +86,7 @@
        <div class="relative max-w-lg mx-auto divide-y-2 divide-gray-200 lg:max-w-7xl">
          <div class="max-w-6xl">
            <h2 class="text-2xl tracking-tight font-extrabold text-gray-900 sm:text-2xl">Role Description</h2>
-           <div class="flex justify-around">
+           <div class="flex justify-around pb-3">
              <div class="min-w-0 flex-1">
                <h3 class="text-base font-medium text-gray-900">
                   <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
