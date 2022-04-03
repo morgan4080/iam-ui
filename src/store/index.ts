@@ -110,7 +110,7 @@ const store = createStore({
             })
         },
         getUsersRoles({ }, payload: any) {
-            const url = import.meta.env.VITE_DOMAIN_URL + '/api/roles/user/'
+            const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/roles/user/' + payload
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
@@ -325,8 +325,8 @@ const store = createStore({
                 }
             })
         },
-        getRoles({ }): Promise<any> {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles`
+        getRoles({ }, query: string = ''): Promise<any> {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles${query}`
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
@@ -346,7 +346,7 @@ const store = createStore({
         },
         getUsers({ }, query: string = ''): Promise<any> {
 
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/users${query}`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users${query}`
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
@@ -367,7 +367,7 @@ const store = createStore({
         },
         async editTheUser({}, { payload, route }): Promise<any> {
 
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/v1/users"
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users"
 
             const method: string = 'PUT'
             return new Promise(async (resolve, reject) => {
@@ -388,7 +388,7 @@ const store = createStore({
             })
         },
         syncServices({}) {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services/sync`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/organizations/services/sync`
             const method = `POST`
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
@@ -408,7 +408,7 @@ const store = createStore({
 
         },
         syncRoles({},payload) {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles/sync-roles`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
             const method = `POST`
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
@@ -428,7 +428,7 @@ const store = createStore({
 
         },
         assignRoles({}, { userRefId, payload }) {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/api/v1/roles/users/${userRefId}/assign`
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/users/${userRefId}/assign`
             const method = `POST`
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {

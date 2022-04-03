@@ -67,8 +67,8 @@ export function getUsers(query: string = ''): Promise<any> {
     return apiCall({ url, method }, { withCredentials: true })
 }
 //moved
-export async function getRoles(): Promise<any> {
-    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles`
+export async function getRoles(query: string = ''): Promise<any> {
+    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles${query}`
 
     const method = 'GET'
 

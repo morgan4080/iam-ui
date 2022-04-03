@@ -2,6 +2,7 @@
   import {useRoute, useRouter} from "vue-router"
   import { ref, onMounted } from "vue"
   import { useStore } from "vuex"
+  import { getUsersRoles } from '@/modules/all'
 
   const router = useRouter()
 
@@ -26,7 +27,7 @@
 
       userData.value = user
 
-      const { data } = await store.dispatch("getUsersRoles", user.keycloakId)
+      const { data } = await getUsersRoles(user.keycloakId)
 
       userRoles.value = data
 

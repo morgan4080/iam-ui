@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import {reactive, ref} from "vue";
+  import { createPopper } from '@popperjs/core'
+  import {reactive, ref, watch} from "vue";
   import {getRoles, syncRoles, syncServices} from '@/modules/all'
   import {useStore} from "vuex";
   const store = useStore()
@@ -8,9 +9,46 @@
 
   const pageCountOpen = ref(<boolean>false)
 
+  const totalRecords = ref(<number>0)
+
   const totalPagesArray = ref(<number[]>[])
 
   const currentPage = ref(<number>0)
+
+  const totalPages = ref(<number>0)
+
+  const selectedIndex = ref(<any>null)
+
+  const activeIndex = ref(<any>null)
+
+  const filterForm = reactive({
+    recordsPerPage: 10,
+    searchTerm: '',
+    order: 'ASC',
+    page: currentPage.value
+  })
+
+  const popcorn = ref(<any>null)
+  const tooltip = ref(<any>null)
+
+  watch(
+      pageCountOpen,
+      () => {
+        console.log("pageCountOpen", pageCountOpen.value)
+        if (pageCountOpen.value) {
+          createPopper(popcorn.value, tooltip.value,{
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [5, 10],
+                },
+              },
+            ],
+          });
+        }
+      }
+  )
 
   const all_roles = ref(<{ id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[]>[
     {
@@ -23,7 +61,13 @@
   ])
 
   getRoles()
-    .then((data: {records: { id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[]}) => {
+    .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[] }) => {
+      totalRecords.value = data.totalRecords
+      totalPages.value = data.totalPages
+      for (let i = 1; i <= totalPages.value; i++) {
+        totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+      }
+      currentPage.value = data.currentPage + 1
       all_roles.value = data.records
     }).catch((e: any) => {
       alert(e.message)
@@ -31,20 +75,40 @@
 
   async function reFetch() {
     try {
-      all_roles.value = []
+      all_roles.value = [{
+        id: '1',
+        keycloakRoleId: '',
+        name: '',
+        roleType: '',
+        description: ''
+      }]
+      const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
       const response: any = await syncRoles()
       await store.dispatch("defineNotification", { message: response.message, success: true })
       await syncServices()
-      const data: {records: { id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[]} = await getRoles()
+      const data: { totalRecords: number, totalPages: number, currentPage: number, records: { id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[] } = await getRoles(query.value)
+      totalRecords.value = data.totalRecords
+      totalPages.value = data.totalPages
+      for (let i = 1; i <= totalPages.value; i++) {
+        totalPagesArray.value = [...totalPagesArray.value, ...[i]]
+      }
+      currentPage.value = data.currentPage + 1
       all_roles.value = data.records
     } catch (e: any) {
       alert(e.message)
     }
   }
 
+  const choose = (index: number) => {
+    selectedIndex.value = index
+    filterForm.recordsPerPage = lots.value[index]
+    pageCountOpen.value = !pageCountOpen.value
+    reFetch()
+  }
+
 </script>
 <template>
-  <div class="w-full bg-white max-h-screen overflow-y-scroll ">
+  <div class="w-full bg-white max-h-screen overflow-y-scroll pb-32">
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
@@ -129,11 +193,11 @@
               <div>
                 <p class="text-sm text-gray-700">
                   Showing
-                  <span class="font-medium">1</span>
+                  <span class="font-medium">{{ currentPage === 1 ? 1 : currentPage * 10 - 9 }}</span>
                   to
-                  <span class="font-medium">10</span>
+                  <span class="font-medium">{{ totalRecords < 10 ? totalRecords : (10 * currentPage) }}</span>
                   of
-                  <span class="font-medium">100</span>
+                  <span class="font-medium">{{ totalRecords }}</span>
                   results
                 </p>
               </div>
@@ -147,10 +211,10 @@
                       <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
                         <div class="relative inline-flex items-center bg-indigo-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
                           <p class="ml-2.5 text-xs sm:text-sm font-medium">
-                            10
+                            {{ filterForm.recordsPerPage }}
                           </p>
                         </div>
-                        <button @click="pageCountOpen = !pageCountOpen" type="button" class="relative inline-flex items-center bg-indigo-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                        <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-indigo-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
                           <span class="sr-only">Change records count</span>
                           <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -170,10 +234,10 @@
                     >
                       <ul v-show="pageCountOpen" class="origin-top-right absolute z-10 right-0 w-12 rounded-md shadow-lg overflow-hidden bg-white divide-y divide-gray-200 ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
 
-                        <li v-for="(lot, i) in lots" :key="i" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
+                        <li v-for="(lot, i) in lots" :key="i" @click="choose(i)" @mouseenter="activeIndex = i" @mouseleave="activeIndex = null" :class="{ 'text-white bg-indigo-500': activeIndex === i, 'text-gray-900': !(activeIndex === i) }" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
                           <div class="flex flex-col">
                             <div class="flex justify-between">
-                              <p class="font-normal text-xs sm:text-sm">
+                              <p :class="{ 'font-semibold': selectedIndex === i, 'font-normal': !(selectedIndex === i) }" class="font-normal text-xs sm:text-sm">
                                 {{ lot }}
                               </p>
                             </div>
@@ -184,18 +248,17 @@
                     </transition>
                   </div>
                 </div>
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px hidden" aria-label="Pagination">
                   <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                     <span class="sr-only">Previous</span>
+                    <!-- Heroicon name: solid/chevron-left -->
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                   </a>
-                  <!-- Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" -->
                   <a v-for="(page, i) in totalPagesArray" :key="i" href="#" aria-current="page" :class="{'z-10 bg-indigo-50 border-indigo-500 text-indigo-600': currentPage === page, 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50' : currentPage !== page }" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                     {{ page }}
                   </a>
-
                   <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                     <span class="sr-only">Next</span>
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
