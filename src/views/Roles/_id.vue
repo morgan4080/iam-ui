@@ -11,28 +11,30 @@
 </script>
   <template>
    <div class="w-full h-screen bg-white pb-28 overflow-y-auto" style="min-height: 640px;">
-     <nav class="mt-0 flex px-5 lg:px-8" aria-label="Breadcrumb">
-       <ol role="list" class="flex items-center space-x-4">
+     <div class="pt-3 flex items-center">
+       <nav class="mt-0 flex px-5 lg:px-8" aria-label="Breadcrumb">
+         <ol role="list" class="flex items-center space-x-4">
 
-         <li>
-           <div class="flex items-center">
-             <router-link :to="`/admin/roles/`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
-           </div>
-         </li>
+           <li>
+             <div class="flex items-center">
+               <router-link :to="`/admin/roles/`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+             </div>
+           </li>
 
-         <li>
-           <div class="flex items-center">
-             <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-             </svg>
-             <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
-               Role
-             </h1>
-           </div>
-         </li>
-       </ol>
-     </nav>
-     <div class="pt-16 w-full pb-20 px-4 sm:px-6 lg:pt-4 lg:pb-28 lg:px-8">
+           <li>
+             <div class="flex items-center">
+               <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+               </svg>
+               <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
+                 Role
+               </h1>
+             </div>
+           </li>
+         </ol>
+       </nav>
+     </div>
+     <div class="w-full pb-20 px-4 sm:px-6 pt-4 lg:pb-28 lg:px-8">
        <div class="relative max-w-lg mx-auto divide-y-2 divide-gray-200 lg:max-w-7xl">
          <div class="max-w-6xl">
            <h2 class="text-2xl tracking-tight font-extrabold text-gray-900 sm:text-2xl">Role Description</h2>
