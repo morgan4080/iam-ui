@@ -10,8 +10,8 @@
   })
 </script>
   <template>
-   <div>
-     <nav class="mt-0 flex px-5 bg-white lg:px-8" aria-label="Breadcrumb">
+   <div class="w-full h-screen bg-white pb-28 overflow-y-auto" style="min-height: 640px;">
+     <nav class="mt-0 flex px-5 lg:px-8" aria-label="Breadcrumb">
        <ol role="list" class="flex items-center space-x-4">
 
          <li>
@@ -32,7 +32,7 @@
          </li>
        </ol>
      </nav>
-     <div class="bg-white pt-16 w-full pb-20 px-4 sm:px-6 lg:pt-4 lg:pb-28 lg:px-8">
+     <div class="pt-16 w-full pb-20 px-4 sm:px-6 lg:pt-4 lg:pb-28 lg:px-8">
        <div class="relative max-w-lg mx-auto divide-y-2 divide-gray-200 lg:max-w-7xl">
          <div class="max-w-6xl">
            <h2 class="text-2xl tracking-tight font-extrabold text-gray-900 sm:text-2xl">Role Description</h2>
