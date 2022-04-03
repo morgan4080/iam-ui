@@ -51,14 +51,23 @@ const store = createStore({
     },
     actions: {
         //from all.ts
-        syncUsers() {
-            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`
-            const method = `POST`
-            const myHeaders = new Headers()
-            myHeaders.append("Authorization", `*/*`)
-            const headers = myHeaders
+        syncUsers({commit}, payload) {
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/sync-users", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
 
-            return apiCall({url, method, headers}, {withCredentials: true})
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         defineNotification({ commit }, payload) {
             commit("set_notification", payload)
@@ -81,32 +90,63 @@ const store = createStore({
                 }
             })
         },
-        logout({  }) {
+        logout({ commit },payload) {
             const url = import.meta.env.VITE_DOMAIN_URL + '/'
             const method = 'GET'
-            return apiCall({ url, method }, { withCredentials: true })
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         getUsersRoles({ }, payload: any) {
-            const options: any = {
-                method: 'GET',
-                config: {
-                    withCredentials: false
-                },
-                url: import.meta.env.VITE_DOMAIN_URL + "/api/roles/user/" + payload,
-            }
-            return axios(options)
+            const url = import.meta.env.VITE_DOMAIN_URL + '/api/roles/user/'
+            const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         passChange({ }, payload: any) {
-            const options: any = {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                data: payload,
-                config: {
-                    withCredentials: false
-                },
-                url: import.meta.env.VITE_DOMAIN_URL + "/api/users/update-password",
-            }
-            return axios(options)
+            const url = import.meta.env.VITE_DOMAIN_URL + '/api/users/update-password'
+            const method = 'POST'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         pinChange({ }, payload: any) {
             return new Promise(async (resolve, reject) => {
@@ -127,24 +167,32 @@ const store = createStore({
             })
         },
         passReset({ }, payload: any) {
-            const options: any = {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                data: payload,
-                config: {
-                    withCredentials: false
-                },
-                url: import.meta.env.VITE_DOMAIN_URL + "/api/users/reset-password",
-            }
-            return axios(options)
+            const url = import.meta.env.VITE_DOMAIN_URL + '/api/users/reset-password'
+            const method = 'POST'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
-        getUserAdminRoles({ }, roleIds: []): Promise<any> {
+       /* getUserAdminRoles({ }, roleIds: []): Promise<any> {
 
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
 
             const myHeaders = new Headers()
 
-            myHeaders.append("Authorization", `*/*`)
+            myHeaders.append("Authorization", `*!/!*`)
 
             const headers = myHeaders
 
@@ -157,13 +205,26 @@ const store = createStore({
                     reject(e)
                 })
             })
-        },
+        },*/
         getRole({ }, keyCloakId: any): Promise<any> {
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/"+keyCloakId
 
-            const headers = new Headers()
-
             const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
 
             return  apiCall({ url, method, headers}, { withCredentials: true })
         },

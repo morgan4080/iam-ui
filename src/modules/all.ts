@@ -156,7 +156,7 @@ export async function postUser(payload: any): Promise<any> {
         alert(e.message)
     }
 }
-
+//moved
 export async function getRole(keyCloakId: any): Promise<any> {
     const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/"+keyCloakId
 
@@ -166,14 +166,14 @@ export async function getRole(keyCloakId: any): Promise<any> {
 
     return  apiCall({ url, method, headers}, { withCredentials: true })
 }
-
+/*
 export function getUserAdminRoles(roleIds: [], ): Promise<any> {
 
     const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all"
 
     const myHeaders = new Headers()
 
-    myHeaders.append("Authorization", `*/*`)
+    myHeaders.append("Authorization", `*!/!*`)
 
     const headers = myHeaders
 
@@ -186,7 +186,7 @@ export function getUserAdminRoles(roleIds: [], ): Promise<any> {
             reject(e)
         })
     })
-}
+}*/
 
 export function logout() {
     const url = import.meta.env.VITE_DOMAIN_URL + '/'
