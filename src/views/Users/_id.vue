@@ -31,7 +31,7 @@
         ...userData.value,
         ...user
       }
-      console.log(userData.value)
+      console.log("user data value", userData.value)
       return user
     })
     .then((user: any) => {

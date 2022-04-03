@@ -15,7 +15,7 @@
     <TheSideBar v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'" />
     <router-view></router-view>
     <Notification v-if="notification.message" :success="notification.success" :warning="notification.warning" :error="notification.error">
-      {{ notification.message }}
+      <p>{{ notification.message }}</p>
     </Notification>
   </div>
   <TheFooter />

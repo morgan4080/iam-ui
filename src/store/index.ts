@@ -74,18 +74,18 @@ const store = createStore({
         },
         async verifyUnique({commit}, payload) {
             return new Promise(async (resolve, reject) => {
-                let response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users/by-identifier", {
-                    method: 'POST',
+                let response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users/by-identifier" + payload, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    }
                 })
-                const data = await response.json()
-
                 if (response.status !== 200) {
-                    reject(data)
-                } else {
+                    resolve('unique')
+                }
+
+                if (response.status === 200)  {
+                    const data = await response.json()
                     resolve(data)
                 }
             })

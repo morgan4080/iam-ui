@@ -1,14 +1,20 @@
 <script setup lang="ts" xmlns="http://www.w3.org/1999/html">
-import {ref, computed} from "vue"
-import {getPermissions, getRoles, postUser} from "@/modules/all"
+import {ref, computed, watch} from "vue"
+import {getPermissions, getRoles} from "@/modules/all"
 import { useStore } from "vuex"
 import router from "@/router"
+import { mapActions } from "@/modules/mapStore"
+
+
+const { postUser, defineNotification, verifyUnique } = mapActions()
+
+
 
 const store = useStore()
 
-const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
+// const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
 
-const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
+// const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
 
 const available_roles = ref(<{name: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]>[])
 
@@ -61,7 +67,7 @@ const formRoles = ref(<{user_has_roles: any, user_roles: any}> {
 
 const currentStep = ref(<number> 1)
 
-const steps = ref([
+/*const steps = ref([
   {
     stage: 1,
     state: 'Current'
@@ -78,9 +84,9 @@ const steps = ref([
     stage: 4,
     state: 'Upcoming'
   }
-])
+])*/
 
-const errorUserHasRoles = ref(false)
+// const errorUserHasRoles = ref(false)
 
 const errorUserRoles = ref(false)
 
@@ -122,47 +128,27 @@ function setEventVal(event: any) {
 
 const loading = ref(false)
 
-const responseData = ref(<{ user: { username: string, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }, message: string }>{})
+// const responseData = ref(<{ user: { username: string, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }, message: string }>{})
+
+let query = ref(<string>`?`)
+
+interface qrInterface {
+  phoneNumber: string,
+  email: string,
+  username: string
+}
+
+let qrObject: qrInterface = {
+  phoneNumber: '',
+  email: '',
+  username: '',
+}
 
 function nextStep () {
   currentStep.value = currentStep.value + 1
 }
 
 const saveUser = async (rolesPayload: string[]) => {
-  /*
-    {
-      "tenantId": "string",
-      "firstName": "string",
-      "lastName": "string",
-      "contact": {
-        "email": "string",
-        "phone": "string"
-      },
-      "webCredentials": {
-        "username": "string",
-        "password": "string"
-      },
-      "ussdCredentials": {
-        "phoneNumber": "string",
-        "pin": "string"
-      },
-      "enabled": true,
-      "permissions": [
-        "string"
-      ],
-      "pinStatus": "SET",
-      "invitationStatus": "PENDING",
-      "userTypes": [
-        "WEB"
-      ],
-      "userRoles": [
-        "string"
-      ],
-      "userRoleIds": [
-        "string"
-      ]
-    }
-  */
   let payload
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
     payload = {
@@ -223,21 +209,15 @@ const saveUser = async (rolesPayload: string[]) => {
       userRoles: [],
       userRoleIds: rolesPayload,
     }
-
     delete payload.webCredentials.passwordConfirmation
   }
-
-  console.log("save user payload", payload)
-
   try {
     loading.value = true
-
-    const response = await store.dispatch("postUser", payload)
-
-    await store.dispatch("defineNotification", { message: response.messages[0].message, success: true })
+    const response = await postUser(payload)
+    await defineNotification( { message: response.messages[0].message, success: true })
     await router.push('/admin/users')
   } catch (e: any) {
-    alert(e.message)
+    await defineNotification( { message: e.message, error: true })
   } finally {
     loading.value = false
     await router.push('/admin/users')
@@ -255,13 +235,73 @@ function setUserType (e: any, payload: string) {
 }
 
 function saveRoles() {
-  // pick key cloak ids for roles
   saveUser(formRoles.value.user_roles.map((role: any): any => role.keycloakRoleId))
 }
 
 function previousStep() {
   if (currentStep.value !== 1) {
     currentStep.value = currentStep.value - 1
+  }
+}
+
+const byIdentifier = async () => {
+  for (const [key, value] of Object.entries(qrObject)) {
+    if (value && query.value === "?") {
+      query.value += `${key}=${value}`
+    } else if (value && query.value !== "?") {
+      query.value += `&${key}=${value}`
+    }
+  }
+  console.log(query.value)
+
+  let response = await verifyUnique(query.value)
+
+  query.value = `?`
+
+  return response === 'unique';
+}
+
+const setQuery = async (e: any) => {
+  if (e.target.id === 'email') {
+    qrObject.phoneNumber = ''
+    qrObject.email = formContacts.value.email
+    qrObject.username = ''
+  }
+  if (e.target.id === 'phone-number') {
+    qrObject.phoneNumber = formContacts.value.phoneNumber
+    qrObject.email = ''
+    qrObject.username = ''
+  }
+  if (e.target.id === 'phone-number') {
+    qrObject.phoneNumber = formContacts.value.phoneNumber
+    qrObject.email = ''
+    qrObject.username = ''
+  }
+  if (e.target.id === 'phonex') {
+    let response0 = await verifyUnique(`?phoneNumber=${formUSSDAccess.value.phoneNumber}`)
+    if (response0 !== 'unique') {
+      formUSSDAccess.value.phoneNumber = ''
+      await defineNotification( { message: `User with that phone number already exists`, error: true })
+    }
+    return
+  }
+  if (e.target.id === 'username') {
+    qrObject.phoneNumber = ''
+    qrObject.email = ''
+    qrObject.username = formWebAccess.value.username
+  }
+
+  let response = await byIdentifier()
+
+  if (!response) {
+    for (const [key, value] of Object.entries(qrObject)) {
+      if (value) {
+        if (key === 'email') formContacts.value.email = ''
+        if (key === 'phoneNumber') formContacts.value.phoneNumber = ''
+        if (key === 'username') formWebAccess.value.username = ''
+        await defineNotification( { message: `User with that ${key} already exists`, error: true })
+      }
+    }
   }
 }
 
@@ -273,22 +313,29 @@ async function setupFormContacts() {
       currentStep.value = currentStep.value + 2
     }
   } else {
-    await store.dispatch("defineNotification", { message: "Kindly Select a user type", error: true })
+    await defineNotification( { message: "Kindly Select a user type", error: true })
   }
 }
 
-function setupFormWebAccess() {
+async function setupFormWebAccess() {
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
-    nextStep()
+    if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
+      nextStep()
+    } else {
+      await defineNotification( { message: `Passwords don't match`, error: true })
+    }
   } else {
     currentStep.value = 4
   }
 }
 
-function setupFormUSSDAccess() {
-  currentStep.value = 4
+async function setupFormUSSDAccess() {
+  if (formUSSDAccess.value.pin === formUSSDAccess.value.pinConfirmation) {
+    currentStep.value = 4
+  } else {
+    await defineNotification( { message: `Pins don't match`, error: true })
+  }
 }
-
 </script>
 
 <template>
@@ -367,7 +414,7 @@ function setupFormUSSDAccess() {
                       <div class="sm:col-span-2">
                         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                         <div class="mt-1">
-                          <input :disabled="formContacts.user_types.length === 0" id="email" type="email" v-model="formContacts.email" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" id="email" type="email" v-model.lazy="formContacts.email" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                         </div>
                       </div>
                       <div class="sm:col-span-2">
@@ -379,7 +426,7 @@ function setupFormUSSDAccess() {
                               <option>KE</option>
                             </select>
                           </div>
-                          <input :disabled="formContacts.user_types.length === 0" type="text" id="phone-number" v-model="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" type="text" id="phone-number" v-model.lazy="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
                         </div>
                       </div>
                     </div>
@@ -439,7 +486,7 @@ function setupFormUSSDAccess() {
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="formWebAccess.username" type="text" name="username" id="username" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                          <input @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                         </div>
                       </div>
                     </div>
@@ -538,7 +585,7 @@ function setupFormUSSDAccess() {
                               <option>KE</option>
                             </select>
                           </div>
-                          <input type="text" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input @change="setQuery($event)" type="text" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                         </div>
                       </div>
                     </div>
