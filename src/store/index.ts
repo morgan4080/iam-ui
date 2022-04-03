@@ -248,127 +248,204 @@ const store = createStore({
         },
         getUser({ }, route: any ): Promise<any> {
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
-
-            const myHeaders = new Headers()
-
-            myHeaders.append("Authorization", `*/*`)
-
-            const headers = myHeaders
-
             const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({ url, method, headers}, { withCredentials: true })
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+
         },
         getPermissions({ }):  Promise<any> {
 
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/permissions"
-
-            const myHeaders = new Headers()
-
-            myHeaders.append("Authorization", `*/*`)
-
-            const headers = myHeaders
-
             const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({ url, method, headers}, { withCredentials: true })
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         async createRole({ }, payload: any): Promise<any> {
-            try {
-                const options: any = {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/json' },
-                    data: payload,
-                    config: {
-                        withCredentials: false
+            const url = import.meta.env.VITE_DOMAIN_URL + '/api/roles'
+            const method = 'POST'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
                     },
-                    url: import.meta.env.VITE_DOMAIN_URL + "/api/roles",
-                };
-                const { data } = await axios(options)
-                return data
-            } catch (e: any) {
-                console.log(e.message)
-            }
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         getServices({ }): Promise<any> {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services`
-
-            const myHeaders = new Headers()
-
-            myHeaders.append("Authorization", `*/*`)
-
-            const headers = myHeaders
-
             const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({ url, method, headers}, { withCredentials: true })
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         getRoles({ }): Promise<any> {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles`
-
             const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({ url, method }, { withCredentials: true })
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         getUsers({ }, query: string = ''): Promise<any> {
 
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/users${query}`
-
             const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({ url, method }, { withCredentials: true })
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+
         },
         async editTheUser({}, { payload, route }): Promise<any> {
 
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/v1/users"
 
             const method: string = 'PUT'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
 
-            try {
-                const options: any = {
-                    method,
-                    headers: { 'content-type': 'application/json' },
-                    data: {
-                        userRefId: route.params.id,
-                        ...payload
-                    },
-                    config: {
-                        withCredentials: false
-                    },
-                    url,
-                };
-                const { data } = await axios(options)
-                return data
-            } catch (e: any) {
-                alert(e.message)
-            }
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         },
         syncServices({}) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services/sync`
             const method = `POST`
-            const myHeaders = new Headers()
-            myHeaders.append("Authorization", `*/*`)
-            const headers = myHeaders
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({url, method, headers}, {withCredentials: true})
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+
         },
-        syncRoles({}) {
+        syncRoles({},payload) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/roles/sync-roles`
             const method = `POST`
-            const myHeaders = new Headers()
-            myHeaders.append("Authorization", `*/*`)
-            const headers = myHeaders
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
 
-            return apiCall({url, method, headers}, {withCredentials: true})
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+
         },
         assignRoles({}, { userRefId, payload }) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/v1/roles/users/${userRefId}/assign`
             const method = `POST`
-            const myHeaders = new Headers()
-            myHeaders.append("Authorization", `*/*`)
-            const headers = myHeaders
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
 
-            return apiCall({url, method, data: payload, headers}, {withCredentials: true})
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
         }
     }
 })
