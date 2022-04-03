@@ -144,7 +144,7 @@ export async function postUser(payload: any): Promise<any> {
             config: {
                 withCredentials: false
             },
-            url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/admin",
+            url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
         };
         const { data } = await axios(options)
         return data
@@ -198,7 +198,7 @@ export function passReset(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/api/users/reset-password",
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/reset-password",
     }
     return axios(options)
 }
@@ -211,7 +211,7 @@ export function pinChange(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/api/update-pin",
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/update-pin",
     }
     return axios(options)
 }
@@ -224,7 +224,7 @@ export function passChange(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/api/users/update-password",
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users/update-password",
     }
     return axios(options)
 }

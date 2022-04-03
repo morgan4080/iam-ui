@@ -142,7 +142,7 @@ const store = createStore({
                     config: {
                         withCredentials: false
                     },
-                    url: import.meta.env.VITE_DOMAIN_URL + "/api/v1/users",
+                    url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
                 };
                 const { data } = await api(options)
                 return data
@@ -151,7 +151,7 @@ const store = createStore({
             }
         },
         getUser({ }, route: any ): Promise<any> {
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/users/" + route.params.id
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
 
             const myHeaders = new Headers()
 
