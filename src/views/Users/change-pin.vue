@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import {useRoute} from "vue-router"
 import {ref, computed} from "vue"
-import {getUser, pinChange} from '@/modules/all'
-import { useStore } from "vuex"
+import {getUser} from '@/modules/all'
+import { mapState, mapGetters, mapMutations, mapActions } from '@/modules/mapStore'
+
+
+const { pinChange, defineNotification } = mapActions()
 
 const route = useRoute()
-
-const store = useStore()
 
 const loading = ref(<boolean> false)
 
@@ -40,7 +41,7 @@ const form = ref(<any> {
 
 async function changePin() {
   if (form.value.pin !== form.value.pinConfirmation) {
-    await store.dispatch("defineNotification", { message: "Make Sure the pins are the same", error: true })
+    await defineNotification({ message: "Make Sure the pins are the same", error: true })
     return
   }
   loading.value = true
@@ -55,7 +56,7 @@ async function changePin() {
       pin: '',
       pinConfirmation: ''
     }
-    await store.dispatch("defineNotification", { message: "Pin Change Successful", success: true })
+    await defineNotification({ message: "Pin Change Successful", success: true })
   } catch (e: any) {
     alert(e.message)
   } finally {
