@@ -3,6 +3,7 @@ import {useRoute} from "vue-router"
 import {ref, computed} from "vue"
 import {getUser} from '@/modules/all'
 import { mapState, mapGetters, mapMutations, mapActions } from '@/modules/mapStore'
+import router from "@/router";
 
 
 const { pinChange, defineNotification } = mapActions()
@@ -25,13 +26,14 @@ const userData = ref({
   username: ''
 })
 getUser(route)
-    .then((data) => {
-      const { user } = data
-      userData.value = {
-        ...userData.value,
-        ...user
-      }
-    }).catch((e: any) => {
+.then((data) => {
+  const { user } = data
+  userData.value = {
+    ...userData.value,
+    ...user
+  }
+  userData.value.phoneNumber =  user.phoneNumber
+}).catch((e: any) => {
   alert(e.message)
 })
 const form = ref(<any> {
@@ -57,10 +59,12 @@ async function changePin() {
       pinConfirmation: ''
     }
     await defineNotification({ message: "Pin Change Successful", success: true })
+    await router.push(`/admin/users/${route.params.id}`)
   } catch (e: any) {
     alert(e.message)
   } finally {
     loading.value = false
+    await router.push(`/admin/users/${route.params.id}`)
   }
 }
 </script>

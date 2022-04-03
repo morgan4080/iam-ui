@@ -228,7 +228,7 @@ export function passChange(payload: any) {
         config: {
             withCredentials: false
         },
-        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users/update-password",
+        url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/update-password",
     }
     return axios(options)
 }
