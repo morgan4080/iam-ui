@@ -35,7 +35,7 @@
        </nav>
      </div>
      <div class="w-full pb-20 px-4 sm:px-6 pt-4 lg:pb-28 lg:px-8">
-       <div class="relative max-w-lg mx-auto divide-y-2 divide-gray-200 lg:max-w-7xl">
+       <div class="relative max-w-lg divide-y-2 divide-gray-200 lg:max-w-7xl">
          <div class="max-w-6xl">
            <h2 class="text-2xl tracking-tight font-extrabold text-gray-900 sm:text-2xl">Role Description</h2>
            <div class="flex justify-around pb-3">
