@@ -51,6 +51,23 @@ const store = createStore({
     },
     actions: {
         //from all.ts
+        syncUser({commit}, param) {
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(import.meta.env.VITE_DOMAIN_URL + `/users-admin/api/v1/roles/users/${param}/sync`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+        },
         syncUsers({commit}, payload) {
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/sync-users", {

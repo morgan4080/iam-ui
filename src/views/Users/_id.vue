@@ -3,6 +3,9 @@
   import {ref, computed} from "vue"
   import {getUser, getUsersRoles, passReset} from '@/modules/all'
   import { useStore } from "vuex"
+  import { mapActions } from "@/modules/mapStore"
+
+  const { syncUser } = mapActions()
 
   const route = useRoute()
 
@@ -23,6 +26,8 @@
   })
 
   const userRoles = ref(<any[]>[])
+
+  const loading = ref(<boolean> false)
 
   getUser(route)
     .then((data) => {
@@ -65,6 +70,19 @@
 
   const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
 
+
+  const synchronizeUser = async () => {
+    try {
+      loading.value = true
+      const response = await syncUser(`${userData.value.id}`)
+      console.log(response)
+      loading.value = false
+      await store.dispatch("defineNotification", { message: "User Account Synchronised", success: true })
+    } catch (e: any) {
+      await store.dispatch("defineNotification", { message: e.message, error: true })
+    }
+  }
+
 </script>
 
 <template>
@@ -75,7 +93,7 @@
         <div class="flex-1 min-w-0">
           <div class="ml-3 flex items-center border-b border-gray-200">
 
-            <nav class="flex" aria-label="Breadcrumb">
+            <nav class="flex space-x-4 items-center w-full" aria-label="Breadcrumb">
               <ol role="list" class="flex items-center space-x-4">
 
                 <li>
@@ -96,6 +114,11 @@
                   </div>
                 </li>
               </ol>
+              <button @click="synchronizeUser" type="button" class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
             </nav>
           </div>
           <div class="ml-3 mt-4 text-sm block ">
