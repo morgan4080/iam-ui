@@ -124,7 +124,7 @@
                     </div>
                   </div>
                   <div class="sm:grid sm:grid-cols-3 sm:gap-4">
-                    <PermissionsList v-for="(permission, index) in services[i].permissions" :key="`${i}${index}`" :permission="permission" @change="setPermissionToService"/>
+                    <PermissionsList v-for="(permission, index) in services[i].permissions" :key="`${i}${index}`" :permission="permission" @change="setPermissionToService" :existing="[]"/>
                   </div>
                 </div>
               </div>

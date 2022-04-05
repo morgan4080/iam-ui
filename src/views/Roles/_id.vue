@@ -17,7 +17,7 @@
 
            <li>
              <div class="flex items-center">
-               <router-link :to="`/admin/roles/`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+               <router-link :to="`/admin/roles/`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">Roles</router-link>
              </div>
            </li>
 

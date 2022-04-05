@@ -94,6 +94,7 @@ const loading = ref(<boolean> false)
 
 const actionUpdateRole = async () => {
   try {
+    loading.value = true
     let existing: string[] = Array.from(initialKeycloakIds)
     form.value.keycloakRoleIdsToRemove = existing.reduce((acc: string[], current: string) => {
       // if current does not exist is keycloakRoleIdsToAdd
@@ -102,10 +103,15 @@ const actionUpdateRole = async () => {
       }
       return acc
     }, [])
+    form.value.keycloakRoleIdsToAdd = form.value.keycloakRoleIdsToAdd.filter((keyId: string) => existing.indexOf(keyId) === -1)
     const response = await updateRole(form.value)
     console.log(response)
+    await store.dispatch("defineNotification", { message: response.messages[0].message, success: true })
+    await router.push(`/admin/roles/${route.params.id}`)
   } catch (e: any) {
     await store.dispatch("defineNotification", { message: e.message, error: true })
+  } finally {
+    loading.value = false
   }
 }
 </script>
