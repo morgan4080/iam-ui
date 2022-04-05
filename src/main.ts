@@ -15,21 +15,13 @@ const headers = myHeaders
 
 const method = 'GET'
 
-function progress (progressEvent: any): void {
-    console.log(Math.round((progressEvent.loaded * 100) / progressEvent.total))
-    let percent: any = document.getElementById("percent")
-    if (percent) {
-        percent.innerText = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-    }
-}
-
 const spinner: any = document.getElementById("spinner")
 
 if (spinner) {
     spinner.style.display = "block"
 }
 
-apiCall({ url, method, headers}, { withCredentials: true, onUploadProgress: progress }).then((response: any): void => {
+apiCall({ url, method, headers}, { withCredentials: true }).then((response: any): void => {
     function instantiateApp () {
         createApp(App)
             .use(router)

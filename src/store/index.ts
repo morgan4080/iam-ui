@@ -306,6 +306,26 @@ const store = createStore({
                 }
             })
         },
+        async updateRole({ }, payload: any): Promise<any> {
+            const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/v1/roles'
+            const method = 'PUT'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+
+                if (response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+        },
         getServices({ }): Promise<any> {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services`
             const method = 'GET'

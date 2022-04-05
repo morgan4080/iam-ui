@@ -11,8 +11,8 @@
 </script>
   <template>
    <div class="w-full h-screen bg-white pb-28 overflow-y-auto" style="min-height: 640px;">
-     <div class="pt-3 flex items-center">
-       <nav class="mt-0 flex px-5 lg:px-8" aria-label="Breadcrumb">
+     <div class="pt-3 flex items-center w-full px-4 sm:px-6 lg:px-8">
+       <nav class="mt-0 flex justify-between items-center w-full" aria-label="Breadcrumb">
          <ol role="list" class="flex items-center space-x-4">
 
            <li>
@@ -32,20 +32,26 @@
              </div>
            </li>
          </ol>
+         <button @click="$router.push(`/admin/roles/${role.keycloakRoleId}/edit`)" type="button" class="inline-flex justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+           Edit Role
+           <svg class="ml-2 -mr-0.5 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+           </svg>
+         </button>
        </nav>
      </div>
      <div class="w-full pb-20 px-4 sm:px-6 pt-4 lg:pb-28 lg:px-8">
-       <div class="relative max-w-lg divide-y-2 divide-gray-200 lg:max-w-7xl">
-         <div class="max-w-6xl">
+       <div class="relative w-full divide-y-2 divide-gray-200">
+         <div>
            <h2 class="text-2xl tracking-tight font-extrabold text-gray-900 sm:text-2xl">Role Description</h2>
            <div class="flex justify-around pb-3">
              <div class="min-w-0 flex-1">
                <h3 class="text-base font-medium text-gray-900">
                   <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                    <a href="#" class="focus:outline-none">
+                    <span class="focus:outline-none">
                       <span aria-hidden="true" />
                       Name
-                    </a>
+                    </span>
                   </span>
                </h3>
                <p class="text-base text-gray-500">{{ role.name }}</p>
@@ -53,13 +59,24 @@
              <div class="min-w-0 flex-1">
                <h3 class="text-base font-medium text-gray-900">
                   <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                    <a href="#" class="focus:outline-none">
+                    <span class="focus:outline-none">
                       <span aria-hidden="true" />
                       Role Type
-                    </a>
+                    </span>
                   </span>
                </h3>
                <p class="text-base text-gray-500">{{ role.roleType }}</p>
+             </div>
+             <div class="min-w-0 flex-1">
+               <h3 class="text-base font-medium text-gray-900">
+                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                    <span class="focus:outline-none">
+                      <span aria-hidden="true" />
+                      Role Description
+                    </span>
+                  </span>
+               </h3>
+               <p class="text-base text-gray-500">{{ role.description }}</p>
              </div>
            </div>
          </div>

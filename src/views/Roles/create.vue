@@ -53,6 +53,7 @@
 
   async function saveToState() {
     loading.value = true
+    console.log(form.value)
     try {
       const response = await createRole(form.value)
       await store.dispatch("defineNotification", { message: response.message, success: true })
@@ -117,7 +118,7 @@
               <div class="mt-3">
                 <div v-for="(service, i) in services" :key="i" class="col-span-1 sm:border-t sm:border-gray-200">
                   <div class="p-1 bg-blue-50 flex items-center sm:mt-px sm:pt-2 space-x-2">
-                    <div class="block text-base font-medium text-gray-700">{{ i+1 }}.&nbsp;{{ service.name }}</div>
+                    <div class="block text-base font-medium text-gray-700">{{ i+1 }}.&nbsp;{{ service.clientId }}</div>
                     <div class="text-xs text-gray-500">
                       {{ service.description }}
                     </div>
