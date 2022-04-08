@@ -2,19 +2,13 @@
 import {ref, computed, watch} from "vue"
 import {getPermissions, getRoles} from "@/modules/all"
 import { useStore } from "vuex"
-import router from "@/router"
 import { mapActions } from "@/modules/mapStore"
-
+import {useRouter} from "vue-router"
+const router = useRouter()
 
 const { postUser, defineNotification, verifyUnique } = mapActions()
 
-
-
 const store = useStore()
-
-// const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
-
-// const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
 
 const available_roles = ref(<{name: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]>[])
 
@@ -149,9 +143,9 @@ function nextStep () {
 }
 
 const saveUser = async (rolesPayload: string[]) => {
-  let payload
+  let payloadOut: any
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
-    payload = {
+    let payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -167,12 +161,22 @@ const saveUser = async (rolesPayload: string[]) => {
       userRoleIds: rolesPayload,
     }
 
+    if (formContacts.value.email === '') {
+      delete payload.contact.email
+    }
+
+    if (formContacts.value.phoneNumber === '') {
+      delete payload.contact.phone
+    }
+
     delete payload.webCredentials.passwordConfirmation
 
     delete  payload.ussdCredentials.pinConfirmation
 
+    payloadOut = payload
+
   } else if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') === -1) {
-    payload = {
+    let payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -195,8 +199,18 @@ const saveUser = async (rolesPayload: string[]) => {
 
     delete  payload.ussdCredentials.pinConfirmation
 
+    if (formContacts.value.email === '') {
+      delete payload.contact.email
+    }
+
+    if (formContacts.value.phoneNumber === '') {
+      delete payload.contact.phone
+    }
+
+    payloadOut = payload
+
   } else if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') === -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
-    payload = {
+    let payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -210,10 +224,20 @@ const saveUser = async (rolesPayload: string[]) => {
       userRoleIds: rolesPayload,
     }
     delete payload.webCredentials.passwordConfirmation
+
+    if (formContacts.value.email === '') {
+      delete payload.contact.email
+    }
+
+    if (formContacts.value.phoneNumber === '') {
+      delete payload.contact.phone
+    }
+
+    payloadOut = payload
   }
   try {
     loading.value = true
-    const response = await postUser(payload)
+    const response = await postUser(payloadOut)
     await defineNotification( { message: response.messages[0].message, success: true })
     await router.push('/admin/users')
   } catch (e: any) {
@@ -319,13 +343,18 @@ async function setupFormContacts() {
 
 async function setupFormWebAccess() {
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
+    alert((formWebAccess.value.password === formWebAccess.value.passwordConfirmation))
     if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
       nextStep()
     } else {
       await defineNotification( { message: `Passwords don't match`, error: true })
     }
   } else {
-    currentStep.value = 4
+    if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
+      currentStep.value = 4
+    } else {
+      await defineNotification( { message: `Passwords don't match`, error: true })
+    }
   }
 }
 
@@ -414,7 +443,7 @@ async function setupFormUSSDAccess() {
                       <div class="sm:col-span-2">
                         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                         <div class="mt-1">
-                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" id="email" type="email" v-model.lazy="formContacts.email" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" id="email" type="email" v-model.lazy="formContacts.email" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
                         </div>
                       </div>
                       <div class="sm:col-span-2">

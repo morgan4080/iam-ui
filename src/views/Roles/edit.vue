@@ -53,26 +53,30 @@ onMounted(async () => {
 
     role.value = r
 
-    keycloakIds.value = role.value.services.map((service: any) => {
-      return service.permissions.map((permission: any) => {
-        return permission.keycloakRoleId
-      })
-    }).reduce((acc: [], curr: []) => {
-      acc = [...acc,...curr]
-      return acc
-    }, [])
-
     form.value.name = role.value.name
 
     form.value.keycloakRoleId = role.value.keycloakRoleId
 
     form.value.description = role.value.description ? role.value.description : ''
 
-    form.value.keycloakRoleIdsToAdd = keycloakIds.value
+    if (role.value.services) {
+      keycloakIds.value = role.value.services.map((service: any) => {
+        return service.permissions.map((permission: any) => {
+          return permission.keycloakRoleId
+        })
+      }).reduce((acc: [], curr: []) => {
+        acc = [...acc,...curr]
+        return acc
+      }, [])
 
-    keycloakIds.value.forEach((key: string) => {
-      initialKeycloakIds.add(key)
-    })
+      form.value.keycloakRoleIdsToAdd = keycloakIds.value
+
+      keycloakIds.value.forEach((key: string) => {
+        initialKeycloakIds.add(key)
+      })
+    }
+
+
 
   } catch (e: any) {
     await store.dispatch("defineNotification", { message: e.message, error: true })
@@ -97,7 +101,6 @@ const actionUpdateRole = async () => {
     loading.value = true
     let existing: string[] = Array.from(initialKeycloakIds)
     form.value.keycloakRoleIdsToRemove = existing.reduce((acc: string[], current: string) => {
-      // if current does not exist is keycloakRoleIdsToAdd
       if (form.value.keycloakRoleIdsToAdd.findIndex((k: string) => k === current) === -1) {
         acc.push(current)
       }
@@ -107,7 +110,7 @@ const actionUpdateRole = async () => {
     const response = await updateRole(form.value)
     console.log(response)
     await store.dispatch("defineNotification", { message: response.messages[0].message, success: true })
-    await router.push(`/admin/roles/${route.params.id}`)
+    await router.push(`/admin/roles`)
   } catch (e: any) {
     await store.dispatch("defineNotification", { message: e.message, error: true })
   } finally {

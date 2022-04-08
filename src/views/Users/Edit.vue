@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import {useRoute} from "vue-router"
+import {useRoute, useRouter} from "vue-router"
   import {computed, reactive, ref} from "vue"
   import {getRoles, getUser, editTheUser} from '@/modules/all'
   import {useStore} from "vuex"
-  import router from "@/router"
+  const router = useRouter()
 
   const store = useStore()
 
@@ -74,53 +74,20 @@
 
   function editUser () {
     loading.value = true
-
-    /*const userType: string = userData.value.userType.toLowerCase()*/
-
-    /*email: "austinoyugi@presta.co.ke"
-    firstName: "Austin"
-    id: "3a75dffd-2993-4c72-8dbb-9cd116896e0c"
-    invitationStatus: "PENDING"
-    isEnabled: true
-    keycloakId: "b915f3f4-b1a2-434a-9535-e74fe1ce679f"
-    lastName: "Oyugi"
-    phoneNumber: "254721373685"
-    pinStatus: "NOT_SET"
-    tenantId: "t10007"
-    userType: "CUSTOMER"
-    username: "austinO"*/
-
-    /*{
-      "gid": "string",
-        "firstName": "string",
-        "lastName": "string",
-        "email": "string",
-        "username": "string",
-        "password": "string",
-        "phoneNumber": "string",
-        "accessLevel": "string",
-        "userRoles": [
-          "string"
-        ],
-        "userRoleIds": [
-          "string"
-        ],
-        "tenantId": "string",
-        "enabled": true,
-        "permissions": [
-          "string"
-        ],
-        "pinStatus": "SET",
-        "invitationStatus": "PENDING"
-    }*/
-
-    let payload: {} = {
+    let payload: { userRefId: string, firstName: string, lastName: string, email: string | undefined, phoneNumber: string | undefined, isEnabled: boolean } = {
       userRefId: userData.value.id,
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.emailAddress,
       phoneNumber: form.phoneNumber,
       isEnabled: true
+    }
+
+    if (form.emailAddress === '') {
+      delete payload.email
+    }
+    if (form.phoneNumber === '') {
+      delete payload.phoneNumber
     }
 
     store.dispatch("editTheUser", { payload, route }).then(async (response: any) => {
@@ -157,7 +124,7 @@
                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                   </svg>
                   <h1 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate">
-                    Assign Roles
+                    Edit User
                   </h1>
                 </div>
               </li>
@@ -169,7 +136,7 @@
 
             <div class="flex-1 min-w-0">
               <div class="text-xl font-semibold leading-7 text-gray-900 py-2 sm:leading-9 sm:truncate border-b border-gray-200">
-                {{ userData.firstName + ' ' + userData.lastName }} edit
+                {{ userData.firstName + ' ' + userData.lastName }}
               </div>
               <div class="py-3 md:flex md:justify-between">
                 <div class="text-sm block w-full">
@@ -201,7 +168,7 @@
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.emailAddress" type="email" name="email" id="email" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                          <input v-model="form.emailAddress" type="email" name="email" id="email" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" >
                         </div>
                       </div>
                     </div>
@@ -217,7 +184,7 @@
                               <option>KE</option>
                             </select>
                           </div>
-                          <input type="text" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input type="text" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" >
                         </div>
                       </div>
                     </div>
