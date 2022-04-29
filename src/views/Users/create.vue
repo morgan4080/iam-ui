@@ -156,8 +156,6 @@ const saveUser = async (rolesPayload: string[]) => {
       ussdCredentials: formUSSDAccess.value,
       enabled: true,
       userTypes: formContacts.value.user_types,
-      permissions: [],
-      userRoles: [],
       userRoleIds: rolesPayload,
     }
 
@@ -193,7 +191,6 @@ const saveUser = async (rolesPayload: string[]) => {
       },
       enabled: true,
       userTypes: formContacts.value.user_types,
-      userRoles: [],
       userRoleIds: rolesPayload,
     }
 
@@ -220,7 +217,6 @@ const saveUser = async (rolesPayload: string[]) => {
       webCredentials: formWebAccess.value,
       enabled: true,
       userTypes: formContacts.value.user_types,
-      userRoles: [],
       userRoleIds: rolesPayload,
     }
     delete payload.webCredentials.passwordConfirmation
