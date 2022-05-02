@@ -126,7 +126,7 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL
             >
             <div v-if="accountMenu" class="bg-gray-800 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
               <!-- Active: "bg-gray-100", Not Active: "" -->
-<!--              <router-link :to="`/admin/profiles/${user.id}`" @click="accountMenu = !accountMenu" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</router-link>-->
+<!--              <router-link :to="`/profiles/${user.id}`" @click="accountMenu = !accountMenu" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</router-link>-->
               <a @click="doLogout" class="navbar cursor-pointer block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
             </div>
             </transition>

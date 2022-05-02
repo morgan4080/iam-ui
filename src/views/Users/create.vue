@@ -190,7 +190,7 @@ const saveUser = async (rolesPayload: string[]) => {
         phoneNumber: `254${formUSSDAccess.value.phoneNumber}`,
       },
       enabled: true,
-      userTypes: formContacts.value.user_types,
+      userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,
     }
 
@@ -216,7 +216,7 @@ const saveUser = async (rolesPayload: string[]) => {
       },
       webCredentials: formWebAccess.value,
       enabled: true,
-      userTypes: formContacts.value.user_types,
+      userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,
     }
     delete payload.webCredentials.passwordConfirmation
@@ -235,12 +235,12 @@ const saveUser = async (rolesPayload: string[]) => {
     loading.value = true
     const response = await postUser(payloadOut)
     await defineNotification( { message: response.messages[0].message, success: true })
-    await router.push('/admin/users')
+    await router.push('/users')
   } catch (e: any) {
     await defineNotification( { message: e.message, error: true })
   } finally {
     loading.value = false
-    await router.push('/admin/users')
+    await router.push('/users')
   }
 }
 
@@ -339,7 +339,6 @@ async function setupFormContacts() {
 
 async function setupFormWebAccess() {
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
-    alert((formWebAccess.value.password === formWebAccess.value.passwordConfirmation))
     if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
       nextStep()
     } else {
@@ -461,7 +460,7 @@ async function setupFormUSSDAccess() {
               <div class="flex">
                 <div class="ml-auto py-5">
                   <div class="space-x-3">
-                    <button @click="$router.push('/admin/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
+                    <button @click="$router.push('/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
                       Cancel
                     </button>
                     <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
@@ -481,89 +480,87 @@ async function setupFormUSSDAccess() {
               leave-class="transform opacity-100 translate-x-0"
               leave-to-class="transform opacity-0 translate-x-full"
           >
-            <div v-if="currentStep === 2" class="flex flex-col min-h-screen sm:border-t sm:border-gray-200 mt-3">
-              <form @submit.prevent="setupFormWebAccess">
+            <form v-if="currentStep === 2" @submit.prevent="setupFormWebAccess" class="flex flex-col min-h-screen sm:border-t sm:border-gray-200 mt-3">
 
-                <div class="flex flex-col pb-2 mt-6">
-                  <div>
-                    <h3 class="text-base leading-6 font-medium text-gray-900">
-                      Set Web Credentials
-                    </h3>
-                    <p class="mt-1 text-xs text-gray-500">Credentials to access web interface.</p>
-                  </div>
-                  <div class="flex flex-col mt-6 sm:mt-5  space-y-2">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                      <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Full names
-                      </label>
-                      <div class="mt-1 sm:mt-0 sm:col-span-2">
-                        <div class="max-w-lg flex">
+              <div class="flex flex-col pb-2 mt-6">
+                <div>
+                  <h3 class="text-base leading-6 font-medium text-gray-900">
+                    Set Web Credentials
+                  </h3>
+                  <p class="mt-1 text-xs text-gray-500">Credentials to access web interface.</p>
+                </div>
+                <div class="flex flex-col mt-6 sm:mt-5  space-y-2">
+                  <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                    <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Full names
+                    </label>
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                      <div class="max-w-lg flex">
                           <span class="font-semibold block w-full underline" >
                             {{ formContacts.firstName }} {{ formContacts.lastName }}
                           </span>
-                        </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                      <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Username
-                      </label>
-                      <div class="mt-1 sm:mt-0 sm:col-span-2">
-                        <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex flex-col border-b mt-4 pt-3 pb-8 space-y-2">
-                  <div>
-                    <h3 class="text-base leading-6 font-medium text-gray-900">
-                      Temporary Password
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-xs text-gray-500">
-                      Set temporary password.
-                    </p>
-                  </div>
-                  <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                    <label for="password" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                      Password
-                    </label>
-                    <div class="mt-1 sm:mt-0 sm:col-span-2">
-                      <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input v-model="formWebAccess.password" type="password" name="password" id="password" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
-                      </div>
-                    </div>
-                  </div>
                   <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                    <label for="password-c" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                      Password Confirmation
+                    <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Username
                     </label>
                     <div class="mt-1 sm:mt-0 sm:col-span-2">
                       <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input v-model="formWebAccess.passwordConfirmation" type="password" name="password-c" id="password-c" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <input @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="flex">
-                  <div class="ml-auto py-5">
-                    <div class="space-x-3">
-                      <button @click="previousStep()" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
-                        Previous
-                      </button>
+              </div>
 
-                      <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
-                        {{ formContacts.user_types.findIndex((type) => type === 'USSD') !== -1 ? 'Next: USSD Credentials' : 'Save User' }}
-                      </button>
+              <div class="flex flex-col border-b mt-4 pt-3 pb-8 space-y-2">
+                <div>
+                  <h3 class="text-base leading-6 font-medium text-gray-900">
+                    Temporary Password
+                  </h3>
+                  <p class="mt-1 max-w-2xl text-xs text-gray-500">
+                    Set temporary password.
+                  </p>
+                </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label for="password" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                    Password
+                  </label>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex rounded-md shadow-sm">
+                      <input v-model="formWebAccess.password" type="password" name="password" id="password" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                  <label for="password-c" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                    Password Confirmation
+                  </label>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex rounded-md shadow-sm">
+                      <input v-model="formWebAccess.passwordConfirmation" type="password" name="password-c" id="password-c" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex">
+                <div class="ml-auto py-5">
+                  <div class="space-x-3">
+                    <button @click="previousStep()" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
+                      Previous
+                    </button>
 
-              </form>
-            </div>
+                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+                      {{ formContacts.user_types.findIndex((type) => type === 'USSD') !== -1 ? 'Next: USSD Credentials' : 'Save User' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </form>
           </transition>
           <!--            step 3-->
           <transition
@@ -574,103 +571,100 @@ async function setupFormUSSDAccess() {
               leave-class="transform opacity-100 translate-x-0"
               leave-to-class="transform opacity-0 translate-x-full"
           >
-            <div v-if="currentStep === 3" class="flex flex-col min-h-screen">
-              <form @submit.prevent="setupFormUSSDAccess">
+            <form v-if="currentStep === 3" @submit.prevent="setupFormUSSDAccess" class="flex flex-col min-h-screen">
 
-                <div class="flex flex-col pb-2 mt-6">
-                  <div>
-                    <h3 class="text-base leading-6 font-medium text-gray-900">
-                      Set USSD Credentials
-                    </h3>
-                    <p class="mt-1 text-xs text-gray-500">Credentials to access ussd interface</p>
-                  </div>
-                  <div class="flex flex-col mt-6 sm:mt-5  space-y-2">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                      <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Full names
-                      </label>
-                      <div class="mt-1 sm:mt-0 sm:col-span-2">
-                        <div class="max-w-lg flex">
+              <div class="flex flex-col pb-2 mt-6">
+                <div>
+                  <h3 class="text-base leading-6 font-medium text-gray-900">
+                    Set USSD Credentials
+                  </h3>
+                  <p class="mt-1 text-xs text-gray-500">Credentials to access ussd interface</p>
+                </div>
+                <div class="flex flex-col mt-6 sm:mt-5  space-y-2">
+                  <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                    <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Full names
+                    </label>
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                      <div class="max-w-lg flex">
                             <span class="font-semibold block w-full underline" >
                               {{ formContacts.firstName }} {{ formContacts.lastName }}
                             </span>
-                        </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                      <label for="phonex" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Phone number
-                      </label>
-                      <div class="mt-1 sm:mt-0 sm:col-span-2">
-                        <div class="max-w-lg relative rounded-md shadow-sm">
-                          <div class="absolute inset-y-0 left-0 flex items-center">
-                            <label for="country" class="sr-only">Country</label>
-                            <select id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                              <option>KE</option>
-                            </select>
-                          </div>
-                          <input @change="setQuery($event)" type="text" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex flex-col border-b mt-4 pt-3 pb-8 space-y-2">
-                  <div>
-                    <h3 class="text-base leading-6 font-medium text-gray-900">
-                      Temporary Pin
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-xs text-gray-500">
-                      Set temporary Pin.
-                    </p>
-                  </div>
-                  <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                    <div>
-                      <label for="pin" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Pin
-                      </label>
-                      <p class="mt-2 text-xs text-gray-500">Maximum of 4 numbers</p>
-                    </div>
-                    <div class="mt-1 sm:mt-0 sm:col-span-2">
-                      <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" autocomplete="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
-                      </div>
-                    </div>
-                  </div>
                   <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                    <div>
-                      <label for="pin-c" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                        Pin Confirmation
-                      </label>
-                      <p class="mt-2 text-xs text-gray-500">Ensure it matches the pin above</p>
-                    </div>
+                    <label for="phonex" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Phone number
+                    </label>
                     <div class="mt-1 sm:mt-0 sm:col-span-2">
-                      <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" autocomplete="pin-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <div class="max-w-lg relative rounded-md shadow-sm">
+                        <div class="absolute inset-y-0 left-0 flex items-center">
+                          <label for="country" class="sr-only">Country</label>
+                          <select id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                            <option>KE</option>
+                          </select>
+                        </div>
+                        <input @change="setQuery($event)" type="text" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div class="flex">
-                  <div class="ml-auto py-5">
-                    <div class="space-x-3">
-                      <button @click="$router.push('/admin/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
-                        Cancel
-                      </button>
-
-                      <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
-                        Next: Assign Roles
-                      </button>
+              <div class="flex flex-col border-b mt-4 pt-3 pb-8 space-y-2">
+                <div>
+                  <h3 class="text-base leading-6 font-medium text-gray-900">
+                    Temporary Pin
+                  </h3>
+                  <p class="mt-1 max-w-2xl text-xs text-gray-500">
+                    Set temporary Pin.
+                  </p>
+                </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <div>
+                    <label for="pin" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Pin
+                    </label>
+                    <p class="mt-2 text-xs text-gray-500">Maximum of 4 numbers</p>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex rounded-md shadow-sm">
+                      <input v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" autocomplete="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                  <div>
+                    <label for="pin-c" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Pin Confirmation
+                    </label>
+                    <p class="mt-2 text-xs text-gray-500">Ensure it matches the pin above</p>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex rounded-md shadow-sm">
+                      <input v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" autocomplete="pin-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-              </form>
+              <div class="flex">
+                <div class="ml-auto py-5">
+                  <div class="space-x-3">
+                    <button @click="$router.push('/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
+                      Cancel
+                    </button>
 
-            </div>
+                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+                      Next: Assign Roles
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </form>
           </transition>
           <!--            step 4-->
           <transition
@@ -681,7 +675,7 @@ async function setupFormUSSDAccess() {
               leave-class="transform opacity-100 translate-x-0"
               leave-to-class="transform opacity-0 translate-x-full"
           >
-            <div v-if="currentStep === 4" class="flex flex-col min-h-screen">
+            <div v-if="currentStep === 4" class="flex flex-col min-h-screen pb-16">
 
               <div>
                 <h3 class="text-base leading-6 font-medium text-gray-900 border-t pt-4 mt-6">
@@ -742,7 +736,7 @@ async function setupFormUSSDAccess() {
                 <div class="flex">
                   <div class="ml-auto py-6">
                     <div class="space-x-3">
-                      <button @click="$router.push('/admin/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
+                      <button @click="$router.push('/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
                         Cancel
                       </button>
 

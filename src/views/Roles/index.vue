@@ -5,6 +5,8 @@
   import {useStore} from "vuex";
   const store = useStore()
 
+  const loading = ref(<boolean> false)
+
   const lots = ref(<number[]>[10, 50, 100])
 
   const pageCountOpen = ref(<boolean>false)
@@ -59,7 +61,7 @@
       description: ''
     }
   ])
-
+  loading.value = true
   getRoles()
     .then((data: { totalRecords: number, totalPages: number, currentPage: number, records: { id: string, keycloakRoleId: string, name: string, roleType: string, description: string }[] }) => {
       totalRecords.value = data.totalRecords
@@ -71,7 +73,9 @@
       all_roles.value = data.records
     }).catch((e: any) => {
       alert(e.message)
-    })
+    }).finally(() => {
+      loading.value = false
+  })
 
   async function reFetch() {
     try {
@@ -105,12 +109,15 @@
 
   const roleSync = async () => {
     try {
+      loading.value = true
       await syncServices()
       const response: any = await syncRoles()
       await store.dispatch("defineNotification", { message: response.message, success: true })
       await reFetch()
     } catch (e: any) {
       await store.dispatch("defineNotification", { message: e.message, error: true })
+    } finally {
+      loading.value = false
     }
   }
 
@@ -120,7 +127,7 @@
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
-          <button @click="$router.push('/admin/roles/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+          <button @click="$router.push('/roles/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
             Add roles
           </button>
           <div class="relative z-0 inline-flex shadow-sm rounded-md ml-auto">
@@ -135,7 +142,7 @@
               <input type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
             </div>
             <button @click="roleSync" type="button" class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
               </svg>
             </button>
@@ -164,25 +171,25 @@
             <tbody>
             <tr v-if="all_roles.length > 0" v-for="(role,i) in all_roles" :key="i" :class="{'bg-white' : i % 2 === 0, 'bg-gray-50' : i % 2 !== 0 }">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                <router-link :to="`/admin/roles/${role.keycloakRoleId}`">
+                <router-link :to="`/roles/${role.keycloakRoleId}`">
                   <span v-if="role.name === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                   {{ role.name }}
                 </router-link>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <router-link :to="`/admin/roles/${role.keycloakRoleId}`">
+                <router-link :to="`/roles/${role.keycloakRoleId}`">
                   <span v-if="role.roleType === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                   {{ role.roleType }}
                 </router-link>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <router-link :to="`/admin/roles/${role.keycloakRoleId}`">
+                <router-link :to="`/roles/${role.keycloakRoleId}`">
                   <span v-if="role.description === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                   {{ role.description }}
                 </router-link>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <router-link :to="`/admin/roles/${role.keycloakRoleId}/edit`" class="text-blue-600 hover:text-blue-900">
+                <router-link :to="`/roles/${role.keycloakRoleId}/edit`" class="text-blue-600 hover:text-blue-900">
                   <span v-if="role.description === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                   <span v-else>Edit</span>
                 </router-link>

@@ -31,15 +31,11 @@ const setWidth = ref(true)
       <div class="flex-grow flex flex-col">
 
         <nav class="flex-1 px-2 space-y-1 bg-white" aria-label="Sidebar">
-
-
           <div>
-            <router-link to="/admin/dashboard" class="text-gray-900 group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-gray-900" >
+            <router-link to="/dashboard" class="text-gray-900 group w-full flex items-center pl-7 pr-2 py-2 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-gray-900" >
               Dashboard
             </router-link>
           </div>
-
-
           <div class="space-y-1">
             <button type="button" class="bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-controls="sub-menu-1" @click="open0 = !open0" aria-expanded="false">
               <svg class="mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150 text-gray-300" viewBox="0 0 20 20" aria-hidden="true" :class="{ 'text-gray-400 rotate-90': open0, 'text-gray-300': !(open0) }">
@@ -49,11 +45,11 @@ const setWidth = ref(true)
             </button>
             <div :class="{'block' : open0, 'hidden' : !open0 }" class="space-y-1" id="sub-menu-1" >
 
-              <router-link to="/admin/users" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
+              <router-link to="/users" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
                 Users
               </router-link>
 
-              <router-link to="/admin/roles" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
+              <router-link to="/roles" class="group w-full flex items-center pl-10 pr-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
                 Roles
               </router-link>
 

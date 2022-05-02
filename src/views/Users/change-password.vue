@@ -62,12 +62,12 @@
       }
       const response = await passChange(payload)
       await defineNotification( { message: "Password Change Successful", success: true })
-      await router.push(`/admin/users/${route.params.id}`)
+      await router.push(`/users/${route.params.id}`)
     } catch (e: any) {
       alert(e.message)
     } finally {
       loading.value = false
-      await router.push(`/admin/users/${route.params.id}`)
+      await router.push(`/users/${route.params.id}`)
     }
   }
 </script>
@@ -83,7 +83,7 @@
 
                 <li>
                   <div class="flex items-center">
-                    <router-link :to="`/admin/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+                    <router-link :to="`/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
                   </div>
                 </li>
 

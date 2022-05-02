@@ -6,7 +6,7 @@
 
   const route = useRoute()
 
-  const allUsers = ref(<{ isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[]>[])
+  const allUsers = ref(<{ isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[]>[])
 
   const totalRecords = ref(<number>0)
 
@@ -60,9 +60,13 @@
     refresh()
   }
 
+  const loading = ref(<boolean> false)
+
   const syncData = async () => {
+    loading.value = true
     await syncUsers()
     await refresh()
+    loading.value = false
   }
 
   const refresh = async () => {
@@ -75,13 +79,14 @@
           firstName: '',
           lastName: '',
           phoneNumber: '',
+          ussdPhoneNumber: '',
           id: ''
         }
       ]
 
       const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
 
-      const data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }[] } = await getUsers(query.value)
+      const data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[] } = await getUsers(query.value)
 
       console.log("all users", data)
       totalRecords.value = data.totalRecords
@@ -105,7 +110,7 @@
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
-          <button @click="$router.push('/admin/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+          <button @click="$router.push('/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
             Add user
           </button>
           <div class="relative flex-none z-0 inline-flex rounded-md ml-auto">
@@ -120,7 +125,7 @@
               <input type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
             </div>
             <button @click="syncData" type="button" class="shadow-sm relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
               </svg>
             </button>
@@ -136,13 +141,16 @@
                 Name
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Username
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                USSD
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Web Access
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                USSD Access
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
@@ -155,27 +163,33 @@
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="allUsers.length > 0" v-for="(user) in allUsers" :key="user.id">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  <router-link :to="`/admin/users/${user.id}`">
+                  <router-link :to="`/users/${user.id}`">
                     <span v-if="user.firstName === '' && user.lastName === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
                     {{ user.firstName }} {{ user.lastName }}
                   </router-link>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <router-link :to="`/admin/users/${user.id}`">
-                    <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                    {{ user.phoneNumber }}
-                  </router-link>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <router-link :to="`/admin/users/${user.id}`">
-                    <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
-                    {{ user.email }}
-                  </router-link>
-                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 lowercase">
-                  <router-link :to="`/admin/users/${user.id}`">
+                  <router-link :to="`/users/${user.id}`">
                     <span v-if="user.username === ''" class="h-4 w-8 bg-gray-400 block rounded animate-pulse"></span>
                     {{ user.username }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <router-link :to="`/users/${user.id}`">
+                    <span v-if="user.phoneNumber === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                    {{ user.ussdPhoneNumber ? user.ussdPhoneNumber : '' }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <router-link :to="`/users/${user.id}`">
+                    <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                    <span v-else>Yes</span>
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <router-link :to="`/users/${user.id}`">
+                    <span v-if="user.email === ''" class="h-4 w-12 bg-gray-400 block rounded animate-pulse"></span>
+                    <span v-else>{{ user.ussdPhoneNumber ? 'Yes' : 'No' }}</span>
                   </router-link>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -187,7 +201,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                  <router-link v-if="user.id" :to="`/admin/users/${user.id}`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
+                  <router-link v-if="user.id" :to="`/users/${user.id}`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
                 </td>
               </tr>
               <tr v-else>

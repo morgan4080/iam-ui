@@ -45,7 +45,7 @@ getRoles().then(({ totalRecords }) => {
               <router-link to="/admin/roles" class="flex text-blue-600"><span class="pr-3">Roles:</span>  {{ roleCount }}</router-link>
             </div>
           </div>
-          <div class="ml-3 mt-4 text-sm block ">
+          <div class="ml-3 mt-4 text-sm block hidden">
             <div class="font-normal border-b border-gray-200 py-2">Best practices</div>
             <div class="text-xs pt-3 opacity-75 flex space-x-16">
               <ul class="space-y-1 list-disc list-inside" role="list">

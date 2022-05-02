@@ -57,7 +57,7 @@
     try {
       const response = await createRole(form.value)
       await store.dispatch("defineNotification", { message: response.message, success: true })
-      await router.push('/admin/roles')
+      await router.push('/roles')
     } catch (e: any) {
       await store.dispatch("defineNotification", { message: e.message, error: true })
     } finally {

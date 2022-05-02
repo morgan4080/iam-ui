@@ -62,7 +62,7 @@
       loading.value = true
       const { messages } = await store.dispatch("assignRoles", { userRefId: userId.value, payload: form.value })
       await store.dispatch("defineNotification", { message: messages[0].message, success: true })
-      await router.push(`/admin/users/${route.params.id}`)
+      await router.push(`/users/${route.params.id}`)
     } catch (e: any) {
       alert(e.message)
     } finally {
@@ -83,7 +83,7 @@
 
                   <li>
                     <div class="flex items-center">
-                      <router-link :to="`/admin/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+                      <router-link :to="`/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
                     </div>
                   </li>
 

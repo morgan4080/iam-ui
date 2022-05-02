@@ -20,6 +20,7 @@ const userData = ref({
   isEnabled: '',
   keycloakId: '',
   phoneNumber: '',
+  ussdPhoneNumber: '',
   tenantId: '',
   userAssignedRolesId: [],
   userType: '',
@@ -32,15 +33,15 @@ getUser(route)
     ...userData.value,
     ...user
   }
-  userData.value.phoneNumber =  user.phoneNumber
-  form.value.phoneNumber = user.phoneNumber
+  userData.value.ussdPhoneNumber =  user.ussdPhoneNumber
+  form.value.ussdPhoneNumber = user.ussdPhoneNumber
 }).catch((e: any) => {
   alert(e.message)
 })
-const form = ref(<any> {
+const form = ref(<{ pin: string,pinConfirmation: string, ussdPhoneNumber: string }> {
   pin: '',
   pinConfirmation: '',
-  phoneNumber: ''
+  ussdPhoneNumber: '',
 })
 
 async function changePin() {
@@ -51,15 +52,16 @@ async function changePin() {
   loading.value = true
   try {
     const payload = {
-      phoneNumber: form.value.phoneNumber,
-      pin: parseInt(form.value.pin)
+      "ussdPhoneNumberOrKeycloakId": userData.value.keycloakId,
+      "newUSSDPhoneNumber": form.value.ussdPhoneNumber,
+      "pin": form.value.pin,
     }
     const response = await pinChange(payload)
     console.log(response)
     form.value = {
       pin: '',
       pinConfirmation: '',
-      phoneNumber: ''
+      ussdPhoneNumber: ''
     }
     await defineNotification({ message: "Pin Change Successful", success: true })
     await router.push(`/admin/users/${route.params.id}`)
@@ -96,17 +98,17 @@ const validatePin = async (e: any) => {
 }
 
 const validatePhone = async (e: any) => {
-  let response = await verifyUnique(`?phoneNumber=${e.target.value}`)
+  let response = await verifyUnique(`?ussdPhoneNumber=${e.target.value}`)
 
   if (response !== 'unique') {
-    e.target.value = userData.value.phoneNumber
+    e.target.value = userData.value.ussdPhoneNumber
     e.target.classList.add('focus:ring-red-400')
     e.target.classList.add('focus:border-red-400')
     e.target.onblur = () => {
       e.target.classList.remove('focus:ring-red-400')
       e.target.classList.remove('focus:border-red-400')
     }
-    await defineNotification({ message: "Phone Number already taken", error: true })
+    await defineNotification({ message: "USSD Phone Number Number already taken", error: true })
   }
 }
 </script>
@@ -151,12 +153,12 @@ const validatePhone = async (e: any) => {
                 <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <div>
                     <label for="phone" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
-                      Phone number
+                      USSD Phone number
                     </label>
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input @input="validatePhone($event)" v-model.lazy="form.phoneNumber" type="text" name="phone" id="phone" autocomplete="phone" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePhone($event)" v-model.lazy="form.ussdPhoneNumber" type="text" name="phone" id="phone" autocomplete="phone" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>

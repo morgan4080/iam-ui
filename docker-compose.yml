@@ -1,0 +1,21 @@
+version: "3"
+services:
+  vite:
+    image: node:16.15.0
+    container_name: vite
+    working_dir: /var/local/app
+    volumes:
+      - .:/var/local/app
+    environment:
+      - HOST=0.0.0.0
+    command: /bin/sh -c "npm install && npm run dev"
+
+  proxy_nginx_vite:
+    image: nginx:1.20.2
+    volumes:
+      - ./.nginx/default.conf:/etc/nginx/conf.d/default.conf
+    container_name: proxy_nginx_vite
+    ports:
+      - "3000:80"
+    depends_on:
+      - vite

@@ -93,12 +93,12 @@ import {useRoute, useRouter} from "vue-router"
     store.dispatch("editTheUser", { payload, route }).then(async (response: any) => {
       console.log("edit response", response)
       await store.dispatch("defineNotification", { message: `User Edited successfully`, success: true })
-      await router.push(`/admin/users/${route.params.id}`)
+      await router.push(`/users/${route.params.id}`)
     }).catch((e: any) => {
       alert(e.message)
     }).finally(async () => {
       loading.value = false
-      await router.push(`/admin/users/${route.params.id}`)
+      await router.push(`/users/${route.params.id}`)
     })
 
   }
@@ -114,7 +114,7 @@ import {useRoute, useRouter} from "vue-router"
 
               <li>
                 <div class="flex items-center">
-                  <router-link :to="`/admin/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
+                  <router-link :to="`/users/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">User Profile</router-link>
                 </div>
               </li>
 

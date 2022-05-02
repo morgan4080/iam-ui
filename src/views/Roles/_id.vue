@@ -17,7 +17,7 @@
 
            <li>
              <div class="flex items-center">
-               <router-link :to="`/admin/roles/`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">Roles</router-link>
+               <router-link :to="`/roles/`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">Roles</router-link>
              </div>
            </li>
 
@@ -32,7 +32,7 @@
              </div>
            </li>
          </ol>
-         <button @click="$router.push(`/admin/roles/${role.keycloakRoleId}/edit`)" type="button" class="inline-flex justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+         <button @click="$router.push(`/roles/${role.keycloakRoleId}/edit`)" type="button" class="inline-flex justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
            Edit Role
            <svg class="ml-2 -mr-0.5 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
