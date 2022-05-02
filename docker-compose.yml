@@ -8,7 +8,7 @@ services:
       - .:/var/local/app
     environment:
       - HOST=0.0.0.0
-    command: /bin/sh -c "npm install && npm run dev"
+    command: /bin/sh -c "npm install && npm run production"
 
   proxy_nginx_vite:
     image: nginx:1.20.2

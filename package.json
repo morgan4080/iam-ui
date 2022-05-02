@@ -2,12 +2,13 @@
   "name": "prestaui",
   "version": "0.0.0",
   "scripts": {
-    "dev-build": "vue-tsc --noEmit && vite build --base=/admin/ --mode .env.local",
+    "dev-build": "vue-tsc --noEmit && vite build --base=/admin/ --mode local",
     "dev": "vite --base=/admin/ --host 0.0.0.0",
     "build": "vue-tsc --noEmit && vite build --base=/admin/",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.vue",
     "deploy": "vue-tsc --noEmit && vite build --base=/admin/",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "production": "vite --base=/admin/ --host 0.0.0.0  --mode production"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.2",
