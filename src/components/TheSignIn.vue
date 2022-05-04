@@ -25,7 +25,7 @@
       </div>
 
       <div class="text-sm">
-        <router-link to="/admin/password/reset" class="font-medium text-blue-600 hover:text-blue-500">
+        <router-link to="/password/reset" class="font-medium text-blue-600 hover:text-blue-500">
           Forgot your password?
         </router-link>
       </div>

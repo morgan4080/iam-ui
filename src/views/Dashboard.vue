@@ -41,8 +41,8 @@ getRoles().then(({ totalRecords }) => {
           </div>
           <div class="ml-3 mt-4 text-sm block ">
             <div class="text-xs opacity-75 flex space-x-16">
-              <router-link to="/admin/users" class="flex text-blue-600"><span class="pr-3">Users:</span>  {{ userCount }}</router-link>
-              <router-link to="/admin/roles" class="flex text-blue-600"><span class="pr-3">Roles:</span>  {{ roleCount }}</router-link>
+              <router-link to="/users" class="flex text-blue-600"><span class="pr-3">Users:</span>  {{ userCount }}</router-link>
+              <router-link to="/roles" class="flex text-blue-600"><span class="pr-3">Roles:</span>  {{ roleCount }}</router-link>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block hidden">

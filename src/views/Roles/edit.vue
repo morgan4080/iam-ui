@@ -110,7 +110,7 @@ const actionUpdateRole = async () => {
     const response = await updateRole(form.value)
     console.log(response)
     await store.dispatch("defineNotification", { message: response.messages[0].message, success: true })
-    await router.push(`/admin/roles`)
+    await router.push(`/roles`)
   } catch (e: any) {
     await store.dispatch("defineNotification", { message: e.message, error: true })
   } finally {
@@ -129,7 +129,7 @@ const actionUpdateRole = async () => {
 
                 <li>
                   <div class="flex items-center">
-                    <router-link :to="`/admin/roles/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">Role</router-link>
+                    <router-link :to="`/roles/${route.params.id}`" class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate" style="color: #9e9e9e">Role</router-link>
                   </div>
                 </li>
 
