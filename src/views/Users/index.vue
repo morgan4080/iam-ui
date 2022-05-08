@@ -84,7 +84,7 @@
         }
       ]
 
-      const query = ref(<string>`?order=ASC&sort=ASC&pageSize=${filterForm.recordsPerPage}`)
+      const query = ref(<string>`?${filterForm.searchTerm !== '' ?? 'searchTerm=' + filterForm.searchTerm + '&'}order=${filterForm.order}&sort=${filterForm.order}&pageSize=${filterForm.recordsPerPage}`)
 
       const data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[] } = await getUsers(query.value)
 
@@ -117,12 +117,12 @@
             <div class="relative h-8 rounded-md mr-2 shadow-sm">
               <div class="absolute inset-y-0 left-0 flex items-center">
                 <label for="filter" class="sr-only">Filter</label>
-                <select id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md text-sm">
-                  <option>ASC</option>
-                  <option>DESC</option>
+                <select @change="refresh()" v-model="filterForm.order" id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md text-sm">
+                  <option value="ASC">ASC</option>
+                  <option value="DESC">DESC</option>
                 </select>
               </div>
-              <input type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
+              <input @change="refresh()" v-model="filterForm.searchTerm" type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
             </div>
             <button @click="syncData" type="button" class="shadow-sm relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
               <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

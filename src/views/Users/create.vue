@@ -154,6 +154,7 @@ const saveUser = async (rolesPayload: string[]) => {
       },
       webCredentials: formWebAccess.value,
       ussdCredentials: formUSSDAccess.value,
+      activateLogIn: true,
       enabled: true,
       userTypes: formContacts.value.user_types,
       userRoleIds: rolesPayload,
@@ -189,6 +190,7 @@ const saveUser = async (rolesPayload: string[]) => {
         ...formUSSDAccess.value,
         phoneNumber: `254${formUSSDAccess.value.phoneNumber}`,
       },
+      activateLogIn: false,
       enabled: true,
       userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,
@@ -215,6 +217,7 @@ const saveUser = async (rolesPayload: string[]) => {
         phone: `254${formContacts.value.phoneNumber}`
       },
       webCredentials: formWebAccess.value,
+      activateLogIn: false,
       enabled: true,
       userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,

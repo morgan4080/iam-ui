@@ -21,6 +21,7 @@
     phoneNumber: '',
     ussdPhoneNumber: '',
     tenantId: '',
+    isUSSDDisabled: true,
     userAssignedRolesId: [],
     pinStatus: '',
     username: ''
@@ -30,25 +31,29 @@
 
   const loading = ref(<boolean> false)
 
-  getUser(route)
-    .then((data) => {
-      const { user } = data
-      userData.value = {
-        ...userData.value,
-        ...user
-      }
-      console.log("user data value", userData.value)
-      return user
-    })
-    .then((user: any) => {
-      return getUsersRoles(user.keycloakId)
-    })
-    .then((roles: any) => {
-      userRoles.value = roles.data
-    })
-    .catch((e: any) => {
-      alert(e.message)
-    })
+  const fetchUserData = () => {
+    getUser(route)
+        .then((data) => {
+          const { user } = data
+          userData.value = {
+            ...userData.value,
+            ...user
+          }
+          console.log("user data value", userData.value)
+          return user
+        })
+        .then((user: any) => {
+          return getUsersRoles(user.keycloakId)
+        })
+        .then((roles: any) => {
+          userRoles.value = roles.data
+        })
+        .catch((e: any) => {
+          alert(e.message)
+        })
+  }
+
+  fetchUserData()
 
   const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
 
@@ -95,6 +100,7 @@
         const response = await userEnable(payload)
         console.log(response)
         await store.dispatch("defineNotification", { message: "User Account Enabled", success: true })
+        fetchUserData()
       } catch (e: any) {
         console.log("enableUser error", e)
         await store.dispatch("defineNotification", { message: "User Enable Error", error: true })
@@ -115,6 +121,7 @@
         const response = await userDisable(payload)
         console.log(response)
         await store.dispatch("defineNotification", { message: "User Account Disabled", success: true })
+        fetchUserData()
       } catch (e: any) {
         console.log("disableUser error", e)
         await store.dispatch("defineNotification", { message: "User Disable Error", error: true })
@@ -254,6 +261,14 @@
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900">
                   {{ userData.ussdPhoneNumber }}
+                </dd>
+              </div>
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">
+                  USSD Status
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  {{ userData.isUSSDDisabled === true ? 'Disabled' : 'Enabled' }}
                 </dd>
               </div>
               <div class="sm:col-span-1">
