@@ -45,7 +45,7 @@ const store = createStore({
                     warning: false,
                     error: false,
                 }
-            }, 20000)
+            }, 10000)
         },
 
     },

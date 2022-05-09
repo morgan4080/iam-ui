@@ -90,7 +90,7 @@
   }
 
   const enableUser = async () => {
-    if (confirm(`You are about to disable user ${userData.value.firstName}`)) {
+    if (confirm(`You are about to enable user ${userData.value.firstName}`)) {
       loading.value = true
       try {
         const payload: {userRefId: string | any, isEnabled: boolean}  = {

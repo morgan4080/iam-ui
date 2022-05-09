@@ -84,8 +84,8 @@
         }
       ]
 
-      const query = ref(<string>`?${filterForm.searchTerm !== '' ?? 'searchTerm=' + filterForm.searchTerm + '&'}order=${filterForm.order}&sort=${filterForm.order}&pageSize=${filterForm.recordsPerPage}`)
-
+      const query = ref(<string>`?${filterForm.searchTerm !== '' ? 'searchTerm=' + filterForm.searchTerm + '&': ''}order=${filterForm.order}&sort=${filterForm.order}&pageSize=${filterForm.recordsPerPage}`)
+      console.log('query', query)
       const data: { totalRecords: number, totalPages: number, currentPage: number, records: { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[] } = await getUsers(query.value)
 
       console.log("all users", data)
