@@ -48,6 +48,10 @@ const formWebAccess = ref(<{ username: string, password?: string, passwordConfir
   passwordConfirmation: ''
 })
 
+type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
+
+const formPinStatus = ref(<PinStates> "SET")
+
 const formUSSDAccess = ref(<{ phoneNumber: string, pin?: string, pinConfirmation?: string }> {
   phoneNumber: '',
   pin: '',
@@ -154,6 +158,7 @@ const saveUser = async (rolesPayload: string[]) => {
       },
       webCredentials: formWebAccess.value,
       ussdCredentials: formUSSDAccess.value,
+      pinStatus: formPinStatus,
       activateLogIn: true,
       enabled: true,
       userTypes: formContacts.value.user_types,
@@ -191,6 +196,7 @@ const saveUser = async (rolesPayload: string[]) => {
         phoneNumber: `254${formUSSDAccess.value.phoneNumber}`,
       },
       activateLogIn: false,
+      pinStatus: formPinStatus,
       enabled: true,
       userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,
@@ -219,6 +225,7 @@ const saveUser = async (rolesPayload: string[]) => {
       webCredentials: formWebAccess.value,
       activateLogIn: false,
       enabled: true,
+      pinStatus: null,
       userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,
     }
@@ -361,6 +368,14 @@ async function setupFormUSSDAccess() {
     currentStep.value = 4
   } else {
     await defineNotification( { message: `Pins don't match`, error: true })
+  }
+}
+
+const setPinStatus = (e: any): void => {
+  if (e.target.checked) {
+    formPinStatus.value = "TEMPORARY"
+  } else {
+    formPinStatus.value = "SET"
   }
 }
 </script>
@@ -626,6 +641,22 @@ async function setupFormUSSDAccess() {
                   </p>
                 </div>
                 <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <div>
+                    <label for="pinStatus" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Pin Status
+                    </label>
+                    <p class="mt-2 text-xs text-gray-500">Default is SET.</p>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex items-center rounded-md shadow-sm">
+                      <div class="flex-1 flex items-center h-12">
+                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" autocomplete="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <p class="text-xs text-gray-500 ml-2">Set as temporary</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
                   <div>
                     <label for="pin" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                       Pin

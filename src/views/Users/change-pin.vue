@@ -26,6 +26,11 @@ const userData = ref({
   userType: '',
   username: ''
 })
+
+type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
+
+const formPinStatus = ref(<PinStates> "SET")
+
 getUser(route)
 .then((data) => {
   const { user } = data
@@ -54,6 +59,7 @@ async function changePin() {
     const payload = {
       "ussdPhoneNumberOrKeycloakId": userData.value.keycloakId,
       "newUSSDPhoneNumber": form.value.ussdPhoneNumber,
+      "pinStatus": formPinStatus,
       "pin": form.value.pin,
     }
     const response = await pinChange(payload)
@@ -111,6 +117,14 @@ const validatePhone = async (e: any) => {
     await defineNotification({ message: "USSD Phone Number Number already taken", error: true })
   }
 }
+
+const setPinStatus = (e: any): void => {
+  if (e.target.checked) {
+    formPinStatus.value = "TEMPORARY"
+  } else {
+    formPinStatus.value = "SET"
+  }
+}
 </script>
 <template>
 
@@ -159,6 +173,22 @@ const validatePhone = async (e: any) => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input @input="validatePhone($event)" v-model.lazy="form.ussdPhoneNumber" type="text" name="phone" id="phone" autocomplete="phone" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <div>
+                    <label for="pinStatus" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Pin Status
+                    </label>
+                    <p class="mt-2 text-xs text-gray-500">Default is SET.</p>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex items-center rounded-md shadow-sm">
+                      <div class="flex-1 flex items-center h-12">
+                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" autocomplete="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <p class="text-xs text-gray-500 ml-2">Set as temporary</p>
+                      </div>
                     </div>
                   </div>
                 </div>
