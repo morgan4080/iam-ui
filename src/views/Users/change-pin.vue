@@ -186,7 +186,7 @@ const setPinStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" autocomplete="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" autocomplete="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300">
                         <p class="text-xs text-gray-500 ml-2">Set as temporary</p>
                       </div>
                     </div>
