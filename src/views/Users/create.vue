@@ -473,7 +473,7 @@ const setPinStatus = (e: any): void => {
                               <option value="254">KE</option>
                             </select>
                           </div>
-                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" type="text" id="phone-number" v-model.lazy="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" type="number" id="phone-number" v-model.lazy="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
                         </div>
                       </div>
                     </div>
@@ -629,7 +629,7 @@ const setPinStatus = (e: any): void => {
                             <option value="254">KE</option>
                           </select>
                         </div>
-                        <input @change="setQuery($event)" type="text" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                        <input @change="setQuery($event)" type="number" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                       </div>
                     </div>
                   </div>
