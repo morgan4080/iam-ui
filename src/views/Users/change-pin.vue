@@ -59,7 +59,7 @@ async function changePin() {
     const payload = {
       "ussdPhoneNumberOrKeycloakId": userData.value.keycloakId,
       "newUSSDPhoneNumber": form.value.ussdPhoneNumber,
-      "pinStatus": formPinStatus,
+      "pinStatus": formPinStatus.value,
       "pin": form.value.pin,
     }
     const response = await pinChange(payload)
@@ -72,7 +72,7 @@ async function changePin() {
     await defineNotification({ message: "Pin Change Successful", success: true })
     await router.push(`/users/${route.params.id}`)
   } catch (e: any) {
-    alert(e.message)
+    await defineNotification({ message: e.messages, error: true })
   } finally {
     loading.value = false
     await router.push(`/users/${route.params.id}`)
@@ -160,7 +160,7 @@ const setPinStatus = (e: any): void => {
                   Change pin
                 </h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                  Provide a new pin for user <span class="font-bold"> {{ userData.username }}</span>
+                  Provide a new pin for <span class="font-bold"> {{ userData.firstName }} {{ userData.lastName }}</span>
                 </p>
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">

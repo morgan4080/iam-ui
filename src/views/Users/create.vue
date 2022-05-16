@@ -158,7 +158,7 @@ const saveUser = async (rolesPayload: string[]) => {
       },
       webCredentials: formWebAccess.value,
       ussdCredentials: formUSSDAccess.value,
-      pinStatus: formPinStatus,
+      pinStatus: formPinStatus.value,
       activateLogIn: true,
       enabled: true,
       userTypes: formContacts.value.user_types,
@@ -196,7 +196,7 @@ const saveUser = async (rolesPayload: string[]) => {
         phoneNumber: `254${formUSSDAccess.value.phoneNumber}`,
       },
       activateLogIn: false,
-      pinStatus: formPinStatus,
+      pinStatus: formPinStatus.value,
       enabled: true,
       userTypes: [...new Set(formContacts.value.user_types)],
       userRoleIds: rolesPayload,
@@ -289,6 +289,11 @@ const byIdentifier = async () => {
   query.value = `?`
 
   return response === 'unique';
+}
+
+const setCountryCode = (e: any, context: string = 'contact'): void => {
+  if (context === 'contact') formContacts.value.phoneNumber = `${e.target.value}${formContacts.value.phoneNumber}`
+  if (context === 'ussd') formUSSDAccess.value.phoneNumber = `${e.target.value}${formUSSDAccess.value.phoneNumber}`
 }
 
 const setQuery = async (e: any) => {
@@ -464,8 +469,8 @@ const setPinStatus = (e: any): void => {
                         <div class="mt-1 relative rounded-md shadow-sm">
                           <div class="absolute inset-y-0 left-0 flex items-center">
                             <label for="country" class="sr-only">Country</label>
-                            <select id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                              <option>KE</option>
+                            <select @change="setCountryCode($event)" id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                              <option value="254">KE</option>
                             </select>
                           </div>
                           <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" type="text" id="phone-number" v-model.lazy="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
@@ -620,8 +625,8 @@ const setPinStatus = (e: any): void => {
                       <div class="max-w-lg relative rounded-md shadow-sm">
                         <div class="absolute inset-y-0 left-0 flex items-center">
                           <label for="country" class="sr-only">Country</label>
-                          <select id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                            <option>KE</option>
+                          <select @change="setCountryCode($event, 'ussd')" id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                            <option value="254">KE</option>
                           </select>
                         </div>
                         <input @change="setQuery($event)" type="text" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
