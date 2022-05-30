@@ -20,7 +20,7 @@
 
   const totalPages = ref(<number>0)
 
-  const currentPage = ref(<number>0)
+  const currentPage = ref(<number>1)
 
   const filterForm = reactive({
     recordsPerPage: 10,
