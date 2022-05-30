@@ -38,7 +38,7 @@ const formContacts = ref(<form1Interface>{
   firstName: '',
   lastName: '',
   email: '',
-  phoneNumber: '',
+  phoneNumber: '254',
   user_types: [],
 })
 
@@ -53,7 +53,7 @@ type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
 const formPinStatus = ref(<PinStates> "SET")
 
 const formUSSDAccess = ref(<{ phoneNumber: string, pin?: string, pinConfirmation?: string }> {
-  phoneNumber: '',
+  phoneNumber: '254',
   pin: '',
   pinConfirmation: ''
 })
@@ -292,49 +292,83 @@ const byIdentifier = async () => {
 }
 
 const setCountryCode = (e: any, context: string = 'contact'): void => {
-  if (context === 'contact') formContacts.value.phoneNumber = `${e.target.value}${formContacts.value.phoneNumber}`
-  if (context === 'ussd') formUSSDAccess.value.phoneNumber = `${e.target.value}${formUSSDAccess.value.phoneNumber}`
+  if (context === 'contact') {
+    if (formContacts.value.phoneNumber !== e.target.value) {
+      formContacts.value.phoneNumber = `${e.target.value}${formContacts.value.phoneNumber}`;
+    }
+  }
+  if (context === 'ussd') {
+    if (formUSSDAccess.value.phoneNumber !== e.target.value) {
+      formUSSDAccess.value.phoneNumber = `${e.target.value}${formUSSDAccess.value.phoneNumber}`;
+    }
+  }
 }
 
 const setQuery = async (e: any) => {
   if (e.target.id === 'email') {
-    qrObject.phoneNumber = ''
-    qrObject.email = formContacts.value.email
-    qrObject.username = ''
+    qrObject.phoneNumber = '';
+    qrObject.email = formContacts.value.email;
+    qrObject.username = '';
   }
   if (e.target.id === 'phone-number') {
-    qrObject.phoneNumber = formContacts.value.phoneNumber
-    qrObject.email = ''
-    qrObject.username = ''
+    qrObject.phoneNumber = formContacts.value.phoneNumber;
+    qrObject.email = '';
+    qrObject.username = '';
   }
   if (e.target.id === 'phone-number') {
-    qrObject.phoneNumber = formContacts.value.phoneNumber
-    qrObject.email = ''
-    qrObject.username = ''
+    if (e.target.value.length > 12) {
+      e.target.classList.add('focus:ring-red-400')
+      e.target.classList.add('focus:border-red-400')
+      e.target.onblur = () => {
+        e.target.classList.remove('focus:ring-red-400')
+        e.target.classList.remove('focus:border-red-400')
+      }
+      e.target.value = e.target.value.slice(0, 4)
+      await defineNotification({ message: "No more than 12 characters", error: true })
+    }
+    qrObject.phoneNumber = formContacts.value.phoneNumber;
+    qrObject.email = '';
+    qrObject.username = '';
   }
   if (e.target.id === 'phonex') {
-    let response0 = await verifyUnique(`?phoneNumber=${formUSSDAccess.value.phoneNumber}`)
+    if (e.target.value.length > 12) {
+      e.target.classList.add('focus:ring-red-400')
+      e.target.classList.add('focus:border-red-400')
+      e.target.onblur = () => {
+        e.target.classList.remove('focus:ring-red-400')
+        e.target.classList.remove('focus:border-red-400')
+      }
+      e.target.value = e.target.value.slice(0, 4)
+      await defineNotification({ message: "No more than 12 characters", error: true })
+    }
+    let response0 = await verifyUnique(`?phoneNumber=${formUSSDAccess.value.phoneNumber}`);
     if (response0 !== 'unique') {
-      formUSSDAccess.value.phoneNumber = ''
-      await defineNotification( { message: `User with that phone number already exists`, error: true })
+      formUSSDAccess.value.phoneNumber = '';
+      await defineNotification( { message: `User with that phone number already exists`, error: true });
     }
     return
   }
   if (e.target.id === 'username') {
-    qrObject.phoneNumber = ''
-    qrObject.email = ''
-    qrObject.username = formWebAccess.value.username
+    qrObject.phoneNumber = '';
+    qrObject.email = '';
+    qrObject.username = formWebAccess.value.username;
   }
 
-  let response = await byIdentifier()
+  let response = await byIdentifier();
 
   if (!response) {
     for (const [key, value] of Object.entries(qrObject)) {
       if (value) {
-        if (key === 'email') formContacts.value.email = ''
-        if (key === 'phoneNumber') formContacts.value.phoneNumber = ''
-        if (key === 'username') formWebAccess.value.username = ''
-        await defineNotification( { message: `User with that ${key} already exists`, error: true })
+        if (key === 'email') {
+          formContacts.value.email = '';
+        }
+        if (key === 'phoneNumber') {
+          formContacts.value.phoneNumber = '';
+        }
+        if (key === 'username') {
+          formWebAccess.value.username = '';
+        }
+        await defineNotification( { message: `User with that ${key} already exists`, error: true });
       }
     }
   }
