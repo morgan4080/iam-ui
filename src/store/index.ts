@@ -180,7 +180,8 @@ const store = createStore({
             })
         },
         passChange({ }, payload: any) {
-            const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/users/update-password'
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/update-password?notifyUser=${payload.notifyUser}`
+            delete payload.notifyUser
             const method = 'POST'
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
@@ -200,8 +201,10 @@ const store = createStore({
             })
         },
         pinChange({ }, payload: any) {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/auth/ussd/pin?notifyUser=${payload.notifyUser}`
+            delete payload.notifyUser
             return new Promise(async (resolve, reject) => {
-                const response = await fetch(import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/auth/ussd/pin", {
+                const response = await fetch( url, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -279,7 +282,8 @@ const store = createStore({
         },
         async postUser({}, payload: any): Promise<any> {
             try {
-                const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/v1/users'
+                const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users?notifyUser=${payload.notifyUser}`
+                delete payload.notifyUser
                 const method = 'POST'
                 let response = await fetch(url, {
                     method: method,
