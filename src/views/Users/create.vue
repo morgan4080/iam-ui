@@ -250,6 +250,7 @@ const saveUser = async (rolesPayload: string[]) => {
     await defineNotification( { message: response.messages[0].message, success: true })
     await router.push('/users')
   } catch (e: any) {
+    console.log("API error", e)
     await defineNotification( { message: e.message, error: true })
   } finally {
     loading.value = false
@@ -420,16 +421,10 @@ const setPinStatus = (e: any): void => {
   }
 }
 
-type NotificationStates = "true" | "false"
-
-const formNotificationStatus = ref(<NotificationStates> "true")
+const formNotificationStatus = ref(<boolean> true)
 
 const setNotificationStatus = (e: any): void => {
-  if (e.target.checked) {
-    formNotificationStatus.value = "true"
-  } else {
-    formNotificationStatus.value = "false"
-  }
+  formNotificationStatus.value = !!e.target.checked;
 }
 
 </script>
