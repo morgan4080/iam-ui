@@ -15,6 +15,18 @@
 
   const loading = ref(<boolean> false)
 
+  type NotificationStates = "TRUE" | "FALSE"
+
+  const formNotificationStatus = ref(<NotificationStates> "TRUE")
+
+  const setNotificationStatus = (e: any): void => {
+    if (e.target.checked) {
+      formNotificationStatus.value = "TRUE"
+    } else {
+      formNotificationStatus.value = "FALSE"
+    }
+  }
+
   const userData = ref({
     firstName: '',
     lastName: '',
@@ -54,7 +66,8 @@
         "userRefId": userData.value.id,
         "email": userData.value.email,
         "newPassword": form.value.password,
-        "confirmPassword": form.value.passwordConfirmation
+        "confirmPassword": form.value.passwordConfirmation,
+        "notificationStatus": formNotificationStatus.value
       }
       if (form.value.password !== form.value.passwordConfirmation) {
         await defineNotification( { message: "Passwords don't match", error: true })
@@ -109,6 +122,22 @@
                 </p>
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <div>
+                    <label for="notificationStatus" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Notify User On Pin Change
+                    </label>
+                    <p class="mt-2 text-xs text-gray-500">Default is set to notify.</p>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex items-center rounded-md shadow-sm">
+                      <div class="flex-1 flex items-center h-12">
+                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" autocomplete="notificationStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
+                        <p class="text-xs text-gray-500 ml-2">Notify User</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <label for="email" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                    Email
