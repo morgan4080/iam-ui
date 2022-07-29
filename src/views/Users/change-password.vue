@@ -67,7 +67,7 @@
         "email": userData.value.email,
         "newPassword": form.value.password,
         "confirmPassword": form.value.passwordConfirmation,
-        "notificationStatus": formNotificationStatus.value
+        "notifyUser": formNotificationStatus.value
       }
       if (form.value.password !== form.value.passwordConfirmation) {
         await defineNotification( { message: "Passwords don't match", error: true })

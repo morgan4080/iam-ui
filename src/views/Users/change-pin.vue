@@ -64,7 +64,7 @@ async function changePin() {
       "ussdPhoneNumberOrKeycloakId": userData.value.keycloakId,
       "newUSSDPhoneNumber": form.value.ussdPhoneNumber,
       "pinStatus": formPinStatus.value,
-      "notificationStatus": formNotificationStatus.value,
+      "notifyUser": formNotificationStatus.value,
       "pin": form.value.pin,
     }
     const response = await pinChange(payload)
