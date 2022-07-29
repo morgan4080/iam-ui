@@ -280,22 +280,20 @@ const store = createStore({
         async postUser({}, payload: any): Promise<any> {
             const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/v1/users'
             const method = 'POST'
-            return new Promise(async (resolve, reject) => {
-                let response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                })
-                const data = await response.json()
-
-                if (response.status !== 200) {
-                    reject(data)
-                } else {
-                    resolve(data)
-                }
+            let response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
             })
+            const data = await response.json()
+
+            if (response.status === 200) {
+                return Promise.resolve(data)
+            } else {
+                return Promise.reject(data)
+            }
         },
         getUser({ }, route: any ): Promise<any> {
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
