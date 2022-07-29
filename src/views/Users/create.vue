@@ -250,7 +250,6 @@ const saveUser = async (rolesPayload: string[]) => {
     await defineNotification( { message: e.message, error: true })
   } finally {
     loading.value = false
-    await router.push('/users')
   }
 }
 
@@ -421,7 +420,7 @@ const setPinStatus = (e: any): void => {
 
 <template>
   <div class="w-full max-h-screen overflow-y-scroll">
-    <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
+    <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9 pb-40">
       <div class="shadow sm:overflow-hidden">
         <div class="bg-white py-6 px-4 sm:p-6">
           <div>
@@ -566,7 +565,7 @@ const setPinStatus = (e: any): void => {
                     </label>
                     <div class="mt-1 sm:mt-0 sm:col-span-2">
                       <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <input @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                       </div>
                     </div>
                   </div>
@@ -588,7 +587,7 @@ const setPinStatus = (e: any): void => {
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formWebAccess.password" type="password" name="password" id="password" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="formWebAccess.password" type="password" name="password" id="password" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -598,7 +597,7 @@ const setPinStatus = (e: any): void => {
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formWebAccess.passwordConfirmation" type="password" name="password-c" id="password-c" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="formWebAccess.passwordConfirmation" type="password" name="password-c" id="password-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -689,7 +688,7 @@ const setPinStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" autocomplete="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300">
+                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300">
                         <p class="text-xs text-gray-500 ml-2">Set as temporary</p>
                       </div>
                     </div>
@@ -704,7 +703,7 @@ const setPinStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" autocomplete="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -717,7 +716,7 @@ const setPinStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" autocomplete="pin-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>

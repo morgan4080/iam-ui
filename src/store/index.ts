@@ -278,21 +278,25 @@ const store = createStore({
             })
         },
         async postUser({}, payload: any): Promise<any> {
-            const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/v1/users'
-            const method = 'POST'
-            let response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            })
-            const data = await response.json()
+            try {
+                const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/v1/users'
+                const method = 'POST'
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
 
-            if (response.status === 200) {
-                return Promise.resolve(data)
-            } else {
-                return Promise.reject(data)
+                if (response.status === 200) {
+                    const data = await response.json()
+                    return Promise.resolve(data)
+                } else {
+                    return Promise.reject(`${response.status}: API Error`)
+                }
+            } catch (e: any) {
+                return Promise.reject(e)
             }
         },
         getUser({ }, route: any ): Promise<any> {
