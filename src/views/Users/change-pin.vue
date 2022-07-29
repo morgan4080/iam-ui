@@ -29,7 +29,11 @@ const userData = ref({
 
 type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
 
+type NotificationStates = "TRUE" | "FALSE"
+
 const formPinStatus = ref(<PinStates> "SET")
+
+const formNotificationStatus = ref(<NotificationStates> "TRUE")
 
 getUser(route)
 .then((data) => {
@@ -60,6 +64,7 @@ async function changePin() {
       "ussdPhoneNumberOrKeycloakId": userData.value.keycloakId,
       "newUSSDPhoneNumber": form.value.ussdPhoneNumber,
       "pinStatus": formPinStatus.value,
+      "notificationStatus": formNotificationStatus.value,
       "pin": form.value.pin,
     }
     const response = await pinChange(payload)
@@ -125,6 +130,16 @@ const setPinStatus = (e: any): void => {
     formPinStatus.value = "SET"
   }
 }
+
+const setNotificationStatus = (e: any): void => {
+  if (e.target.checked) {
+    formNotificationStatus.value = "TRUE"
+  } else {
+    formNotificationStatus.value = "FALSE"
+  }
+}
+
+
 </script>
 <template>
 
@@ -173,6 +188,22 @@ const setPinStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input @input="validatePhone($event)" v-model.lazy="form.ussdPhoneNumber" type="text" name="phone" id="phone" autocomplete="phone" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <div>
+                    <label for="notificationStatus" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                      Notify User On Pin Change
+                    </label>
+                    <p class="mt-2 text-xs text-gray-500">Default is set to notify.</p>
+                  </div>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div class="max-w-lg flex items-center rounded-md shadow-sm">
+                      <div class="flex-1 flex items-center h-12">
+                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" autocomplete="notificationStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
+                        <p class="text-xs text-gray-500 ml-2">Notify User</p>
+                      </div>
                     </div>
                   </div>
                 </div>
