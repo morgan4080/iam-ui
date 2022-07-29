@@ -29,11 +29,11 @@ const userData = ref({
 
 type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
 
-type NotificationStates = "TRUE" | "FALSE"
+type NotificationStates = "true" | "false"
 
 const formPinStatus = ref(<PinStates> "SET")
 
-const formNotificationStatus = ref(<NotificationStates> "TRUE")
+const formNotificationStatus = ref(<NotificationStates> "true")
 
 getUser(route)
 .then((data) => {
@@ -133,9 +133,9 @@ const setPinStatus = (e: any): void => {
 
 const setNotificationStatus = (e: any): void => {
   if (e.target.checked) {
-    formNotificationStatus.value = "TRUE"
+    formNotificationStatus.value = "true"
   } else {
-    formNotificationStatus.value = "FALSE"
+    formNotificationStatus.value = "false"
   }
 }
 

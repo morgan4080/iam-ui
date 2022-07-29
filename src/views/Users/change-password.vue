@@ -15,15 +15,15 @@
 
   const loading = ref(<boolean> false)
 
-  type NotificationStates = "TRUE" | "FALSE"
+  type NotificationStates = "true" | "false"
 
-  const formNotificationStatus = ref(<NotificationStates> "TRUE")
+  const formNotificationStatus = ref(<NotificationStates> "true")
 
   const setNotificationStatus = (e: any): void => {
     if (e.target.checked) {
-      formNotificationStatus.value = "TRUE"
+      formNotificationStatus.value = "true"
     } else {
-      formNotificationStatus.value = "FALSE"
+      formNotificationStatus.value = "false"
     }
   }
 

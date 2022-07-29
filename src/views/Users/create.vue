@@ -243,7 +243,10 @@ const saveUser = async (rolesPayload: string[]) => {
   }
   try {
     loading.value = true
-    const response = await postUser(payloadOut)
+    const response = await postUser({
+      ...payloadOut,
+      notifyUser: formNotificationStatus.value
+    })
     await defineNotification( { message: response.messages[0].message, success: true })
     await router.push('/users')
   } catch (e: any) {
@@ -416,6 +419,19 @@ const setPinStatus = (e: any): void => {
     formPinStatus.value = "SET"
   }
 }
+
+type NotificationStates = "true" | "false"
+
+const formNotificationStatus = ref(<NotificationStates> "true")
+
+const setNotificationStatus = (e: any): void => {
+  if (e.target.checked) {
+    formNotificationStatus.value = "true"
+  } else {
+    formNotificationStatus.value = "false"
+  }
+}
+
 </script>
 
 <template>
@@ -467,6 +483,15 @@ const setPinStatus = (e: any): void => {
                           <span class="font-normal text-sm text-gray-500">Create customer account</span>
                         </label>
                       </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-col sm:border-t sm:border-gray-200 sm:pt-5">
+                    <div class="flex flex-row items-start space-x-3">
+                      <input @change="setNotificationStatus" type="checkbox" name="notifyUser" id="notifyUser" class="mt-1 border-gray-400 rounded-md" checked>
+                      <label for="notifyUser" class="text-base text-gray-700 flex flex-col">
+                        <span class="block text-sm font-medium text-gray-700">Notify User</span>
+                        <span class="font-normal text-sm text-gray-500">Created User Notified On Create</span>
+                      </label>
                     </div>
                   </div>
                 </div>
