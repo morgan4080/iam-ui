@@ -292,12 +292,11 @@ const store = createStore({
                     },
                     body: JSON.stringify(payload)
                 })
-
+                const data = await response.json()
                 if (response.status === 200) {
-                    const data = await response.json()
                     return Promise.resolve(data)
                 } else {
-                    return Promise.reject(`${response.status}: API Error`)
+                    return Promise.reject(data)
                 }
             } catch (e: any) {
                 return Promise.reject(e)

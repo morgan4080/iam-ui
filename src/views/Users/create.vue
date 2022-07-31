@@ -251,6 +251,10 @@ const saveUser = async (rolesPayload: string[]) => {
     await router.push('/users')
   } catch (e: any) {
     console.log("API error", e)
+    if (e.messages[0].message) {
+      await defineNotification( { message: e.messages[0].message, error: true })
+      return
+    }
     await defineNotification( { message: e.message, error: true })
   } finally {
     loading.value = false
