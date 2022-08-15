@@ -24,7 +24,8 @@
     isUSSDDisabled: true,
     userAssignedRolesId: [],
     pinStatus: '',
-    username: ''
+    username: '',
+    pinAttempts: 0
   })
 
   const userRoles = ref(<any[]>[])
