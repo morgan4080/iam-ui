@@ -290,6 +290,15 @@
                   </ul>
                 </dd>
               </div>
+              <div class="sm:col-span-1">
+                <dt class="text-sm font-medium text-gray-500">
+                  USSD Pin Status
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <a class="text-blue-400" href="#">Status: {{ userData.pinStatus }}</a><br>
+                  <a class="text-blue-400" href="#">Remaining Attempts: {{ userData.pinAttempts }}</a>
+                </dd>
+              </div>
             </dl>
           </div>
         </div>
