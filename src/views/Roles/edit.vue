@@ -107,6 +107,9 @@ const actionUpdateRole = async () => {
       return acc
     }, [])
     form.value.keycloakRoleIdsToAdd = form.value.keycloakRoleIdsToAdd.filter((keyId: string) => existing.indexOf(keyId) === -1)
+    if (form.value.name.toLowerCase() === 'sales_person' || form.value.name.toLowerCase() === 'relationship_manager') {
+      form.value.name = form.value.name.toUpperCase()
+    }
     const response = await updateRole(form.value)
     console.log(response)
     await store.dispatch("defineNotification", { message: response.messages[0].message, success: true })
@@ -156,12 +159,24 @@ const actionUpdateRole = async () => {
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
                 <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                  <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                  <label for="role_name" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Role name
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="form.name" type="text" name="username" id="username" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <div>
+                        <input v-model="form.name" type="text" name="role_name" id="role_name" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <div class="mt-4 flex max-w-lg rounded-sm border p-2" style="background-color: #FFEEB3;border-color: #FB6B27;">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-4 h-6 w-6" style="color: #FB6B27;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"></path>
+                          </svg>
+                          <div v-show="form.name.toLowerCase() === 'sales_person' || form.name.toLowerCase() === 'relationship_manager'">
+                            <p class="text-sm font-semibold lowercase" style="color: #FB6B27;">{{ form.name }}</p>
+                            <p v-show='form.name.toLowerCase() === "sales_person"' class="text-sm" style="color: #FB6B27;">This role will limit all data access including loans and customer data to customers belonging to a sales person.</p>
+                            <p v-show='form.name.toLowerCase() === "relationship_manager"' class="text-sm" style="color: #FB6B27;">This role will limit all data access including loans and customer data to customers under a branch manager.</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
