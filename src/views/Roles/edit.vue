@@ -166,7 +166,7 @@ const actionUpdateRole = async () => {
                     <div class="max-w-lg space-y-4">
                       <input v-model="form.name" type="text" name="role_name" id="role_name" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
 
-                      <div class="flex max-w-lg rounded-sm border p-2" style="background-color: #FFEEB3;border-color: #FB6B27;">
+                      <div v-show="form.value.name.toLowerCase() === 'sales_person' || form.value.name.toLowerCase() === 'relationship_manager'" class="flex max-w-lg rounded-sm border p-2" style="background-color: #FFEEB3;border-color: #FB6B27;">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mr-4 h-6 w-6" style="color: #FB6B27;">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"></path>
                         </svg>
