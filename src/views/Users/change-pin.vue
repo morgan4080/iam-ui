@@ -181,7 +181,7 @@ const setNotificationStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input @input="validatePhone($event)" v-model.lazy="form.ussdPhoneNumber" type="text" name="phone" id="phone" autocomplete="phone" class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePhone($event)" v-model.lazy="form.ussdPhoneNumber" type="text" name="phone" id="phone" class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ const setNotificationStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" autocomplete="notificationStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
+                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
                         <p class="text-xs text-gray-500 ml-2">Notify User</p>
                       </div>
                     </div>
@@ -211,7 +211,7 @@ const setNotificationStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" autocomplete="pinStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
+                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
                         <p class="text-xs text-gray-500 ml-2">Set as temporary</p>
                       </div>
                     </div>
@@ -226,7 +226,7 @@ const setNotificationStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input @input="validatePin($event)" v-model.lazy="form.pin" type="password" name="pin" id="pin" pattern="[0-9]{4,4}" autocomplete="pin" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePin($event)" v-model.lazy="form.pin" type="password" name="pin" id="pin" pattern="[0-9]{4,4}" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ const setNotificationStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input @input="validatePin($event)" v-model.lazy="form.pinConfirmation" type="password" name="pin-confirmation" pattern="[0-9]{4,4}" id="pin-confirmation" autocomplete="pin-confirmation" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input @input="validatePin($event)" v-model.lazy="form.pinConfirmation" type="password" name="pin-confirmation" pattern="[0-9]{4,4}" id="pin-confirmation" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>

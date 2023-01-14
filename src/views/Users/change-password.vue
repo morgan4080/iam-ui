@@ -126,7 +126,7 @@
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" autocomplete="notificationStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
+                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
                         <p class="text-xs text-gray-500 ml-2">Notify User</p>
                       </div>
                     </div>
@@ -138,7 +138,7 @@
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input disabled type="email" name="email" id="email" autocomplete="email" :value="userData.email" class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input disabled type="email" name="email" id="email" :value="userData.email" class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -148,7 +148,7 @@
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="form.password" type="password" name="password" id="password" autocomplete="password" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="form.password" type="password" name="password" id="password" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -158,7 +158,7 @@
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="form.passwordConfirmation" type="password" name="password-confirmation" id="password-confirmation" autocomplete="password-confirmation" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="form.passwordConfirmation" type="password" name="password-confirmation" id="password-confirmation" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>

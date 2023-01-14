@@ -148,7 +148,7 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.firstName" type="text" name="first-name" id="first-name" autocomplete="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                          <input v-model="form.firstName" type="text" name="first-name" id="first-name" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                         </div>
                       </div>
                     </div>
@@ -158,7 +158,7 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.lastName" type="text" name="last-name" id="last-name" autocomplete="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                          <input v-model="form.lastName" type="text" name="last-name" id="last-name" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                         </div>
                       </div>
                     </div>
@@ -168,7 +168,7 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.emailAddress" type="email" name="email" id="email" autocomplete="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" >
+                          <input v-model="form.emailAddress" type="email" name="email" id="email" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" >
                         </div>
                       </div>
                     </div>

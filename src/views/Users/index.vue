@@ -8,7 +8,7 @@
   const { deleteUser, defineNotification } = mapActions()
 
   const route = useRoute()
-  type userType = { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }
+  type userType = { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string, keycloakId?: string }
 
   const allUsers = ref(<userType[]>[])
 
@@ -117,14 +117,15 @@
     if (confirm(`Are you sure you want to delete ${theUser.firstName} ${theUser.lastName}`)) {
       try {
         loading.value = true
-        const response = await deleteUser(theUser.id)
+        const response = await deleteUser(theUser.keycloakId)
         console.log("API response deleteUsers", response)
-        // await defineNotification( { message: response.messages[0].message, success: true })
+        defineNotification( { message: "User deleted successfully", success: true })
       } catch (e: any) {
         console.log("API error deleteUsers", e)
-        // await defineNotification( { message: e.message, error: true })
+        defineNotification( { message: `API error deleteUsers: ${e}`, error: true })
       } finally {
         loading.value = false
+        refresh()
       }
     }
   }
@@ -149,7 +150,7 @@
                   <option value="DESC">DESC</option>
                 </select>
               </div>
-              <input @change="refresh()" v-model="filterForm.searchTerm" type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
+              <input @change="refresh()" v-model="filterForm.searchTerm" type="search" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
             </div>
             <button @click="syncData" type="button" class="shadow-sm relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

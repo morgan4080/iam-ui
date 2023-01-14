@@ -272,7 +272,12 @@ function setUserType (e: any, payload: string) {
 }
 
 function saveRoles() {
-  saveUser(formRoles.value.user_roles.map((role: any): any => role.keycloakRoleId))
+  // alert(formRoles.value.user_roles)
+  if (formRoles.value.user_roles) {
+    saveUser(formRoles.value.user_roles.map((role: any): any => role.keycloakRoleId))
+  } else {
+    defineNotification( { message: `Kindly select at least one role` });
+  }
 }
 
 function previousStep() {

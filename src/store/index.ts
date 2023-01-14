@@ -295,8 +295,8 @@ const store = createStore({
                 const data = await response.json()
                 if (response.status === 200) {
                     return Promise.resolve(data)
-                } else {
-                    return Promise.reject(data)
+                } else if (response.status === 201) {
+                    return Promise.resolve(data)
                 }
             } catch (e: any) {
                 return Promise.reject(e)
