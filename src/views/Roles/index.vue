@@ -127,21 +127,21 @@
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
-          <button @click="$router.push('/roles/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+          <button @click="$router.push('/roles/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500">
             Add roles
           </button>
           <div class="relative z-0 inline-flex shadow-sm rounded-md ml-auto">
             <div class="relative h-8 rounded-md mr-2 shadow-sm">
               <div class="absolute inset-y-0 left-0 flex items-center">
                 <label for="filter" class="sr-only">Filter</label>
-                <select id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md text-sm">
+                <select id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md text-sm">
                   <option>ASC</option>
                   <option>DESC</option>
                 </select>
               </div>
-              <input type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
+              <input type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
             </div>
-            <button @click="roleSync" type="button" class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+            <button @click="roleSync" type="button" class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
               </svg>
@@ -231,14 +231,14 @@
                     Change records count
                   </label>
                   <div class="relative">
-                    <div ref="popcorn" class="inline-flex shadow-sm rounded-md divide-x divide-indigo-600 h-8">
-                      <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
-                        <div class="relative inline-flex items-center bg-indigo-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
+                    <div ref="popcorn" class="inline-flex shadow-sm rounded-md divide-x divide-blue-600 h-8">
+                      <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-blue-600">
+                        <div class="relative inline-flex items-center bg-blue-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
                           <p class="ml-2.5 text-xs sm:text-sm font-medium">
                             {{ filterForm.recordsPerPage }}
                           </p>
                         </div>
-                        <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-indigo-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                        <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-blue-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-blue-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
                           <span class="sr-only">Change records count</span>
                           <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -258,7 +258,7 @@
                     >
                       <ul v-show="pageCountOpen" class="origin-top-right absolute z-10 right-0 w-12 rounded-md shadow-lg overflow-hidden bg-white divide-y divide-gray-200 ring-1 ring-black ring-opacity-5 focus:outline-none" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-0">
 
-                        <li v-for="(lot, i) in lots" :key="i" @click="choose(i)" @mouseenter="activeIndex = i" @mouseleave="activeIndex = null" :class="{ 'text-white bg-indigo-500': activeIndex === i, 'text-gray-900': !(activeIndex === i) }" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
+                        <li v-for="(lot, i) in lots" :key="i" @click="choose(i)" @mouseenter="activeIndex = i" @mouseleave="activeIndex = null" :class="{ 'text-white bg-blue-500': activeIndex === i, 'text-gray-900': !(activeIndex === i) }" class="cursor-pointer select-none relative p-4 text-sm" id="listbox-option-0" role="option">
                           <div class="flex flex-col">
                             <div class="flex justify-between">
                               <p :class="{ 'font-semibold': selectedIndex === i, 'font-normal': !(selectedIndex === i) }" class="font-normal text-xs sm:text-sm">
@@ -280,7 +280,7 @@
                       <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                   </a>
-                  <a v-for="(page, i) in totalPagesArray" :key="i" href="#" aria-current="page" :class="{'z-10 bg-indigo-50 border-indigo-500 text-indigo-600': currentPage === page, 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50' : currentPage !== page }" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                  <a v-for="(page, i) in totalPagesArray" :key="i" href="#" aria-current="page" :class="{'z-10 bg-blue-50 border-blue-500 text-indigo-600': currentPage === page, 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50' : currentPage !== page }" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                     {{ page }}
                   </a>
                   <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">

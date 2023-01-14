@@ -3,6 +3,8 @@ import router from './router/'
 import store from './store/'
 import App from './App.vue'
 import apiCall from "@/utils/api"
+import nProgress from "nprogress";
+import "../node_modules/nprogress/nprogress.css";
 import './index.css'
 
 const url = `${import.meta.env.VITE_DOMAIN_URL}/authentication`
@@ -25,6 +27,7 @@ window.fetch = new Proxy(window.fetch, {
     apply(fetch, that, args: any) {
         // Forward function call to the original fetch
         const result = fetch.apply(that, args);
+        nProgress.start();
         // Do whatever you want with the resulting Promise
         result
             .then(response => {
@@ -47,7 +50,7 @@ window.fetch = new Proxy(window.fetch, {
                 console.log("fetch completed!", args, response);
             })
             .finally(() => {
-
+                nProgress.done();
             });
 
         return result;

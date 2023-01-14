@@ -499,14 +499,14 @@ const setNotificationStatus = (e: any): void => {
                     <div class="font-medium text-lg text-gray-700">
                       <h3>Set Contact details</h3>
                     </div>
-                    <p>All fields are required to create and manage user accounts</p>
+                    <p class="text-sm text-gray-500">All fields are required to create and manage user accounts</p>
                   </div>
                   <div :class="{'opacity-50  cursor-not-allowed' : formContacts.user_types.length === 0}" class="flex flex-col pt-5 cursor-not-allowed">
                     <div class="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-4">
                       <div>
                         <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
                         <div class="mt-1">
-                          <input :disabled="formContacts.user_types.length === 0" type="text" id="first-name" v-model="formContacts.firstName" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input :disabled="formContacts.user_types.length === 0" type="text" id="first-name" v-model="formContacts.firstName" class="py-1 px-4 block w-full shadow-sm  focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                         </div>
                       </div>
                       <div>

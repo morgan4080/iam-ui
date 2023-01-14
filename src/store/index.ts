@@ -322,6 +322,26 @@ const store = createStore({
             })
 
         },
+        async deleteUser({}, keycloakId): Promise<any> {
+            const url: string = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users?keycloakId=${keycloakId}&force=false`
+            const requestOptions = {
+                method: 'DELETE'
+            }
+
+            try {
+                const response = await fetch(url, requestOptions);
+                if (response.status === 200) {
+                    const data = await response.text();
+                    return Promise.resolve(data);
+                } else {
+                    return Promise.reject(`${response.status}: Failed to delete user.`);
+                }
+            } catch (e: any) {
+                console.error("delete user",  e);
+                return Promise.reject(e.message);
+            }
+
+        },
         getPermissions({ }):  Promise<any> {
 
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/permissions"

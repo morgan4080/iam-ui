@@ -3,10 +3,14 @@
   import { getUsers, syncUsers } from '@/modules/all'
   import { ref, reactive, watch } from "vue"
   import { useRoute } from "vue-router"
+  import { mapActions } from "@/modules/mapStore"
+
+  const { deleteUser, defineNotification } = mapActions()
 
   const route = useRoute()
+  type userType = { isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }
 
-  const allUsers = ref(<{ isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[]>[])
+  const allUsers = ref(<userType[]>[])
 
   const totalRecords = ref(<number>0)
 
@@ -108,6 +112,23 @@
     }
   }
 
+  const deleteUsers = async (theUser: userType) => {
+    // deleteUser
+    if (confirm(`Are you sure you want to delete ${theUser.firstName} ${theUser.lastName}`)) {
+      try {
+        loading.value = true
+        const response = await deleteUser(theUser.id)
+        console.log("API response deleteUsers", response)
+        // await defineNotification( { message: response.messages[0].message, success: true })
+      } catch (e: any) {
+        console.log("API error deleteUsers", e)
+        // await defineNotification( { message: e.message, error: true })
+      } finally {
+        loading.value = false
+      }
+    }
+  }
+
   refresh()
 </script>
 
@@ -116,21 +137,21 @@
     <div class="pb-24 sm:px-6 lg:px-0 lg:col-span-9">
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
-          <button @click="$router.push('/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500">
+          <button @click="$router.push('/users/create')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500">
             Add user
           </button>
           <div class="relative flex-none z-0 inline-flex rounded-md ml-auto">
             <div class="relative h-8 rounded-md mr-2 shadow-sm">
               <div class="absolute inset-y-0 left-0 flex items-center">
                 <label for="filter" class="sr-only">Filter</label>
-                <select @change="refresh()" v-model="filterForm.order" id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md text-sm">
+                <select @change="refresh()" v-model="filterForm.order" id="filter" class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md text-sm">
                   <option value="ASC">ASC</option>
                   <option value="DESC">DESC</option>
                 </select>
               </div>
-              <input @change="refresh()" v-model="filterForm.searchTerm" type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
+              <input @change="refresh()" v-model="filterForm.searchTerm" type="text" id="search" class="px-4 py-1 h-full block w-full pl-20 focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md text-sm" placeholder="search term...">
             </div>
-            <button @click="syncData" type="button" class="shadow-sm relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+            <button @click="syncData" type="button" class="shadow-sm relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" :class="{ 'animate-spin': loading }" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
               </svg>
@@ -162,7 +183,7 @@
                 Status
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Edit
+                Action
               </th>
             </tr>
             </thead>
@@ -206,8 +227,17 @@
                     Disabled
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
-                  <router-link v-if="user.id" :to="`/users/${user.id}`" class="text-blue-600 hover:text-blue-900">Edit</router-link>
+                <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium flex items-center space-x-4">
+                  <router-link v-if="user.id" :to="`/users/${user.id}`" class="text-blue-600 hover:text-blue-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                    </svg>
+                  </router-link>
+                  <button @click="deleteUsers(user)" type="button" class="text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                  </button>
                 </td>
               </tr>
               <tr v-else>
@@ -238,14 +268,14 @@
                     Change records count
                   </label>
                   <div class="relative">
-                    <div ref="popcorn" class="inline-flex shadow-sm rounded-md divide-x divide-indigo-600 h-8">
-                      <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-indigo-600">
-                        <div class="relative inline-flex items-center bg-indigo-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
+                    <div ref="popcorn" class="inline-flex shadow-sm rounded-md divide-x divide-blue-600 h-8">
+                      <div class="relative z-0 inline-flex shadow-sm rounded-md divide-x divide-blue-600">
+                        <div class="relative inline-flex items-center bg-blue-500 py-2 pl-3 pr-4 border border-transparent rounded-l-md shadow-sm text-white">
                           <p class="ml-2.5 text-xs sm:text-sm font-medium">
                             {{ filterForm.recordsPerPage }}
                           </p>
                         </div>
-                        <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-indigo-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
+                        <button type="button" @click="pageCountOpen = !pageCountOpen" class="relative inline-flex items-center bg-blue-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500" aria-haspopup="listbox" aria-expanded="true" aria-labelledby="listbox-label">
                           <span class="sr-only">Change records count</span>
                           <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />

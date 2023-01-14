@@ -47,7 +47,7 @@
            <div class="flex justify-around pb-3">
              <div class="min-w-0 flex-1">
                <h3 class="text-base font-medium text-gray-900">
-                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                     <span class="focus:outline-none">
                       <span aria-hidden="true" />
                       Name
@@ -58,7 +58,7 @@
              </div>
              <div class="min-w-0 flex-1">
                <h3 class="text-base font-medium text-gray-900">
-                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                     <span class="focus:outline-none">
                       <span aria-hidden="true" />
                       Role Type
@@ -69,7 +69,7 @@
              </div>
              <div class="min-w-0 flex-1">
                <h3 class="text-base font-medium text-gray-900">
-                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <span class="rounded-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                     <span class="focus:outline-none">
                       <span aria-hidden="true" />
                       Role Description

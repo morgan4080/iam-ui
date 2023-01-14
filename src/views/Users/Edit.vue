@@ -148,7 +148,7 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.firstName" type="text" name="first-name" id="first-name" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                          <input v-model="form.firstName" type="text" name="first-name" id="first-name" autocomplete="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                         </div>
                       </div>
                     </div>
@@ -158,7 +158,7 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.lastName" type="text" name="last-name" id="last-name" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                          <input v-model="form.lastName" type="text" name="last-name" id="last-name" autocomplete="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                         </div>
                       </div>
                     </div>
@@ -168,7 +168,7 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.emailAddress" type="email" name="email" id="email" autocomplete="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" >
+                          <input v-model="form.emailAddress" type="email" name="email" id="email" autocomplete="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" >
                         </div>
                       </div>
                     </div>
@@ -180,11 +180,11 @@ import {useRoute, useRouter} from "vue-router"
                         <div class="max-w-lg relative rounded-md shadow-sm">
                           <div class="absolute inset-y-0 left-0 flex items-center">
                             <label for="country" class="sr-only">Country</label>
-                            <select id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
+                            <select id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md">
                               <option>KE</option>
                             </select>
                           </div>
-                          <input type="text" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" >
+                          <input type="text" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md" >
                         </div>
                       </div>
                     </div>

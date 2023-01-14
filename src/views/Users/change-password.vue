@@ -126,7 +126,7 @@
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" autocomplete="notificationStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
+                        <input @change="setNotificationStatus" type="checkbox" name="notificationStatus" id="notificationStatus" autocomplete="notificationStatus" class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" checked>
                         <p class="text-xs text-gray-500 ml-2">Notify User</p>
                       </div>
                     </div>
@@ -138,7 +138,7 @@
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input disabled type="email" name="email" id="email" autocomplete="email" :value="userData.email" class="flex-1 bg-gray-50 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input disabled type="email" name="email" id="email" autocomplete="email" :value="userData.email" class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -148,7 +148,7 @@
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="form.password" type="password" name="password" id="password" autocomplete="password" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="form.password" type="password" name="password" id="password" autocomplete="password" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -158,7 +158,7 @@
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="form.passwordConfirmation" type="password" name="password-confirmation" id="password-confirmation" autocomplete="password-confirmation" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input v-model="form.passwordConfirmation" type="password" name="password-confirmation" id="password-confirmation" autocomplete="password-confirmation" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
                     </div>
                   </div>
                 </div>
@@ -171,7 +171,7 @@
       <div class="flex pb-20 bg-gray-100">
         <div class="ml-auto pt-5 pb-8 px-4">
           <div class="space-x-3">
-            <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+            <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
               <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
