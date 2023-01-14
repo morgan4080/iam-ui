@@ -125,7 +125,7 @@
         defineNotification( { message: `API error deleteUsers: ${e}`, error: true })
       } finally {
         loading.value = false
-        refresh()
+        await refresh()
       }
     }
   }

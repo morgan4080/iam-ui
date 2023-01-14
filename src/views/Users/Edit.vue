@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import {useRoute, useRouter} from "vue-router"
+  import {useRoute, useRouter} from "vue-router"
   import {computed, reactive, ref} from "vue"
-  import {getRoles, getUser, editTheUser} from '@/modules/all'
+  import {getUser} from '@/modules/all'
   import {useStore} from "vuex"
+  import {mapActions} from "@/modules/mapStore";
   const router = useRouter()
 
   const store = useStore()
 
   const route = useRoute()
+
+  const { defineNotification, verifyUnique } = mapActions()
 
   interface User {
     id: string,
@@ -29,6 +32,7 @@ import {useRoute, useRouter} from "vue-router"
     emailAddress: '',
     company: <any>'',
     phoneNumber: '',
+    ussdPhoneNumber: '',
     password: '',
     passwordConfirmation: '',
     pinSecret: '',
@@ -60,11 +64,13 @@ import {useRoute, useRouter} from "vue-router"
       ...userData.value,
       ...user
     }
+    form.username = user.username
     form.firstName = user.firstName
     form.lastName = user.lastName
     form.emailAddress = user.email
     form.username = user.username
     form.phoneNumber = user.phoneNumber
+    form.ussdPhoneNumber = user.ussdPhoneNumber
     form.company = organisation
   }).catch((e: any) => {
     alert(e.message)
@@ -74,12 +80,14 @@ import {useRoute, useRouter} from "vue-router"
 
   function editUser () {
     loading.value = true
-    let payload: { userRefId: string, firstName: string, lastName: string, email: string | undefined, phoneNumber: string | undefined, isEnabled: boolean } = {
+    let payload: { userRefId: string, userName: string, firstName: string, lastName: string, ussdPhoneNumber: string, email: string | undefined, phoneNumber: string | undefined, isEnabled: boolean } = {
       userRefId: userData.value.id,
+      userName: form.username,
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.emailAddress,
       phoneNumber: form.phoneNumber,
+      ussdPhoneNumber: form.ussdPhoneNumber,
       isEnabled: true
     }
 
@@ -95,12 +103,113 @@ import {useRoute, useRouter} from "vue-router"
       await store.dispatch("defineNotification", { message: `User Edited successfully`, success: true })
       await router.push(`/users/${route.params.id}`)
     }).catch((e: any) => {
-      alert(e.message)
+      console.log(e.message)
     }).finally(async () => {
       loading.value = false
       await router.push(`/users/${route.params.id}`)
     })
 
+  }
+
+  interface qrInterface {
+    phoneNumber: string,
+    ussdPhoneNumber: string,
+    email: string,
+    username: string
+  }
+  let query = ref(<string>`?`)
+  const byIdentifier = async () => {
+    for (const [key, value] of Object.entries(qrObject)) {
+      if (value && query.value === "?") {
+        query.value += `${key}=${value}`
+      } else if (value && query.value !== "?") {
+        query.value += `&${key}=${value}`
+      }
+    }
+    console.log(query.value)
+
+    let response = await verifyUnique(query.value)
+
+    query.value = `?`
+
+    return response === 'unique';
+  }
+
+  let qrObject: qrInterface = {
+    phoneNumber: '',
+    ussdPhoneNumber: '',
+    email: '',
+    username: '',
+  }
+
+  const setQuery = async (e: any) => {
+    if (e.target.id === 'email') {
+      qrObject.phoneNumber = '';
+      qrObject.email = form.emailAddress;
+      qrObject.username = '';
+    }
+    if (e.target.id === 'phone-number') {
+      qrObject.phoneNumber = form.phoneNumber;
+      qrObject.email = '';
+      qrObject.username = '';
+    }
+    if (e.target.id === 'phone-number') {
+      if (e.target.value.length > 12) {
+        e.target.classList.add('focus:ring-red-400')
+        e.target.classList.add('focus:border-red-400')
+        e.target.onblur = () => {
+          e.target.classList.remove('focus:ring-red-400')
+          e.target.classList.remove('focus:border-red-400')
+        }
+        e.target.value = e.target.value.slice(0, 4)
+        await defineNotification({ message: "No more than 12 characters", error: true })
+      }
+      qrObject.phoneNumber = form.phoneNumber;
+      qrObject.email = '';
+      qrObject.username = '';
+    }
+    if (e.target.id === 'ussd-phone-number') {
+      if (e.target.value.length > 12) {
+        e.target.classList.add('focus:ring-red-400')
+        e.target.classList.add('focus:border-red-400')
+        e.target.onblur = () => {
+          e.target.classList.remove('focus:ring-red-400')
+          e.target.classList.remove('focus:border-red-400')
+        }
+        e.target.value = e.target.value.slice(0, 4)
+        await defineNotification({ message: "No more than 12 characters", error: true })
+      }
+      let response0 = await verifyUnique(`?phoneNumber=${form.phoneNumber}`);
+      if (response0 !== 'unique') {
+        form.phoneNumber = '';
+        await defineNotification( { message: `User with that phone number already exists`, error: true });
+      }
+      return
+    }
+    if (e.target.id === 'username') {
+      qrObject.phoneNumber = '';
+      qrObject.email = '';
+      qrObject.username = form.username;
+    }
+
+    let response = await byIdentifier();
+
+    if (!response) {
+      for (const [key, value] of Object.entries(qrObject)) {
+        if (value) {
+          if (key === 'email') {
+            form.emailAddress = '';
+          }
+          if (key === 'phoneNumber') {
+            form.phoneNumber = '';
+          }
+          if (key === 'username') {
+            form.username = '';
+          }
+          await defineNotification( { message: `User with that ${key} already exists`, error: true });
+        }
+      }
+    }
   }
 </script>
 
@@ -143,6 +252,16 @@ import {useRoute, useRouter} from "vue-router"
 
                   <div class="space-y-2">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="username" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        Username
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg flex rounded-md shadow-sm">
+                          <input v-model="form.username" type="text" name="username" id="username" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
                       <label for="first-name" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                         First Name
                       </label>
@@ -168,7 +287,23 @@ import {useRoute, useRouter} from "vue-router"
                       </label>
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
-                          <input v-model="form.emailAddress" type="email" name="email" id="email" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" >
+                          <input @change="setQuery($event)" v-model="form.emailAddress" type="email" name="email" id="email" class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                      <label for="ussd-phone-number" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        USSD Phone number
+                      </label>
+                      <div class="mt-1 sm:mt-0 sm:col-span-2">
+                        <div class="max-w-lg relative rounded-md shadow-sm">
+                          <div class="absolute inset-y-0 left-0 flex items-center">
+                            <label for="country" class="sr-only">Country</label>
+                            <select id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md">
+                              <option>KE</option>
+                            </select>
+                          </div>
+                          <input @change="setQuery($event)" type="number" id="ussd-phone-number" v-model="form.ussdPhoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                         </div>
                       </div>
                     </div>
@@ -184,7 +319,7 @@ import {useRoute, useRouter} from "vue-router"
                               <option>KE</option>
                             </select>
                           </div>
-                          <input type="text" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md" >
+                          <input @change="setQuery($event)" type="number" id="phone-number" v-model="form.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
                         </div>
                       </div>
                     </div>
