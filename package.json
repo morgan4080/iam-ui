@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev-build": "vue-tsc --noEmit && vite build --base=/admin/ --mode local",
-    "dev": "vite --base=/admin/ --host 0.0.0.0 --port 9099",
+    "dev": "vite --base=/admin/ --port 9099",
     "build": "vue-tsc --noEmit && vite build --base=/admin/",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.vue",
     "deploy": "vue-tsc --noEmit && vite build --base=/admin/",
