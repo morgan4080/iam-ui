@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import {useRoute} from "vue-router"
 import {ref, computed, onBeforeMount} from "vue"
-import {getUser, getUsersRoles, passReset} from '@/modules/all'
+import {getUser, getUsersRoles} from '@/modules/all'
 import {useStore} from "vuex"
 import {mapActions} from "@/modules/mapStore"
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
+import {ChevronDownIcon} from '@heroicons/vue/20/solid'
+import ResetCredentialsModal from "@/components/ResetCredentialsModal.vue";
+import type {User} from "@/types";
 
 const {syncUser, userEnable, userDisable} = mapActions()
 
@@ -13,7 +15,7 @@ const route = useRoute()
 
 const store = useStore()
 
-const userData = ref({
+const userData = ref<User>({
   firstName: '',
   lastName: '',
   email: '',
@@ -33,6 +35,21 @@ const userData = ref({
 const userRoles = ref(<any[]>[])
 
 const loading = ref(<boolean>false)
+
+const resetCredentialModalOpen = ref(false)
+const resetCredentialsAction = ref<'USSD' | 'WEB' | null>(null)
+
+function openResetCredentialsModal() {
+  resetCredentialModalOpen.value = true;
+}
+function closeResetCredentialsModal() {
+  resetCredentialsAction.value = null
+  resetCredentialModalOpen.value = false
+}
+
+const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
+
+const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
 
 const fetchUserData = () => {
   getUser(route)
@@ -56,27 +73,15 @@ const fetchUserData = () => {
       })
 }
 
-const tenantId = computed(() => store.state.user ? store.state.user.tenantId : null)
-
-async function doPasswordReset() {
-  confirm("You are about to send password reset email to: " + userData.value.email)
-  const payload = {
-    "username": userData.value.username,
-    "userRefId": userData.value.keycloakId,
-    "tenantId": tenantId.value
-  }
-
-  try {
-    const response = await passReset(payload)
-    console.log("password reset", response)
-    await store.dispatch("defineNotification", {message: "Password Reset Email Sent", success: true})
-  } catch (e: any) {
-    alert(e.message)
-  }
+function resetWebPassword() {
+  resetCredentialsAction.value = 'WEB'
+  openResetCredentialsModal()
 }
 
-const organisation = computed(() => store.state.user ? store.state.user.companyName : null)
-
+function resetUSSDPin() {
+  resetCredentialsAction.value = 'USSD'
+  openResetCredentialsModal()
+}
 
 const synchronizeUser = async () => {
   try {
@@ -200,27 +205,42 @@ onBeforeMount(() => fetchUserData())
                     <a href="#" class="font-medium text-gray-900 lowercase">{{ organisation }}</a>
                   </p>
                   <p class="mt-2 text-sm text-gray-900">
-                    <span class="font-medium">Keycloak Id: </span>
+                    <span class="font-medium">Keycloak Id:</span>
                     <span>{{ userData.keycloakId }}</span>
                   </p>
                 </div>
                 <div class="mt-4 flex space-x-3 md:mt-0">
                   <Menu as="div" class="relative inline-block text-left">
                     <div>
-                      <MenuButton class="inline-flex justify-center items-center items-center px-3 py-2 border border-red-300 leading-4 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-0">
+                      <MenuButton
+                          class="inline-flex justify-center items-center items-center px-3 py-2 border border-red-300 leading-4 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-0">
                         Reset Credentials
-                        <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                        <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5" aria-hidden="true"/>
                       </MenuButton>
                     </div>
 
-                    <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-                      <MenuItems class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <transition enter-active-class="transition ease-out duration-100"
+                                enter-from-class="transform opacity-0 scale-95"
+                                enter-to-class="transform opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="transform opacity-100 scale-100"
+                                leave-to-class="transform opacity-0 scale-95">
+                      <MenuItems
+                          class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div class="p-1">
-                          <MenuItem v-slot="{ active }" class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200">
-                            <router-link :to="`/users/${route.params.id}/change-pin`" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Reset USSD Pin</router-link>
+                          <MenuItem v-slot="{ active }"
+                                    class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200">
+                            <a @click.prevent="resetUSSDPin"
+                               :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">
+                              Reset USSD Pin
+                            </a>
                           </MenuItem>
-                          <MenuItem v-slot="{ active }" class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200">
-                            <a @click.prevent="doPasswordReset" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">Reset web Password</a>
+                          <MenuItem v-slot="{ active }"
+                                    class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200">
+                            <a @click.prevent="resetWebPassword"
+                               :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">
+                              Reset Web Password
+                            </a>
                           </MenuItem>
                         </div>
                       </MenuItems>
@@ -239,23 +259,42 @@ onBeforeMount(() => fetchUserData())
 
                   <Menu as="div" class="relative inline-block text-left">
                     <div>
-                      <MenuButton class="inline-flex justify-center items-center px-3 py-2 border border-teal-300 leading-4 shadow-sm text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 focus:outline-none focus:ring-0">
+                      <MenuButton
+                          class="inline-flex justify-center items-center px-3 py-2 border border-teal-300 leading-4 shadow-sm text-sm font-medium rounded-md text-teal-700 bg-teal-100 hover:bg-teal-200 focus:outline-none focus:ring-0">
                         Edit
-                        <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5" aria-hidden="true" />
+                        <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5" aria-hidden="true"/>
                       </MenuButton>
                     </div>
 
-                    <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-                      <MenuItems class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <transition enter-active-class="transition ease-out duration-100"
+                                enter-from-class="transform opacity-0 scale-95"
+                                enter-to-class="transform opacity-100 scale-100"
+                                leave-active-class="transition ease-in duration-75"
+                                leave-from-class="transform opacity-100 scale-100"
+                                leave-to-class="transform opacity-0 scale-95">
+                      <MenuItems
+                          class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div class="p-1">
-                          <MenuItem v-slot="{ active }" class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100">
-                            <router-link :to="`/profiles/${route.params.id}/edit`" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Edit User</router-link>
+                          <MenuItem v-slot="{ active }"
+                                    class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100">
+                            <router-link :to="`/profiles/${route.params.id}/edit`"
+                                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                              Edit User
+                            </router-link>
                           </MenuItem>
-                          <MenuItem v-if="userData.isEnabled" v-slot="{ active }" class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200">
-                            <a @click.prevent="disableUser" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">Disable User</a>
+                          <MenuItem v-if="userData.isEnabled" v-slot="{ active }"
+                                    class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200">
+                            <a @click.prevent="disableUser"
+                               :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">
+                              Disable User
+                            </a>
                           </MenuItem>
-                          <MenuItem  v-else v-slot="{ active }" class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100">
-                            <a @click.prevent="enableUser" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">Enable User</a>
+                          <MenuItem v-else v-slot="{ active }"
+                                    class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100">
+                            <a @click.prevent="enableUser"
+                               :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm hover:cursor-pointer']">
+                              Enable User
+                            </a>
                           </MenuItem>
                         </div>
                       </MenuItems>
@@ -343,4 +382,13 @@ onBeforeMount(() => fetchUserData())
       </div>
     </div>
   </div>
+  <Teleport to="body">
+    <ResetCredentialsModal
+        v-if="resetCredentialsAction"
+        :open="resetCredentialModalOpen"
+        :action="resetCredentialsAction"
+        :user="userData"
+        @close="closeResetCredentialsModal"
+    />
+  </Teleport>
 </template>
