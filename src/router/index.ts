@@ -18,6 +18,7 @@ const routes = [
     {path:'/roles/:id', name: 'RolesView', component: () => import("@/views/Roles/_id.vue")},
     {path:'/roles/:id/edit', name: 'RolesEdit', component: () => import("@/views/Roles/edit.vue")},
     {path:'/password/reset', name: 'Password-Reset', component: () => import("@/views/RecoverPassword.vue")},
+    {path: '/test/:id', component: () => import("@/views/Users/test.vue")}
 ]
 
 const router = createRouter({
