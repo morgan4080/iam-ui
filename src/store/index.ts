@@ -1,6 +1,8 @@
-import { createStore } from 'vuex'
+import { createStore, Store } from 'vuex'
 import apiCall from "@/utils/api"
 import axios, {AxiosResponse} from "axios"
+import {RoleUsers} from "@/types/roleTypes";
+import {InjectionKey} from "vue";
 
 const api = axios.create()
 
@@ -14,7 +16,22 @@ api.interceptors.response.use((response:AxiosResponse) => {
     return response
 })
 
-const store = createStore({
+// define your typings for the store state
+export interface State {
+    user: any | null;
+    notification: {
+        message: string | null;
+        success: boolean;
+        warning: boolean;
+        error: boolean;
+    },
+    roleUsers: RoleUsers[]
+}
+
+// define injection key
+export const key: InjectionKey<Store<State>> = Symbol()
+
+const store = createStore<State>({
     state () {
         return {
             user: null,
@@ -24,10 +41,12 @@ const store = createStore({
                 warning: false,
                 error: false,
             },
+            roleUsers: []
         }
     },
     getters: {
         getNotification: (state: any) => state.notification,
+        getRoleUsers: (state) => state.roleUsers
     },
     mutations: {
         set_current_user(state: any, payload: object) {
@@ -47,7 +66,9 @@ const store = createStore({
                 }
             }, 10000)
         },
-
+        set_role_users(state, payload: RoleUsers[]) {
+            state.roleUsers = payload
+        }
     },
     actions: {
         //from all.ts
@@ -542,7 +563,29 @@ const store = createStore({
                     resolve(data)
                 }
             })
-        }
+        },
+        fetchRoleUsers({ commit }, role_id: string): Promise<any> {
+
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/${role_id}/users`
+            const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
+
+                if (!response.ok && response.status !== 200) {
+                    reject(data)
+                } else {
+                    if (data.data) commit("set_role_users", data.data)
+                    resolve(data)
+                }
+            })
+
+        },
     }
 })
 
