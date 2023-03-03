@@ -209,7 +209,7 @@ const removeUsersFromRole = async () => {
         const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
         const newKeycloakIds = roleUsersKeyCloakIds.filter((keycloakId) => idsToRemoveFromRole.value.indexOf(keycloakId) !== -1)
         const response = await store.dispatch('updateUsersInRole', {
-          role_id: route.params.id,
+          role_id: role.value.id,
           keyCloakIds: newKeycloakIds
         })
         console.log("response removing users from role", response)
@@ -240,9 +240,15 @@ const addUsersToRole = async () => {
         // map role users to return keycloak id only
         // spread role users keycloak ids and keycloak idsToAddToRole
         const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
-        const response = await store.dispatch('updateUsersInRole', {role_id: route.params.id, keyCloakIds: [...roleUsersKeyCloakIds, ...idsToAddToRole.value]})
+        const response = await store.dispatch('updateUsersInRole', {
+          role_id: role.value.id,
+          keyCloakIds: [...roleUsersKeyCloakIds, ...idsToAddToRole.value]
+        })
         console.log("response adding users to role", response)
-        await store.dispatch("defineNotification", { message: `Added ${idsToAddToRole.value.length} users to role ${role.name} successfully`, success: true })
+        await store.dispatch("defineNotification", {
+          message: `Added ${idsToAddToRole.value.length} users to role ${role.name} successfully`,
+          success: true
+        })
         // reload onMounted
         await loadPage()
       } catch (e: any) {
