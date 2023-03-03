@@ -11,11 +11,6 @@ const routes = [
     component: () => import("@/views/Dashboard.vue"),
   },
   {
-    path: "/profiles/:id",
-    name: "ProfileView",
-    component: () => import("@/views/Users/_id.vue"),
-  },
-  {
     path: "/profiles/:id/edit",
     name: "ProfilesEdit",
     component: () => import("@/views/Users/Edit.vue"),

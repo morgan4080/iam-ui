@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { ref, computed } from "vue";
-import { getUser, getUsersRoles, passChange, passReset } from "@/modules/all";
+import { getUsersRoles, passChange, passReset } from "@/modules/all";
 import { useStore } from "vuex";
 import router from "@/router";
 
@@ -13,7 +13,7 @@ const route = useRoute();
 
 const store = useStore();
 
-const loading = ref(<boolean>false);
+const loading = ref(false);
 
 const formNotificationStatus = ref(<boolean>true);
 
@@ -34,7 +34,7 @@ const userData = ref({
   userType: "",
   username: "",
 });
-getUser(route)
+store.dispatch('getUser', route)
   .then(data => {
     const { user } = data;
     userData.value = {

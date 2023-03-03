@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
 import { computed, reactive, ref } from "vue";
-import { getUser } from "@/modules/all";
 import { useStore } from "vuex";
 import { mapActions } from "@/modules/mapStore";
 const router = useRouter();
@@ -58,7 +57,7 @@ const userData = ref(<User>{
   phoneNumber: "",
 });
 
-getUser(route)
+store.dispatch('getUser', route)
   .then(data => {
     // User
     console.log("user data", data);

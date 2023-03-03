@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { ref, computed } from "vue";
-import { getUser } from "@/modules/all";
 import {
   mapState,
   mapGetters,
@@ -9,12 +8,13 @@ import {
   mapActions,
 } from "@/modules/mapStore";
 import router from "@/router";
-
+import {useStore} from "vuex";
+const store = useStore();
 const { pinChange, defineNotification, verifyUnique } = mapActions();
 
 const route = useRoute();
 
-const loading = ref(<boolean>false);
+const loading = ref(false);
 
 const userData = ref({
   firstName: "",
@@ -37,7 +37,7 @@ const formPinStatus = ref(<PinStates>"TEMPORARY");
 
 const formNotificationStatus = ref(<boolean>true);
 
-getUser(route)
+store.dispatch('getUser', route)
   .then(data => {
     const { user } = data;
     userData.value = {
