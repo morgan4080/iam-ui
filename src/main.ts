@@ -31,10 +31,10 @@ window.fetch = new Proxy(window.fetch, {
         // Do whatever you want with the resulting Promise
         result
             .then(response => {
-                if (!response.ok) {
-                    response.text().then(text => {
+                /*if (!response.ok) {
+                    response.json().then(json => {
                         const err = new Error("HTTP status code: " + response.status);
-                        err.message = text;
+                        err.message = json;
                         if (response.status === 401) {
                             const currentUrl = window.location.href
                             window.location.href = `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`
@@ -46,7 +46,7 @@ window.fetch = new Proxy(window.fetch, {
                         }
                         throw err;
                     });
-                }
+                }*/
                 console.log("fetch completed!", args, response);
             })
             .finally(() => {

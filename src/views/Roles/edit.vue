@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ArrowLeftCircleIcon } from '@heroicons/vue/24/solid'
+import { ArrowRightCircleIcon, ArrowLeftCircleIcon } from '@heroicons/vue/24/solid'
 import {useRoute, useRouter} from "vue-router"
-import {computed, ComputedRef, onMounted, ref} from "vue"
-import {getRole, getServices} from "@/modules/all"
+import {computed, ComputedRef, onMounted, reactive, ref} from "vue"
+import {getRole, getServices, getUsers} from "@/modules/all"
 import {useStore} from "vuex"
 const route = useRoute()
 const store = useStore()
@@ -19,11 +19,34 @@ interface serviceInterface { id: number, clientId: string, name: string, descrip
 
 interface formInterface { keycloakRoleId: string, name: string, description: string, keycloakRoleIdsToAdd: string[], keycloakRoleIdsToRemove: string[] }
 
+const currentPage = ref(<number>1)
+
+const filterForm = reactive({
+  recordsPerPage: 10,
+  searchTerm: '',
+  order: 'ASC',
+  page: currentPage.value
+})
+
+const urlParams = new URLSearchParams();
+
+if (filterForm.searchTerm !== "") {
+  urlParams.set("searchTerm", filterForm.searchTerm);
+}
+
+urlParams.set("order", filterForm.order);
+urlParams.set("sort", filterForm.order);
+urlParams.set("pageSize", `${filterForm.recordsPerPage}`);
+urlParams.set("pageIndex", `${currentPage.value - 1}`);
+
+const query = computed(() => urlParams.toString())
+
 const services = ref(< serviceInterface []>
     [
 
     ]
 )
+
 const role = ref(<any> {})
 const keycloakIds = ref(<string[]> [])
 const initialKeycloakIds = new Set<string>()
@@ -44,7 +67,7 @@ const roleUsers: ComputedRef<RoleUsers[]> = computed(() => {
   return store.getters.getRoleUsers
 })
 
-onMounted(async () => {
+const loadPage = async () => {
   try {
     const response: serviceInterface[] = await getServices()
 
@@ -96,6 +119,20 @@ onMounted(async () => {
       console.warn("fetchRoleUsers", e)
     }
   }
+
+  try {
+    await store.dispatch('getUsers', `?${query.value}`)
+  } catch (e: any) {
+    if (e.message) {
+      await store.dispatch("defineNotification", { message: e.message, error: true })
+    } else {
+      console.warn("fetchRoleUsers", e)
+    }
+  }
+}
+
+onMounted(async () => {
+  await loadPage()
 })
 
 function setPermissionToService(e: any, permission: permissionInterface) {
@@ -133,6 +170,102 @@ const actionUpdateRole = async () => {
     loading.value = false
   }
 }
+
+const allUsers: ComputedRef<{ keycloakId: string, isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[]> = computed(() => {
+  return store.getters.getAllUsers
+})
+
+const idsToAddToRole = ref<string[]>([])
+
+const setUserIdsToAddToRole = (e: any, keycloakId: string) => {
+  if (e.target.checked) {
+    idsToAddToRole.value.push(keycloakId)
+  } else {
+    let index = idsToAddToRole.value.findIndex((id: string): boolean => id === keycloakId)
+    idsToAddToRole.value.splice(index, 1)
+  }
+}
+
+const idsToRemoveFromRole = ref<string[]>([])
+
+const setUserIdsToRemoveFromRole = (e: any, keycloakId: string) => {
+  if (e.target.checked) {
+    idsToRemoveFromRole.value.push(keycloakId)
+  } else {
+    let index = idsToRemoveFromRole.value.findIndex((id: string): boolean => id === keycloakId)
+    idsToRemoveFromRole.value.splice(index, 1)
+  }
+}
+
+const removeUsersFromRole = async () => {
+  if (idsToRemoveFromRole.value.length === 0) {
+    await store.dispatch("defineNotification", { message: "Use the checkbox to select users to remove", warning: true })
+  } else {
+    if (confirm(`You are about to remove ${idsToRemoveFromRole.value.length} users from role ${form.value.name}, proceed?`)) {
+      try {
+        // call action to update role users
+        //filter role users to remove idsToRemoveFromRole
+        const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
+        const newKeycloakIds = roleUsersKeyCloakIds.filter((keycloakId) => idsToRemoveFromRole.value.indexOf(keycloakId) !== -1)
+        const response = await store.dispatch('updateUsersInRole', {
+          role_id: route.params.id,
+          keyCloakIds: newKeycloakIds
+        })
+        console.log("response removing users from role", response)
+        await store.dispatch("defineNotification", {
+          message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.name} successfully`,
+          success: true
+        })
+        // reload onMounted
+        await loadPage()
+      } catch (e: any) {
+        if (e.message) {
+          await store.dispatch("defineNotification", {message: e.message, error: true})
+        } else {
+          console.warn("removeUsersFromRole", e)
+        }
+      }
+    }
+  }
+}
+
+const addUsersToRole = async () => {
+  if (idsToAddToRole.value.length === 0) {
+    await store.dispatch("defineNotification", { message: "Use the checkbox to select users to add", warning: true })
+  } else {
+    if (confirm(`You are about to add ${idsToAddToRole.value.length} users to role ${form.value.name}, proceed?`)) {
+      try {
+        // call action to update role users
+        // map role users to return keycloak id only
+        // spread role users keycloak ids and keycloak idsToAddToRole
+        const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
+        const response = await store.dispatch('updateUsersInRole', {role_id: route.params.id, keyCloakIds: [...roleUsersKeyCloakIds, ...idsToAddToRole.value]})
+        console.log("response adding users to role", response)
+        await store.dispatch("defineNotification", { message: `Added ${idsToAddToRole.value.length} users to role ${role.name} successfully`, success: true })
+        // reload onMounted
+        await loadPage()
+      } catch (e: any) {
+        if (e.message) {
+          await store.dispatch("defineNotification", { message: e.message, error: true })
+        } else {
+          console.warn("addUsersToRole", e)
+        }
+      }
+    }
+  }
+}
+
+const filteredUsers = computed(() => {
+  // remove from allUsers, users present in roleUsers
+  const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
+  return allUsers.value.reduce((acc: typeof allUsers.value, user) => {
+    if (roleUsersKeyCloakIds.indexOf(user.keycloakId) === -1) {
+      acc.push(user)
+    }
+    return acc
+  }, [])
+})
+
 </script>
 <template>
   <div class="w-full max-h-screen overflow-y-scroll pb-24">
@@ -218,59 +351,97 @@ const actionUpdateRole = async () => {
                   <label for="description" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Service Permissions
                   </label>
-                  <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <div class="py-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                      <div v-if="services[selectedService].permissions.length === 0" class="flex items-center space-x-4 px-2 text-amber-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                        </svg>
-                        <p>Permissions not available for service <span class="font-bold">{{ services[selectedService].clientId }}</span></p>
+
+                  <div class="flex items-start col-span-4">
+                    <div class="mt-1 sm:mt-0 flex-1">
+                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                        <p v-if="services[selectedService].permissions.length > 0" class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">All {{ services[selectedService] ? services[selectedService].clientId : "" }} Permissions</p>
+                        <div v-if="services[selectedService].permissions.length === 0" class="flex items-center space-x-4 px-2 text-amber-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                          </svg>
+                          <p>Permissions not available for service <span class="font-bold">{{ services[selectedService].clientId }}</span></p>
+                        </div>
+                        <ul class="list-decimal list-inside space-y-2">
+                          <PermissionsList v-if="services[selectedService].permissions" v-for="(permission, index) in services[selectedService].permissions" :key="`${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
+                        </ul>
                       </div>
-                      <PermissionsList v-if="services[selectedService].permissions" v-for="(permission, index) in services[selectedService].permissions" :key="`${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
+                      <p class="mt-2 text-sm text-gray-500">{{ services[selectedService].description ? services[selectedService].description : "" }}</p>
                     </div>
-                    <p class="mt-2 text-sm text-gray-500">{{ services[selectedService].description ? services[selectedService].description : "" }}</p>
-                  </div>
-                  <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <div class="py-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                      <div v-if="services[selectedService].permissions.length === 0" class="flex items-center space-x-4 px-2 text-amber-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                        </svg>
-                        <p>Permissions not available for service <span class="font-bold">{{ services[selectedService].clientId }}</span></p>
+
+                    <div class="flex flex-col items-center space-y-3 my-2">
+                      <button :disabled="services[selectedService].permissions.length === 0" :class="{'cursor-not-allowed' : services[selectedService].permissions.length === 0}" type="button" class="mx-4">
+                        <ArrowLeftCircleIcon class="w-6 h-6" />
+                      </button>
+
+                      <button :disabled="services[selectedService].permissions.length === 0" :class="{'cursor-not-allowed' : services[selectedService].permissions.length === 0}" type="button" class="mx-4">
+                        <ArrowRightCircleIcon class="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    <div class="mt-1 sm:mt-0 flex-1">
+                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                        <p v-if="services[selectedService].permissions.length > 0" class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Permissions Assigned To Role {{ form.name }}</p>
+                        <div v-if="services[selectedService].permissions.length === 0" class="flex items-center space-x-4 px-2 text-amber-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                          </svg>
+                          <p>Permissions not available for service <span class="font-bold">{{ services[selectedService].clientId }}</span></p>
+                        </div>
+                        <ul class="list-decimal list-inside space-y-2">
+                          <PermissionsList v-if="services[selectedService].permissions" v-for="(permission, index) in services[selectedService].permissions" :key="`${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
+                        </ul>
                       </div>
-                      <PermissionsList v-if="services[selectedService].permissions" v-for="(permission, index) in services[selectedService].permissions" :key="`${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
                     </div>
-                    <p class="mt-2 text-sm text-gray-500">{{ services[selectedService].description ? services[selectedService].description : "" }}</p>
                   </div>
+
                 </div>
 
                 <div class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <label for="description" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Role Users
                   </label>
-                  <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                      <ul class="list-decimal list-inside">
-                        <li v-for="(user, index) in roleUsers" >
-                          <router-link class="underline" :key="index" :to="`/users/${user.id}`">
-                            {{ user.firstName }} {{ user.lastName }}
-                          </router-link>
-                        </li>
-                      </ul>
+                  <div class="flex items-start col-span-4">
+
+                    <div class="mt-1 sm:mt-0 flex-1">
+                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">All Users</p>
+                        <ul class="list-decimal list-inside space-y-2">
+                          <li v-for="(user, index) in filteredUsers" class="flex items-center justify-between">
+                            <label :for="index">
+                              {{ user.firstName }} {{ user.lastName }}
+                            </label>
+                            <input @change="setUserIdsToAddToRole($event, user.id)" :id="index" type="checkbox" class="text-xs text-gray-500">
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-                    <p class="mt-2 text-sm text-gray-500">Users assigned to {{ role.name }} role</p>
-                  </div>
-                  <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                      <ul class="list-decimal list-inside">
-                        <li v-for="(user, index) in roleUsers" >
-                          <router-link class="underline" :key="index" :to="`/users/${user.id}`">
-                            {{ user.firstName }} {{ user.lastName }}
-                          </router-link>
-                        </li>
-                      </ul>
+
+
+                    <div class="flex flex-col items-center space-y-3 my-2">
+                      <button @click="addUsersToRole" type="button" class="mx-4">
+                        <ArrowRightCircleIcon class="w-6 h-6" />
+                      </button>
+
+                      <button @click="removeUsersFromRole"  type="button" class="mx-4">
+                        <ArrowLeftCircleIcon class="w-6 h-6" />
+                      </button>
                     </div>
-                    <p class="mt-2 text-sm text-gray-500">Users assigned to {{ role.name }} role</p>
+
+                    <div class="mt-1 sm:mt-0 flex-1">
+                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Users Assigned To Role {{ form.name }}</p>
+                        <ul class="list-decimal list-inside space-y-2">
+                          <li v-for="(user, index) in roleUsers" class="flex items-center justify-between">
+                            <label :for="index">
+                              {{ user.firstName }} {{ user.lastName }}
+                            </label>
+                            <input @change="setUserIdsToRemoveFromRole($event, user.id)" :id="index" type="checkbox" class="text-xs text-gray-500">
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>
