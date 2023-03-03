@@ -15,3 +15,6 @@ export type RoleUsers = {
     isEnabled: boolean;
     isUSSDDisabled: boolean
 }
+
+export interface permissionInterface { id: number, checked: boolean, name: string, description: string, keycloakRoleId: string, roleType: string, clientName: string, clientId: string }
+export interface serviceInterface { id: number, clientId: string, name: string, description: string, permissions: permissionInterface[]}

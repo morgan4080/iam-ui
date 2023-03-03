@@ -10,6 +10,7 @@ const router = useRouter()
 import PermissionsList from '@/components/PermissionsList.vue'
 import { mapActions } from "@/modules/mapStore"
 import {RoleUsers} from "@/types/roleTypes";
+import PermissionsExchange from "@/components/PermissionsExchange.vue";
 
 const { updateRole } = mapActions()
 
@@ -41,7 +42,7 @@ urlParams.set("pageIndex", `${currentPage.value - 1}`);
 
 const query = computed(() => urlParams.toString())
 
-const services = ref(< serviceInterface []>
+const services = ref(<serviceInterface[]>
     [
 
     ]
@@ -352,48 +353,7 @@ const filteredUsers = computed(() => {
                     Service Permissions
                   </label>
 
-                  <div class="flex items-start col-span-4">
-                    <div class="mt-1 sm:mt-0 flex-1">
-                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                        <p v-if="services[selectedService].permissions.length > 0" class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">All {{ services[selectedService] ? services[selectedService].clientId : "" }} Permissions</p>
-                        <div v-if="services[selectedService].permissions.length === 0" class="flex items-center space-x-4 px-2 text-amber-700">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                          </svg>
-                          <p>Permissions not available for service <span class="font-bold">{{ services[selectedService].clientId }}</span></p>
-                        </div>
-                        <ul class="list-decimal list-inside space-y-2">
-                          <PermissionsList v-if="services[selectedService].permissions" v-for="(permission, index) in services[selectedService].permissions" :key="`${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
-                        </ul>
-                      </div>
-                      <p class="mt-2 text-sm text-gray-500">{{ services[selectedService].description ? services[selectedService].description : "" }}</p>
-                    </div>
-
-                    <div class="flex flex-col items-center space-y-3 my-2">
-                      <button :disabled="services[selectedService].permissions.length === 0" :class="{'cursor-not-allowed' : services[selectedService].permissions.length === 0}" type="button" class="mx-4">
-                        <ArrowLeftCircleIcon class="w-6 h-6" />
-                      </button>
-
-                      <button :disabled="services[selectedService].permissions.length === 0" :class="{'cursor-not-allowed' : services[selectedService].permissions.length === 0}" type="button" class="mx-4">
-                        <ArrowRightCircleIcon class="w-6 h-6" />
-                      </button>
-                    </div>
-
-                    <div class="mt-1 sm:mt-0 flex-1">
-                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                        <p v-if="services[selectedService].permissions.length > 0" class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Permissions Assigned To Role {{ form.name }}</p>
-                        <div v-if="services[selectedService].permissions.length === 0" class="flex items-center space-x-4 px-2 text-amber-700">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                          </svg>
-                          <p>Permissions not available for service <span class="font-bold">{{ services[selectedService].clientId }}</span></p>
-                        </div>
-                        <ul class="list-decimal list-inside space-y-2">
-                          <PermissionsList v-if="services[selectedService].permissions" v-for="(permission, index) in services[selectedService].permissions" :key="`${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
+                  <PermissionsExchange :existing="keycloakIds" :role_name="form.name" :selected-service="selectedService" :services="services" :setPermissionToService="setPermissionToService" />
 
                 </div>
 
@@ -405,7 +365,7 @@ const filteredUsers = computed(() => {
 
                     <div class="mt-1 sm:mt-0 flex-1">
                       <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">All Users</p>
+                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Available Users</p>
                         <ul class="list-decimal list-inside space-y-2">
                           <li v-for="(user, index) in filteredUsers" class="flex items-center justify-between">
                             <label :for="index">
@@ -430,7 +390,7 @@ const filteredUsers = computed(() => {
 
                     <div class="mt-1 sm:mt-0 flex-1">
                       <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
-                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Users Assigned To Role {{ form.name }}</p>
+                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Users Associated To Role {{ form.name }}</p>
                         <ul class="list-decimal list-inside space-y-2">
                           <li v-for="(user, index) in roleUsers" class="flex items-center justify-between">
                             <label :for="index">
