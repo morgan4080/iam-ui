@@ -11,7 +11,7 @@
 
 <template>
   <TheNavBar v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'" />
-  <div class="flex min-h-screen" >
+  <div class="flex flex-1" >
     <TheSideBar v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'" />
     <router-view></router-view>
     <Notification v-if="notification.message" :success="notification.success" :warning="notification.warning" :error="notification.error">

@@ -1,7 +1,7 @@
 import {createStore} from 'vuex'
 import apiCall from "@/utils/api"
 import axios, {AxiosResponse} from "axios"
-import {KeycloakUser} from "@/types";
+import {KeycloakUser} from "@/Users/types";
 
 const api = axios.create()
 

@@ -12,7 +12,7 @@ import {
   CheckCircleIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/vue/24/outline";
-import type { User } from "@/types";
+import type { User } from "@/Users/types";
 import { useStore } from "vuex";
 import { mapActions } from "@/modules/mapStore";
 
@@ -49,8 +49,13 @@ async function resetWebPassword() {
 
   await passReset(payload)
     .then((response: any) => {
-      loading.value = false;
-      resetSuccessful.value = true;
+      if (response.messages.some((message: any) => message.type === "SUCCESS")) {
+        loading.value = false;
+        resetSuccessful.value = true;
+      }else {
+        loading.value = false;
+        defineNotification({ message: "Something went wrong", error: true });
+      }
     })
     .catch((error: string) => {
       loading.value = false;
@@ -63,14 +68,17 @@ async function resetUSSDPin() {
   try {
     const payload = {
       ussdPhoneNumberOrKeycloakId: props.user.keycloakId,
-      pinStatus: "NOT_SET",
+      pinStatus: "TEMPORARY",
+      pin: "0000",
       notifyUser: true,
     };
     const response = await pinChange(payload);
-    console.log(response);
-    if (response.status === 200) {
+    if (response.messages.some((message: any) => message.type === "SUCCESS")) {
       loading.value = false;
       resetSuccessful.value = true;
+    }else {
+      loading.value = false;
+      await defineNotification({ message: "Something went wrong", error: true });
     }
   } catch (e: any) {
     console.log(e);

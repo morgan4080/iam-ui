@@ -7,7 +7,7 @@ import {mapActions} from "@/modules/mapStore"
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
 import {ChevronDownIcon} from '@heroicons/vue/20/solid'
 import ResetCredentialsModal from "@/components/ResetCredentialsModal.vue";
-import type {User} from "@/types";
+import type {User} from "@/Users/types";
 
 const {syncUser, userEnable, userDisable} = mapActions()
 

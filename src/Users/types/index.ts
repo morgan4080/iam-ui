@@ -25,3 +25,17 @@ export interface KeycloakUser {
     companyName: string;
     roles: Record<string, string[]>
 }
+
+export interface EnableUserPayload {
+    userRefId: string;
+    isEnabled: boolean
+}
+
+export interface Pageables {
+    recordsPerPage: number,
+    totalRecords: number,
+    totalPages: number,
+    currentPage: number,
+    searchTerm: string | null,
+    sort: 'ASC' | 'DESC',
+}
