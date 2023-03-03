@@ -23,7 +23,7 @@ const notification = computed(() => store.getters.getNotification);
         v-if="notification.message"
         :success="notification.success"
         :warning="notification.warning"
-        :error="!notification.error"
+        :error="notification.error"
       >
         <p>{{ notification.message }}</p>
       </Notification>

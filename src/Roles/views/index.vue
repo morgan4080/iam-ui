@@ -3,9 +3,10 @@ import { onBeforeMount } from "vue";
 import Table from "@ui/Table.vue";
 import TableActions from "@ui/TableActions.vue";
 import { useRouter } from "vue-router";
-import { Role } from "@/Roles/types";
 import { mapActions } from "@/modules/mapStore";
 import { useRoles } from "@/Roles/composables/useRoles";
+import { syncRoles, syncServices } from "@/modules/all";
+import store from "@/store";
 
 const router = useRouter();
 const { roles, pageables, isLoading, fetchRoles } = useRoles();
@@ -41,6 +42,15 @@ async function searchRoles() {
   await fetchRoles();
 }
 
+async function sync() {
+  await syncServices();
+  const response: any = await syncRoles();
+  await store.dispatch("defineNotification", {
+    message: response.message,
+    success: true,
+  });
+}
+
 onBeforeMount(async () => await fetchRoles());
 </script>
 
@@ -48,10 +58,12 @@ onBeforeMount(async () => await fetchRoles());
   <div class="px-4 sm:px-6 lg:px-8 w-full py-6">
     <TableActions
       :pageables="pageables"
+      :loading="isLoading"
       title="Roles"
       description=" A list of all the roles including their type and description"
       @sort="sortRoles"
       @search="searchRoles"
+      @sync="sync"
     >
       <template v-slot:actionButton>
         <button
@@ -98,7 +110,7 @@ onBeforeMount(async () => await fetchRoles());
                 @click="e => e.stopPropagation()"
               >
                 <router-link
-                  :to="`/profiles/${role.keycloakRoleId}/edit`"
+                  :to="`/roles/${role.keycloakRoleId}/edit`"
                   class="text-indigo-600 hover:text-indigo-900"
                   >Edit
                   <span class="sr-only">, {{ role.description }}</span>

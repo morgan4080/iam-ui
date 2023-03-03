@@ -1,5 +1,5 @@
-import { onBeforeMount, reactive, ref } from "vue";
-import type { EnableUserPayload, Pageables, User } from "@/Users/types";
+import { reactive, ref } from "vue";
+import { EnableUserPayload, Pageables, User } from "@/Users/types";
 
 export const useUsers = () => {
   const user = ref<User | null>(null);
@@ -28,9 +28,6 @@ export const useUsers = () => {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to sync users");
-      }
 
       const data = await response.json();
       user.value = data.user;
@@ -56,9 +53,6 @@ export const useUsers = () => {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
 
       const data = await response.json();
       users.value = data.records;
@@ -87,9 +81,6 @@ export const useUsers = () => {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to sync users");
-      }
 
       const data = await response.json();
 
@@ -101,7 +92,7 @@ export const useUsers = () => {
     }
   }
 
-  async function enableUser(payload: EnableUserPayload) {
+  async function enableOrDisableUser(payload: EnableUserPayload) {
     isLoading.value = true;
     error.value = null;
     try {
@@ -115,13 +106,8 @@ export const useUsers = () => {
           body: JSON.stringify(payload),
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to enable users: " + response.statusText);
-      }
 
-      const data = await response.json();
-
-      return data;
+      return await response.json();
     } catch (err) {
       error.value = err;
     } finally {
@@ -129,12 +115,14 @@ export const useUsers = () => {
     }
   }
 
-  async function disableUser(payload: EnableUserPayload) {
+  async function editUser(keycloakId: string, payload: any) {
     isLoading.value = true;
     error.value = null;
     try {
       let response = await fetch(
-        `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
+        `${
+          import.meta.env.VITE_DOMAIN_URL
+        }/users-admin/api/users/${keycloakId}`,
         {
           method: "PUT",
           headers: {
@@ -143,15 +131,10 @@ export const useUsers = () => {
           body: JSON.stringify(payload),
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to enable users: " + response.statusText);
-      }
-
-      const data = await response.json();
-
-      return data;
-    } catch (err) {
+      return await response.json();
+    } catch (err: any) {
       error.value = err;
+      throw new Error(err);
     } finally {
       isLoading.value = false;
     }
@@ -172,14 +155,36 @@ export const useUsers = () => {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to enable users: " + response.statusText);
-      }
       const data = await response.text();
       return data;
     } catch (err) {
       error.value = err;
       throw new Error("Something went wrong");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function verifyUnique(params: string) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      let response = await fetch(
+        `${
+          import.meta.env.VITE_DOMAIN_URL
+        }/users-admin/api/v1/users/by-identifier/${params}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      error.value = err;
     } finally {
       isLoading.value = false;
     }
@@ -202,8 +207,11 @@ export const useUsers = () => {
     users,
     isLoading,
     error,
+    syncUser,
+    enableOrDisableUser,
     fetchUser,
     fetchUsers,
     deleteUser,
+    verifyUnique,
   };
 };

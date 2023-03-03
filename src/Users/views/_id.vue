@@ -2,16 +2,14 @@
 import { useRoute } from "vue-router";
 import { ref, computed, onBeforeMount } from "vue";
 import { useStore } from "vuex";
-import { mapActions } from "@/modules/mapStore";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import ResetCredentialsModal from "@/components/ResetCredentialsModal.vue";
 import { useRoles } from "@/Roles/composables/useRoles";
 import { useUsers } from "@/Users/composables/useUsers";
 
-const { syncUser, userEnable, userDisable } = mapActions();
 const { fetchUserRoles, userRoles } = useRoles();
-const { user, fetchUser } = useUsers();
+const { user, fetchUser, syncUser, enableOrDisableUser } = useUsers();
 
 const route = useRoute();
 
@@ -51,7 +49,7 @@ function getInitials(fullName: string) {
 const fetchUserData = async () => {
   console.log("Run");
   const userRefId = route.params.id as string;
-  await fetchUser(userRefId).then(async data => {
+  await fetchUser(userRefId).then(async (data: any) => {
     if (data && user.value?.keycloakId)
       await fetchUserRoles(user.value.keycloakId);
   });
@@ -68,74 +66,73 @@ function resetUSSDPin() {
 }
 
 const synchronizeUser = async () => {
-  try {
-    loading.value = true;
-    const response = await syncUser(`${user.value.id}`);
-    console.log(response);
-    loading.value = false;
-    await store.dispatch("defineNotification", {
-      message: "User Account Synchronised",
-      success: true,
-    });
-  } catch (e: any) {
-    await store.dispatch("defineNotification", {
-      message: e.message,
-      error: true,
-    });
-  }
+  loading.value = true;
+  if (!user.value) return;
+  await syncUser(`${user.value.id}`)
+    .then(async (response: any) => {
+      await store.dispatch("defineNotification", {
+        message: "User Account Synchronised",
+        success: true,
+      });
+    })
+    .catch(async (e: any) => {
+      await store.dispatch("defineNotification", {
+        message: e.message,
+        error: true,
+      });
+    })
+    .finally(() => (loading.value = false));
 };
 
 const enableUser = async () => {
+  if (!user.value) return;
   if (confirm(`You are about to enable user ${user.value.firstName}`)) {
     loading.value = true;
-    try {
-      const payload: { userRefId: string | any; isEnabled: boolean } = {
-        userRefId: route.params.id,
-        isEnabled: true,
-      };
-      const response = await userEnable(payload);
-      console.log(response);
-      await store.dispatch("defineNotification", {
-        message: "User Account Enabled",
-        success: true,
-      });
-      await fetchUserData();
-    } catch (e: any) {
-      console.log("enableUser error", e);
-      await store.dispatch("defineNotification", {
-        message: "User Enable Error",
-        error: true,
-      });
-    } finally {
-      loading.value = false;
-    }
+    const payload: { userRefId: string | any; isEnabled: boolean } = {
+      userRefId: route.params.id,
+      isEnabled: true,
+    };
+    await enableOrDisableUser(payload)
+      .then(async (response: any) => {
+        await store.dispatch("defineNotification", {
+          message: "User Account Enabled",
+          success: true,
+        });
+        await fetchUserData();
+      })
+      .catch(async (e: any) => {
+        await store.dispatch("defineNotification", {
+          message: e.message,
+          error: true,
+        });
+      })
+      .finally(() => (loading.value = false));
   }
 };
 
 const disableUser = async () => {
+  if (!user.value) return;
   if (confirm(`You are about to disable user ${user.value.firstName}`)) {
     loading.value = true;
-    try {
-      const payload: { userRefId: string | any; isEnabled: boolean } = {
-        userRefId: route.params.id,
-        isEnabled: false,
-      };
-      const response = await userDisable(payload);
-      console.log(response);
-      await store.dispatch("defineNotification", {
-        message: "User Account Disabled",
-        success: true,
-      });
-      await fetchUserData();
-    } catch (e: any) {
-      console.log("disableUser error", e);
-      await store.dispatch("defineNotification", {
-        message: "User Disable Error",
-        error: true,
-      });
-    } finally {
-      loading.value = false;
-    }
+    const payload: { userRefId: string | any; isEnabled: boolean } = {
+      userRefId: route.params.id,
+      isEnabled: false,
+    };
+    await enableOrDisableUser(payload)
+      .then(async (response: any) => {
+        await store.dispatch("defineNotification", {
+          message: "User Account Disabled",
+          success: true,
+        });
+        await fetchUserData();
+      })
+      .catch(async (e: any) => {
+        await store.dispatch("defineNotification", {
+          message: e.message,
+          error: true,
+        });
+      })
+      .finally(() => (loading.value = false));
   }
 };
 

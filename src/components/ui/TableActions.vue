@@ -3,17 +3,18 @@ import {
   BarsArrowUpIcon,
   BarsArrowDownIcon,
   MagnifyingGlassIcon,
-  XMarkIcon,
+  ArrowPathIcon,
 } from "@heroicons/vue/20/solid";
 import type { Pageables } from "@/Users/types";
 
 const props = defineProps<{
   title: string;
+  loading: boolean;
   pageables: Pageables;
   description: string;
 }>();
 
-const emit = defineEmits(["sort", "search"]);
+const emit = defineEmits(["sort", "search", "sync"]);
 </script>
 
 <template>
@@ -27,6 +28,15 @@ const emit = defineEmits(["sort", "search"]);
       </p>
     </div>
     <div class="flex space-x-4 mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+      <div
+        @click.prevent="emit('sync')"
+        class="flex items-center hover:cursor-pointer"
+      >
+        <ArrowPathIcon
+          class="h-6 w-6 text-gray-400"
+          :class="loading && 'animate-spin'"
+        />
+      </div>
       <div class="flex rounded-md shadow-sm">
         <div class="relative flex focus-within:z-10">
           <div

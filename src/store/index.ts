@@ -87,27 +87,6 @@ const store = createStore<State>({
   },
   actions: {
     //from all.ts
-    syncUser({ commit }, param) {
-      return new Promise(async (resolve, reject) => {
-        let response = await fetch(
-          import.meta.env.VITE_DOMAIN_URL +
-            `/users-admin/api/v1/roles/users/${param}/sync`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
-      });
-    },
     syncUsers({ commit }, payload) {
       return new Promise(async (resolve, reject) => {
         let response = await fetch(
@@ -131,69 +110,6 @@ const store = createStore<State>({
     },
     defineNotification({ commit }, payload) {
       commit("set_notification", payload);
-    },
-    async userDisable({ commit }, payload) {
-      return new Promise(async (resolve, reject) => {
-        let response = await fetch(
-          import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-        if (response.status === 200) {
-          const data = await response.json();
-          resolve(data);
-        } else {
-          reject("User disabling failed");
-        }
-      });
-    },
-    async userEnable({ commit }, payload) {
-      return new Promise(async (resolve, reject) => {
-        let response = await fetch(
-          import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-        if (response.status === 200) {
-          const data = await response.json();
-          resolve(data);
-        } else {
-          reject("User enabling failed");
-        }
-      });
-    },
-    async verifyUnique({ commit }, payload) {
-      return new Promise(async (resolve, reject) => {
-        let response = await fetch(
-          import.meta.env.VITE_DOMAIN_URL +
-            "/users-admin/api/v1/users/by-identifier" +
-            payload,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.status !== 200) {
-          resolve("unique");
-        }
-
-        if (response.status === 200) {
-          const data = await response.json();
-          resolve(data);
-        }
-      });
     },
     logout({ commit }, payload) {
       const url = import.meta.env.VITE_DOMAIN_URL + "/";

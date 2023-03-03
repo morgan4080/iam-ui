@@ -138,23 +138,6 @@ export function getPermissions(): Promise<any> {
 
   return apiCall({ url, method, headers }, { withCredentials: true });
 }
-
-export function getUser(route: any): Promise<any> {
-  const url: string =
-    import.meta.env.VITE_DOMAIN_URL +
-    "/users-admin/api/users/" +
-    route.params.id;
-
-  const myHeaders = new Headers();
-
-  myHeaders.append("Authorization", `*/*`);
-
-  const headers = myHeaders;
-
-  const method = "GET";
-
-  return apiCall({ url, method, headers }, { withCredentials: true });
-}
 //moved
 export async function postUser(payload: any): Promise<any> {
   try {
