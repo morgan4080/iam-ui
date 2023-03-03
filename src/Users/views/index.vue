@@ -56,13 +56,13 @@ async function delUser(user: User) {
   )
     return;
   await deleteUser(user.keycloakId)
-    .then( async (response: string) => {
+    .then(async (response: string) => {
       if (response) {
         defineNotification({
           message: "User deleted successfully",
           success: true,
         });
-        await fetchUsers()
+        await fetchUsers();
       } else {
         defineNotification({
           message: "User deleted successfully",
@@ -89,7 +89,7 @@ onBeforeMount(async () => await fetchUsers());
     >
       <template v-slot:actionButton>
         <button
-            @click="router.push('/users/create')"
+          @click="router.push('/users/create')"
           type="button"
           class="block rounded-md bg-blue-500 hover:bg-blue-700 py-2 px-3 text-center text-sm font-semibold text-white shadow-sm"
         >

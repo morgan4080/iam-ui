@@ -13,6 +13,7 @@ export default defineConfig({
             {find: '@', replacement: '/src'},
             {find: '@ui', replacement: '/src/components/ui'},
             {find: '@users', replacement: '/src/Users'},
+            {find: '@roles', replacement: '/src/Roles'},
         ],
     },
     envDir: path.resolve(__dirname, './'),
