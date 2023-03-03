@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import { ArrowRightCircleIcon, ArrowLeftCircleIcon } from '@heroicons/vue/24/solid'
 import {useRoute, useRouter} from "vue-router"
-import {onMounted, ref, watch} from "vue"
-import {getRole, getServices} from "@/modules/all"
+import {computed, ComputedRef, onMounted, reactive, ref} from "vue"
+import {getRole, getServices, getUsers} from "@/modules/all"
 import {useStore} from "vuex"
 const route = useRoute()
 const store = useStore()
 const router = useRouter()
 import PermissionsList from '@/components/PermissionsList.vue'
 import { mapActions } from "@/modules/mapStore"
+import {RoleUsers} from "@/types/roleTypes";
+import PermissionsExchange from "@/components/PermissionsExchange.vue";
 
 const { updateRole } = mapActions()
 
@@ -17,11 +20,34 @@ interface serviceInterface { id: number, clientId: string, name: string, descrip
 
 interface formInterface { keycloakRoleId: string, name: string, description: string, keycloakRoleIdsToAdd: string[], keycloakRoleIdsToRemove: string[] }
 
-const services = ref(< serviceInterface []>
+const currentPage = ref(<number>1)
+
+const filterForm = reactive({
+  recordsPerPage: 10,
+  searchTerm: '',
+  order: 'ASC',
+  page: currentPage.value
+})
+
+const urlParams = new URLSearchParams();
+
+if (filterForm.searchTerm !== "") {
+  urlParams.set("searchTerm", filterForm.searchTerm);
+}
+
+urlParams.set("order", filterForm.order);
+urlParams.set("sort", filterForm.order);
+urlParams.set("pageSize", `${filterForm.recordsPerPage}`);
+urlParams.set("pageIndex", `${currentPage.value - 1}`);
+
+const query = computed(() => urlParams.toString())
+
+const services = ref(<serviceInterface[]>
     [
 
     ]
 )
+
 const role = ref(<any> {})
 const keycloakIds = ref(<string[]> [])
 const initialKeycloakIds = new Set<string>()
@@ -36,7 +62,13 @@ const form = ref(< formInterface >
     }
 )
 
-onMounted(async () => {
+const selectedService = ref<number | null>(null)
+
+const roleUsers: ComputedRef<RoleUsers[]> = computed(() => {
+  return store.getters.getRoleUsers
+})
+
+const loadPage = async () => {
   try {
     const response: serviceInterface[] = await getServices()
 
@@ -75,15 +107,34 @@ onMounted(async () => {
         initialKeycloakIds.add(key)
       })
     }
-
-
-
   } catch (e: any) {
     await store.dispatch("defineNotification", { message: e.message, error: true })
   }
-})
 
-const reviewed = ref(<boolean> false)
+  try {
+    await store.dispatch('fetchRoleUsers', route.params.id)
+  } catch (e: any) {
+    if (e.message) {
+      await store.dispatch("defineNotification", { message: e.message, error: true })
+    } else {
+      console.warn("fetchRoleUsers", e)
+    }
+  }
+
+  try {
+    await store.dispatch('getUsers', `?${query.value}`)
+  } catch (e: any) {
+    if (e.message) {
+      await store.dispatch("defineNotification", { message: e.message, error: true })
+    } else {
+      console.warn("fetchRoleUsers", e)
+    }
+  }
+}
+
+onMounted(async () => {
+  await loadPage()
+})
 
 function setPermissionToService(e: any, permission: permissionInterface) {
   if (e.target.checked) {
@@ -120,6 +171,102 @@ const actionUpdateRole = async () => {
     loading.value = false
   }
 }
+
+const allUsers: ComputedRef<{ keycloakId: string, isEnabled: boolean, username: string, email: string, firstName: string, lastName: string, phoneNumber: string, ussdPhoneNumber: string, id: string }[]> = computed(() => {
+  return store.getters.getAllUsers
+})
+
+const idsToAddToRole = ref<string[]>([])
+
+const setUserIdsToAddToRole = (e: any, keycloakId: string) => {
+  if (e.target.checked) {
+    idsToAddToRole.value.push(keycloakId)
+  } else {
+    let index = idsToAddToRole.value.findIndex((id: string): boolean => id === keycloakId)
+    idsToAddToRole.value.splice(index, 1)
+  }
+}
+
+const idsToRemoveFromRole = ref<string[]>([])
+
+const setUserIdsToRemoveFromRole = (e: any, keycloakId: string) => {
+  if (e.target.checked) {
+    idsToRemoveFromRole.value.push(keycloakId)
+  } else {
+    let index = idsToRemoveFromRole.value.findIndex((id: string): boolean => id === keycloakId)
+    idsToRemoveFromRole.value.splice(index, 1)
+  }
+}
+
+const removeUsersFromRole = async () => {
+  if (idsToRemoveFromRole.value.length === 0) {
+    await store.dispatch("defineNotification", { message: "Use the checkbox to select users to remove", warning: true })
+  } else {
+    if (confirm(`You are about to remove ${idsToRemoveFromRole.value.length} users from role ${form.value.name}, proceed?`)) {
+      try {
+        // call action to update role users
+        //filter role users to remove idsToRemoveFromRole
+        const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
+        const newKeycloakIds = roleUsersKeyCloakIds.filter((keycloakId) => idsToRemoveFromRole.value.indexOf(keycloakId) !== -1)
+        const response = await store.dispatch('updateUsersInRole', {
+          role_id: route.params.id,
+          keyCloakIds: newKeycloakIds
+        })
+        console.log("response removing users from role", response)
+        await store.dispatch("defineNotification", {
+          message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.name} successfully`,
+          success: true
+        })
+        // reload onMounted
+        await loadPage()
+      } catch (e: any) {
+        if (e.message) {
+          await store.dispatch("defineNotification", {message: e.message, error: true})
+        } else {
+          console.warn("removeUsersFromRole", e)
+        }
+      }
+    }
+  }
+}
+
+const addUsersToRole = async () => {
+  if (idsToAddToRole.value.length === 0) {
+    await store.dispatch("defineNotification", { message: "Use the checkbox to select users to add", warning: true })
+  } else {
+    if (confirm(`You are about to add ${idsToAddToRole.value.length} users to role ${form.value.name}, proceed?`)) {
+      try {
+        // call action to update role users
+        // map role users to return keycloak id only
+        // spread role users keycloak ids and keycloak idsToAddToRole
+        const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
+        const response = await store.dispatch('updateUsersInRole', {role_id: route.params.id, keyCloakIds: [...roleUsersKeyCloakIds, ...idsToAddToRole.value]})
+        console.log("response adding users to role", response)
+        await store.dispatch("defineNotification", { message: `Added ${idsToAddToRole.value.length} users to role ${role.name} successfully`, success: true })
+        // reload onMounted
+        await loadPage()
+      } catch (e: any) {
+        if (e.message) {
+          await store.dispatch("defineNotification", { message: e.message, error: true })
+        } else {
+          console.warn("addUsersToRole", e)
+        }
+      }
+    }
+  }
+}
+
+const filteredUsers = computed(() => {
+  // remove from allUsers, users present in roleUsers
+  const roleUsersKeyCloakIds = roleUsers.value.map((user) => user.keycloakId)
+  return allUsers.value.reduce((acc: typeof allUsers.value, user) => {
+    if (roleUsersKeyCloakIds.indexOf(user.keycloakId) === -1) {
+      acc.push(user)
+    }
+    return acc
+  }, [])
+})
+
 </script>
 <template>
   <div class="w-full max-h-screen overflow-y-scroll pb-24">
@@ -158,7 +305,7 @@ const actionUpdateRole = async () => {
                 </p>
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <div class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <label for="role_name" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Role name
                   </label>
@@ -179,37 +326,82 @@ const actionUpdateRole = async () => {
                     </div>
                   </div>
                 </div>
-                <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <div class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                   <label for="description" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Description
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <textarea v-model="form.description" id="description" rows="3" class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md" required></textarea>
+                    <textarea v-model="form.description" id="description" rows="2" class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md" required></textarea>
                     <p class="mt-2 text-sm text-gray-500">Write a short description about the role.</p>
                   </div>
                 </div>
-              </div>
-              <div class="mt-10 divide-y divide-gray-200">
-                <div>
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                <div class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label for="description" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
                     Services
-                  </h3>
-                  <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                    Assign service permissions to role.
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-3">
-                <div v-for="(service, i) in services" :key="i" class="col-span-1 sm:border-t sm:border-gray-200">
-                  <div class="p-1 bg-blue-50 flex items-center sm:mt-px sm:pt-2 space-x-2">
-                    <div class="block text-base font-medium text-gray-700">{{ i+1 }}.&nbsp;{{ service.clientId }}</div>
-                    <div class="text-xs text-gray-500">
-                      {{ service.description }}
-                    </div>
+                  </label>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <select v-model="selectedService" class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                      <option :value="null">Select Service</option>
+                      <option v-for="(service, i) in services" :key="i" :value="i">{{ service.clientId }} <!--{{service.name ? `: ${service.name}` : ``}}--></option>
+                    </select>
+                    <p class="mt-2 text-sm text-gray-500">Select a service to start assigning permissions to this role.</p>
                   </div>
-                  <div class="sm:grid sm:grid-cols-3 sm:gap-4">
-                    <PermissionsList v-for="(permission, index) in services[i].permissions" :key="`${i}${index}`" :existing="keycloakIds" :permission="permission" @change="setPermissionToService"/>
+                </div>
+
+                <div v-if="typeof selectedService === 'number'" class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label for="description" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                    Service Permissions
+                  </label>
+
+                  <PermissionsExchange :existing="keycloakIds" :role_name="form.name" :selected-service="selectedService" :services="services" :setPermissionToService="setPermissionToService" />
+
+                </div>
+
+                <div class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label for="description" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                    Role Users
+                  </label>
+                  <div class="flex items-start col-span-4">
+
+                    <div class="mt-1 sm:mt-0 flex-1">
+                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Available Users</p>
+                        <ul class="list-decimal list-inside space-y-2">
+                          <li v-for="(user, index) in filteredUsers" class="flex items-center justify-between">
+                            <label :for="index">
+                              {{ user.firstName }} {{ user.lastName }}
+                            </label>
+                            <input @change="setUserIdsToAddToRole($event, user.id)" :id="index" type="checkbox" class="text-xs text-gray-500">
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+
+                    <div class="flex flex-col items-center space-y-3 my-2">
+                      <button @click="addUsersToRole" type="button" class="mx-4">
+                        <ArrowRightCircleIcon class="w-6 h-6" />
+                      </button>
+
+                      <button @click="removeUsersFromRole"  type="button" class="mx-4">
+                        <ArrowLeftCircleIcon class="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    <div class="mt-1 sm:mt-0 flex-1">
+                      <div class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md">
+                        <p class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100">Users Associated To Role {{ form.name }}</p>
+                        <ul class="list-decimal list-inside space-y-2">
+                          <li v-for="(user, index) in roleUsers" class="flex items-center justify-between">
+                            <label :for="index">
+                              {{ user.firstName }} {{ user.lastName }}
+                            </label>
+                            <input @change="setUserIdsToRemoveFromRole($event, user.id)" :id="index" type="checkbox" class="text-xs text-gray-500">
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </div>

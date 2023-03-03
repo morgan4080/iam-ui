@@ -1,9 +1,11 @@
-import {createStore} from 'vuex'
+import { createStore, Store } from 'vuex'
 import apiCall from "@/utils/api"
 import axios, {AxiosResponse} from "axios"
 import {KeycloakUser} from "@/Users/types";
+import {RoleUsers} from "@/types/roleTypes";
+import {InjectionKey} from "vue";
 
-const api = axios.create()
+/*const api = axios.create()
 
 api.interceptors.response.use((response: AxiosResponse) => {
     if (response.status === 302) {
@@ -13,17 +15,23 @@ api.interceptors.response.use((response: AxiosResponse) => {
     }
 
     return response
-})
+})*/
 
-interface State {
-    user: KeycloakUser | null,
+// define your typings for the store state
+export interface State {
+    user: any | null;
     notification: {
-        message: null | string,
-        success: boolean,
-        warning: boolean,
-        error: boolean,
-    }
+        message: string | null;
+        success: boolean;
+        warning: boolean;
+        error: boolean;
+    },
+    roleUsers: RoleUsers[];
+    allUsers: RoleUsers[];
 }
+
+// define injection key
+export const key: InjectionKey<Store<State>> = Symbol()
 
 const store = createStore<State>({
     state() {
@@ -35,10 +43,14 @@ const store = createStore<State>({
                 warning: false,
                 error: false,
             },
+            roleUsers: [],
+            allUsers: [],
         }
     },
     getters: {
         getNotification: (state: any) => state.notification,
+        getRoleUsers: (state) => state.roleUsers,
+        getAllUsers: (state) => state.allUsers
     },
     mutations: {
         set_current_user(state: any, payload: KeycloakUser) {
@@ -58,7 +70,12 @@ const store = createStore<State>({
                 }
             }, 10000)
         },
-
+        set_role_users(state, payload: RoleUsers[]) {
+            state.roleUsers = payload
+        },
+        set_all_users(state, payload: RoleUsers[]) {
+            state.allUsers = payload
+        }
     },
     actions: {
         //from all.ts
@@ -448,22 +465,21 @@ const store = createStore<State>({
                 }
             })
         },
-        getUsers({}, query: string = ''): Promise<any> {
-
+        getUsers({ commit }, query: string = ''): Promise<any> {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users${query}`
-            const method = 'GET'
             return new Promise(async (resolve, reject) => {
                 let response = await fetch(url, {
-                    method: method,
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                 })
                 const data = await response.json()
 
-                if (response.status !== 200) {
+                if (!response.ok && response.status !== 200) {
                     reject(data)
                 } else {
+                    if (data.records) commit("set_all_users", data.records)
                     resolve(data)
                 }
             })
@@ -550,7 +566,53 @@ const store = createStore<State>({
                     resolve(data)
                 }
             })
-        }
+        },
+        fetchRoleUsers({ commit }, role_id: string): Promise<any> {
+
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/${role_id}/users`
+            const method = 'GET'
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                const data = await response.json()
+
+                if (!response.ok && response.status !== 200) {
+                    reject(data)
+                } else {
+                    if (data.data) commit("set_role_users", data.data)
+                    resolve(data)
+                }
+            })
+
+        },
+        updateUsersInRole({ }, { role_id, keyCloakIds }: {role_id: string, keyCloakIds: string[]}) {
+            const payload = {
+                userKeyCloakIds: keyCloakIds
+            }
+
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/${role_id}/users`
+
+            return new Promise(async (resolve, reject) => {
+                let response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                const data = await response.json()
+                console.log("updateUsersInRole", data)
+                if (!response.ok && response.status !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
+            })
+        },
     }
 })
 

@@ -4,6 +4,9 @@ import {getPermissions, getRoles} from "@/modules/all"
 import { useStore } from "vuex"
 import { mapActions } from "@/modules/mapStore"
 import {useRouter} from "vue-router"
+import {isValidNumberForRegion, parsePhoneNumber} from "libphonenumber-js";
+import useVuelidate from "@vuelidate/core";
+import {email, helpers, maxLength, minLength, numeric, required, sameAs} from "@vuelidate/validators";
 const router = useRouter()
 
 const { postUser, defineNotification, verifyUnique } = mapActions()
@@ -13,6 +16,16 @@ const store = useStore()
 const available_roles = ref(<{name: string, roleType: string, keycloakRoleId: string, roleDescription: string, id: string }[]>[])
 
 const available_permissions = ref(<any[]>[])
+
+interface form1Interface {
+  firstName: string,
+  lastName: string,
+  email: string,
+  phoneNumber: string,
+  user_types: string[]
+}
+
+type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
 
 getRoles().then((response: any) => {
   available_roles.value = response.records
@@ -26,65 +39,92 @@ getPermissions().then((data: any) => {
   alert(e.message)
 })
 
-interface form1Interface {
-  firstName: string,
-  lastName: string,
-  email: string,
-  phoneNumber: string,
-  user_types: string[]
-}
+const validPhone = (value: number) => isValidNumberForRegion(`${value}`, 'KE')
 
 const formContacts = ref(<form1Interface>{
   firstName: '',
   lastName: '',
   email: '',
-  phoneNumber: '254',
+  phoneNumber: '',
   user_types: [],
 })
 
-const formWebAccess = ref(<{ username: string, password?: string, passwordConfirmation?: string }>{
+const validationRulesFormContacts = {
+  firstName: {
+    required,
+  },
+  lastName: {
+    required,
+  },
+  email: {
+    required,
+    email
+  },
+  phoneNumber: {
+    required,
+    numeric,
+    validPhone: helpers.withMessage('Please provide a valid number', validPhone)
+  }
+}
+
+const vFormContacts$ = useVuelidate(validationRulesFormContacts, formContacts.value, { $lazy: true, $autoDirty: true})
+
+const formWebAccess = ref(<{ username: string, password: string, passwordConfirmation: string }>{
   username: '',
   password: '',
   passwordConfirmation: ''
 })
 
-type PinStates = "SET" | "NOT-SET" | "TEMPORARY"
+const validationRulesFormWebAccess = {
+  username: {
+    required,
+  },
+  password: {
+    required,
+  },
+  passwordConfirmation: {
+    required
+  }
+}
 
-const formPinStatus = ref(<PinStates> "SET")
+const vFormWebAccess$ = useVuelidate(validationRulesFormWebAccess, formWebAccess.value, { $lazy: true, $autoDirty: true})
 
-const formUSSDAccess = ref(<{ phoneNumber: string, pin?: string, pinConfirmation?: string }> {
-  phoneNumber: '254',
+const formUSSDAccess = ref(<{ phoneNumber: string, pin: string, pinConfirmation: string }> {
+  phoneNumber: '',
   pin: '',
   pinConfirmation: ''
 })
+
+const validationRulesFormUSSDAccess = {
+  phoneNumber: {
+    required,
+    numeric,
+    validPhone: helpers.withMessage('Please provide a valid number', validPhone)
+  },
+  pin: {
+    required,
+    min: minLength(4),
+    max: maxLength(4),
+    numeric
+  },
+  pinConfirmation: {
+    required,
+    min: minLength(4),
+    max: maxLength(4),
+    numeric
+  },
+}
+
+const vFormUSSDAccess$ = useVuelidate(validationRulesFormUSSDAccess, formUSSDAccess.value, { $lazy: true, $autoDirty: true})
 
 const formRoles = ref(<{user_has_roles: any, user_roles: any}> {
   user_has_roles: null,
   user_roles: null
 })
 
+const formPinStatus = ref(<PinStates> "SET")
+
 const currentStep = ref(<number> 1)
-
-/*const steps = ref([
-  {
-    stage: 1,
-    state: 'Current'
-  },
-  {
-    stage: 2,
-    state: 'Upcoming'
-  },
-  {
-    stage: 3,
-    state: 'Upcoming'
-  },
-  {
-    stage: 4,
-    state: 'Upcoming'
-  }
-])*/
-
-// const errorUserHasRoles = ref(false)
 
 const errorUserRoles = ref(false)
 
@@ -149,15 +189,20 @@ function nextStep () {
 const saveUser = async (rolesPayload: string[]) => {
   let payloadOut: any
   if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
+    const phoneNumber = parsePhoneNumber(`${formContacts.value.phoneNumber}`, "KE")
+    const phoneNumber1 = parsePhoneNumber(`${formUSSDAccess.value.phoneNumber}`, "KE")
     let payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
         email: formContacts.value.email,
-        phone: formContacts.value.phoneNumber
+        phone: `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`
       },
       webCredentials: formWebAccess.value,
-      ussdCredentials: formUSSDAccess.value,
+      ussdCredentials: {
+        ...formUSSDAccess.value,
+        phoneNumber: `${phoneNumber1?.countryCallingCode}${phoneNumber1?.nationalNumber}`,
+      },
       pinStatus: formPinStatus.value,
       activateLogIn: true,
       enabled: true,
@@ -180,20 +225,22 @@ const saveUser = async (rolesPayload: string[]) => {
     payloadOut = payload
 
   } else if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') === -1) {
+    const phoneNumber = parsePhoneNumber(`${formContacts.value.phoneNumber}`, "KE")
+    const phoneNumber1 = parsePhoneNumber(`${formUSSDAccess.value.phoneNumber}`, "KE")
     let payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
         email: formContacts.value.email,
-        phone: `254${formContacts.value.phoneNumber}`
+        phone: `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`
       },
       webCredentials: {
-        username: `254${formUSSDAccess.value.phoneNumber}`,
+        username: `${formUSSDAccess.value.phoneNumber}`,
         password: formUSSDAccess.value.pin,
       },
       ussdCredentials: {
         ...formUSSDAccess.value,
-        phoneNumber: `254${formUSSDAccess.value.phoneNumber}`,
+        phoneNumber: `${phoneNumber1?.countryCallingCode}${phoneNumber1?.nationalNumber}`,
       },
       activateLogIn: false,
       pinStatus: formPinStatus.value,
@@ -215,12 +262,13 @@ const saveUser = async (rolesPayload: string[]) => {
     payloadOut = payload
 
   } else if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') === -1 && formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
+    const phoneNumber = parsePhoneNumber(`${formContacts.value.phoneNumber}`, "KE")
     let payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
         email: formContacts.value.email,
-        phone: `254${formContacts.value.phoneNumber}`
+        phone: `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`
       },
       webCredentials: formWebAccess.value,
       activateLogIn: false,
@@ -241,6 +289,7 @@ const saveUser = async (rolesPayload: string[]) => {
 
     payloadOut = payload
   }
+
   try {
     loading.value = true
     const response = await postUser({
@@ -306,12 +355,14 @@ const byIdentifier = async () => {
 const setCountryCode = (e: any, context: string = 'contact'): void => {
   if (context === 'contact') {
     if (formContacts.value.phoneNumber !== e.target.value) {
-      formContacts.value.phoneNumber = `${e.target.value}${formContacts.value.phoneNumber}`;
+      const phoneNumber = parsePhoneNumber(`${formContacts.value.phoneNumber}`, e.target.value)
+      formContacts.value.phoneNumber = `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`;
     }
   }
   if (context === 'ussd') {
     if (formUSSDAccess.value.phoneNumber !== e.target.value) {
-      formUSSDAccess.value.phoneNumber = `${e.target.value}${formUSSDAccess.value.phoneNumber}`;
+      const phoneNumber = parsePhoneNumber(`${formUSSDAccess.value.phoneNumber}`, e.target.value)
+      formUSSDAccess.value.phoneNumber = `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`;
     }
   }
 }
@@ -323,7 +374,9 @@ const setQuery = async (e: any) => {
     qrObject.username = '';
   }
   if (e.target.id === 'phone-number') {
-    qrObject.phoneNumber = formContacts.value.phoneNumber;
+    const phoneNumber = parsePhoneNumber(`${formContacts.value.phoneNumber}`, 'KE')
+
+    qrObject.phoneNumber = `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`;
     qrObject.email = '';
     qrObject.username = '';
   }
@@ -338,7 +391,8 @@ const setQuery = async (e: any) => {
       e.target.value = e.target.value.slice(0, 4)
       await defineNotification({ message: "No more than 12 characters", error: true })
     }
-    qrObject.phoneNumber = formContacts.value.phoneNumber;
+    const phoneNumber = parsePhoneNumber(`${formContacts.value.phoneNumber}`, 'KE')
+    qrObject.phoneNumber = `${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`;
     qrObject.email = '';
     qrObject.username = '';
   }
@@ -353,11 +407,16 @@ const setQuery = async (e: any) => {
       e.target.value = e.target.value.slice(0, 4)
       await defineNotification({ message: "No more than 12 characters", error: true })
     }
-    let response0 = await verifyUnique(`?phoneNumber=${formUSSDAccess.value.phoneNumber}`);
+
+    const phoneNumber = parsePhoneNumber(`${formUSSDAccess.value.phoneNumber}`, 'KE')
+
+    let response0 = await verifyUnique(`?phoneNumber=${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`)
+
     if (response0 !== 'unique') {
       formUSSDAccess.value.phoneNumber = '';
       await defineNotification( { message: `User with that phone number already exists`, error: true });
     }
+
     return
   }
   if (e.target.id === 'username') {
@@ -387,38 +446,47 @@ const setQuery = async (e: any) => {
 }
 
 async function setupFormContacts() {
-  if (formContacts.value.user_types.length > 0) {
-    if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
-      nextStep()
-    } else if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
-      currentStep.value = currentStep.value + 2
+  const result = await vFormContacts$.value.$validate()
+  if (result) {
+    if (formContacts.value.user_types.length > 0) {
+      if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'WEB') !== -1) {
+        nextStep()
+      } else if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
+        currentStep.value = currentStep.value + 2
+      }
+    } else {
+      await defineNotification( { message: "Kindly Select a user type", error: true })
     }
-  } else {
-    await defineNotification( { message: "Kindly Select a user type", error: true })
   }
 }
 
 async function setupFormWebAccess() {
-  if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
-    if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
-      nextStep()
+  const result = await vFormWebAccess$.value.$validate()
+  if (result) {
+    if (formContacts.value.user_types.findIndex((type: string): boolean => type === 'USSD') !== -1) {
+      if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
+        nextStep()
+      } else {
+        await defineNotification( { message: `Passwords don't match`, error: true })
+      }
     } else {
-      await defineNotification( { message: `Passwords don't match`, error: true })
-    }
-  } else {
-    if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
-      currentStep.value = 4
-    } else {
-      await defineNotification( { message: `Passwords don't match`, error: true })
+      if (formWebAccess.value.password === formWebAccess.value.passwordConfirmation) {
+        currentStep.value = 4
+      } else {
+        await defineNotification( { message: `Passwords don't match`, error: true })
+      }
     }
   }
 }
 
 async function setupFormUSSDAccess() {
-  if (formUSSDAccess.value.pin === formUSSDAccess.value.pinConfirmation) {
-    currentStep.value = 4
-  } else {
-    await defineNotification( { message: `Pins don't match`, error: true })
+  const result = await vFormUSSDAccess$.value.$validate()
+  if (result) {
+    if (formUSSDAccess.value.pin === formUSSDAccess.value.pinConfirmation) {
+      currentStep.value = 4
+    } else {
+      await defineNotification( { message: `Pins don't match`, error: true })
+    }
   }
 }
 
@@ -470,7 +538,7 @@ const setNotificationStatus = (e: any): void => {
                   <div>
                     <div class="pt-3">
                       <div class="flex flex-row items-start space-x-3">
-                        <input id="admin" @change="setUserType($event, 'WEB')" name="user_types" class="mt-1 border-gray-400 rounded-md" type="checkbox">
+                        <input autocomplete="false" id="admin" @change="setUserType($event, 'WEB')" name="user_types" class="mt-1 border-gray-400 rounded-md" type="checkbox">
                         <label for="admin" class="text-base text-gray-700 flex flex-col">
                           <span class="block text-sm font-medium text-gray-700">Web Access</span>
                           <span class="font-normal text-sm text-gray-500">Create admin user</span>
@@ -481,7 +549,7 @@ const setNotificationStatus = (e: any): void => {
                   <div>
                     <div class="mt-1">
                       <div class="flex flex-row items-start space-x-3">
-                        <input id="customer" @change="setUserType($event, 'USSD')" name="user_types" class="mt-1 border-gray-400 rounded-md" type="checkbox">
+                        <input autocomplete="false" id="customer" @change="setUserType($event, 'USSD')" name="user_types" class="mt-1 border-gray-400 rounded-md" type="checkbox">
                         <label for="customer" class="text-base text-gray-700 flex flex-col">
                           <span class="block text-sm font-medium text-gray-700">USSD Access</span>
                           <span class="font-normal text-sm text-gray-500">Create customer account</span>
@@ -491,7 +559,7 @@ const setNotificationStatus = (e: any): void => {
                   </div>
                   <div class="flex flex-col sm:border-t sm:border-gray-200 sm:pt-5">
                     <div class="flex flex-row items-start space-x-3">
-                      <input @change="setNotificationStatus" type="checkbox" name="notifyUser" id="notifyUser" class="mt-1 border-gray-400 rounded-md" checked>
+                      <input autocomplete="false" @change="setNotificationStatus" type="checkbox" name="notifyUser" id="notifyUser" class="mt-1 border-gray-400 rounded-md" checked>
                       <label for="notifyUser" class="text-base text-gray-700 flex flex-col">
                         <span class="block text-sm font-medium text-gray-700">Notify User</span>
                         <span class="font-normal text-sm text-gray-500">Created User Notified On Create</span>
@@ -511,19 +579,28 @@ const setNotificationStatus = (e: any): void => {
                       <div>
                         <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
                         <div class="mt-1">
-                          <input :disabled="formContacts.user_types.length === 0" type="text" id="first-name" v-model="formContacts.firstName" class="py-1 px-4 block w-full shadow-sm  focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input autocomplete="false" :disabled="formContacts.user_types.length === 0" type="text" id="first-name" v-model="formContacts.firstName" class="py-1 px-4 block w-full shadow-sm  focus:ring-black focus:border-black border-gray-300 rounded-md" required>
+                          <div class="input-errors" v-for="(error, index) of vFormContacts$.firstName.$errors" :key="index">
+                            <div class="text-xs text-red-400">{{ error.$message }}</div>
+                          </div>
                         </div>
                       </div>
                       <div>
                         <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
                         <div class="mt-1">
-                          <input :disabled="formContacts.user_types.length === 0" type="text" id="last-name" v-model="formContacts.lastName" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                          <input autocomplete="false" :disabled="formContacts.user_types.length === 0" type="text" id="last-name" v-model="formContacts.lastName" class="py-1 px-4 block w-full shadow-sm  focus:ring-black focus:border-black border-gray-300 rounded-md" required>
+                          <div class="input-errors" v-for="(error, index) of vFormContacts$.lastName.$errors" :key="index">
+                            <div class="text-xs text-red-400">{{ error.$message }}</div>
+                          </div>
                         </div>
                       </div>
                       <div class="sm:col-span-2">
                         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                         <div class="mt-1">
-                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" id="email" type="email" v-model.lazy="formContacts.email" class="py-1 px-4 block w-full shadow-sm  focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          <input autocomplete="false" @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" id="email" type="email" v-model.lazy="formContacts.email" class="py-1 px-4 block w-full shadow-sm  focus:ring-black focus:border-black border-gray-300 rounded-md">
+                          <div class="input-errors" v-for="(error, index) of vFormContacts$.email.$errors" :key="index">
+                            <div class="text-xs text-red-400">{{ error.$message }}</div>
+                          </div>
                         </div>
                       </div>
                       <div class="sm:col-span-2">
@@ -531,11 +608,14 @@ const setNotificationStatus = (e: any): void => {
                         <div class="mt-1 relative rounded-md shadow-sm">
                           <div class="absolute inset-y-0 left-0 flex items-center">
                             <label for="country" class="sr-only">Country</label>
-                            <select @change="setCountryCode($event)" id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                              <option value="254">KE</option>
+                            <select @change="setCountryCode($event)" id="country" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-black focus:border-black rounded-md">
+                              <option value="KE">KE</option>
                             </select>
                           </div>
-                          <input @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" type="number" id="phone-number" v-model.lazy="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
+                          <input autocomplete="false" @change="setQuery($event)" :disabled="formContacts.user_types.length === 0" type="number" id="phone-number" v-model.lazy="formContacts.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-black focus:border-black border-gray-300 rounded-md">
+                        </div>
+                        <div class="input-errors" v-for="(error, index) of vFormContacts$.phoneNumber.$errors" :key="index">
+                          <div class="text-xs text-red-400">{{ error.$message }}</div>
                         </div>
                       </div>
                     </div>
@@ -548,7 +628,7 @@ const setNotificationStatus = (e: any): void => {
                     <button @click="$router.push('/users')" type="button" class="inline-flex items-center px-2.5 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-red-200 hover:bg-red-400 hover:text-white focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500">
                       Cancel
                     </button>
-                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-black">
                       Next: {{ formContacts.user_types.findIndex((type) => type === 'WEB') !== -1 ? 'Web' : 'USSD' }} Credentials
                     </button>
                   </div>
@@ -594,7 +674,10 @@ const setNotificationStatus = (e: any): void => {
                     </label>
                     <div class="mt-1 sm:mt-0 sm:col-span-2">
                       <div class="max-w-lg flex rounded-md shadow-sm">
-                        <input @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                        <input autocomplete="false" @change="setQuery($event)" v-model.lazy="formWebAccess.username" type="text" name="username" id="username" class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      </div>
+                      <div class="input-errors" v-for="(error, index) of vFormWebAccess$.username.$errors" :key="index">
+                        <div class="text-xs text-red-400">{{ error.$message }}</div>
                       </div>
                     </div>
                   </div>
@@ -616,7 +699,10 @@ const setNotificationStatus = (e: any): void => {
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formWebAccess.password" type="password" name="password" id="password" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input autocomplete="false" v-model="formWebAccess.password" type="password" name="password" id="password" class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                    <div class="input-errors" v-for="(error, index) of vFormWebAccess$.password.$errors" :key="index">
+                      <div class="text-xs text-red-400">{{ error.$message }}</div>
                     </div>
                   </div>
                 </div>
@@ -626,7 +712,10 @@ const setNotificationStatus = (e: any): void => {
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formWebAccess.passwordConfirmation" type="password" name="password-c" id="password-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input autocomplete="false" v-model="formWebAccess.passwordConfirmation" type="password" name="password-c" id="password-c" class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                    <div class="input-errors" v-for="(error, index) of vFormWebAccess$.passwordConfirmation.$errors" :key="index">
+                      <div class="text-xs text-red-400">{{ error.$message }}</div>
                     </div>
                   </div>
                 </div>
@@ -638,7 +727,7 @@ const setNotificationStatus = (e: any): void => {
                       Previous
                     </button>
 
-                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-black">
                       {{ formContacts.user_types.findIndex((type) => type === 'USSD') !== -1 ? 'Next: USSD Credentials' : 'Save User' }}
                     </button>
                   </div>
@@ -687,11 +776,14 @@ const setNotificationStatus = (e: any): void => {
                       <div class="max-w-lg relative rounded-md shadow-sm">
                         <div class="absolute inset-y-0 left-0 flex items-center">
                           <label for="country" class="sr-only">Country</label>
-                          <select @change="setCountryCode($event, 'ussd')" id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-indigo-500 focus:border-indigo-500 rounded-md">
-                            <option value="254">KE</option>
+                          <select @change="setCountryCode($event, 'ussd')" id="phone" class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-black focus:border-black rounded-md">
+                            <option value="KE">KE</option>
                           </select>
                         </div>
-                        <input @change="setQuery($event)" type="number" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md" required>
+                        <input autocomplete="false" @change="setQuery($event)" type="number" id="phonex" v-model="formUSSDAccess.phoneNumber" class="py-1 px-4 block w-full pl-20 focus:ring-black focus:border-black border-gray-300 rounded-md" required>
+                      </div>
+                      <div class="input-errors" v-for="(error, index) of vFormUSSDAccess$.phoneNumber.$errors" :key="index">
+                        <div class="text-xs text-red-400">{{ error.$message }}</div>
                       </div>
                     </div>
                   </div>
@@ -717,7 +809,7 @@ const setNotificationStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex items-center rounded-md shadow-sm">
                       <div class="flex-1 flex items-center h-12">
-                        <input @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" class="flex-none block w-4 focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300">
+                        <input autocomplete="false" @change="setPinStatus" type="checkbox" name="pinStatus" id="pinStatus" class="flex-none block w-4 focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300">
                         <p class="text-xs text-gray-500 ml-2">Set as temporary</p>
                       </div>
                     </div>
@@ -732,7 +824,10 @@ const setNotificationStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input autocomplete="false" v-model="formUSSDAccess.pin" pattern="[0-9]{4,4}" type="password" name="pin" id="pin" class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                    <div class="input-errors" v-for="(error, index) of vFormUSSDAccess$.pin.$errors" :key="index">
+                      <div class="text-xs text-red-400">{{ error.$message }}</div>
                     </div>
                   </div>
                 </div>
@@ -745,7 +840,10 @@ const setNotificationStatus = (e: any): void => {
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
-                      <input v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" class="flex-1 block w-full focus:ring-indigo-500 focus:border-indigo-500 min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                      <input autocomplete="false" v-model="formUSSDAccess.pinConfirmation" pattern="[0-9]{4,4}" type="password" name="pin-c" id="pin-c" class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300" required>
+                    </div>
+                    <div class="input-errors" v-for="(error, index) of vFormUSSDAccess$.pinConfirmation.$errors" :key="index">
+                      <div class="text-xs text-red-400">{{ error.$message }}</div>
                     </div>
                   </div>
                 </div>
@@ -758,7 +856,7 @@ const setNotificationStatus = (e: any): void => {
                       Cancel
                     </button>
 
-                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-black">
                       Next: Assign Roles
                     </button>
                   </div>
@@ -841,7 +939,7 @@ const setNotificationStatus = (e: any): void => {
                         Cancel
                       </button>
 
-                      <button :disabled="loading" type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500">
+                      <button :disabled="loading" type="submit" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-black">
                         <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
