@@ -1,0 +1,118 @@
+<script setup lang="ts">
+import { onBeforeMount } from "vue";
+import Table from "@ui/Table.vue";
+import TableActions from "@ui/TableActions.vue";
+import { useRouter } from "vue-router";
+import { Role } from "@/Roles/types";
+import { mapActions } from "@/modules/mapStore";
+import {useRoles} from "@/Roles/composables/useRoles";
+
+const router = useRouter();
+const { roles, pageables, isLoading, fetchRoles } = useRoles();
+const { defineNotification } = mapActions();
+const tableHeaders = [
+  "Name",
+  "Type",
+  "Description",
+];
+
+async function next() {
+  if (pageables.currentPage <= 1) return;
+  pageables.currentPage -= 1;
+  await fetchRoles();
+}
+
+async function previous() {
+  if (pageables.currentPage > pageables.totalPages) return;
+  pageables.currentPage -= 1;
+  await fetchRoles();
+}
+
+async function sortRoles() {
+  pageables.sort =
+      pageables.sort === "ASC"
+          ? (pageables.sort = "DESC")
+          : (pageables.sort = "ASC");
+  pageables.currentPage = 0;
+  await fetchRoles();
+}
+
+async function searchRoles() {
+  if (pageables.searchTerm?.length === 0) {
+    pageables.searchTerm = null;
+  }
+  pageables.currentPage = 0;
+  await fetchRoles();
+}
+
+
+onBeforeMount(async () => await fetchRoles());
+</script>
+
+<template>
+  <div class="px-4 sm:px-6 lg:px-8 w-full py-6">
+    <TableActions
+        :pageables="pageables"
+        title="Roles"
+        description=" A list of all the roles including their type and description"
+        @sort="sortRoles"
+        @search="searchRoles"
+    >
+      <template v-slot:actionButton>
+        <button
+            @click="router.push('/roles/create')"
+            type="button"
+            class="block rounded-md bg-blue-500 hover:bg-blue-700 py-2 px-3 text-center text-sm font-semibold text-white shadow-sm"
+        >
+          Add Role
+        </button>
+      </template>
+    </TableActions>
+    <div class="mt-8 flow-root">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <Table
+              v-if="roles"
+              :headers="tableHeaders"
+              :pageables="pageables"
+              :loading="isLoading"
+              :dataLength="roles.length"
+              @next="next"
+              @previous="previous"
+          >
+            <tr
+                v-if="roles.length && !isLoading"
+                v-for="role in roles"
+                :key="role.id"
+                class="hover:bg-gray-200 hover:cursor-pointer"
+                @click="router.push(`/roles/${role.keycloakRoleId}`)"
+            >
+              <td
+                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+              >
+                {{ role.name }}
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                {{ role.roleType }}
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                {{ role.description }}
+              </td>
+              <td
+                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                  @click="e => e.stopPropagation()"
+              >
+                <router-link
+                    :to="`/profiles/${role.keycloakRoleId}/edit`"
+                    class="text-indigo-600 hover:text-indigo-900"
+                >Edit
+                  <span class="sr-only">, {{ role.description }}</span>
+                </router-link>
+              </td>
+            </tr>
+          </Table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

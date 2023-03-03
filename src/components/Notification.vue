@@ -1,18 +1,49 @@
 <script setup lang="ts">
 import {toRefs} from "vue";
+import {XMarkIcon} from "@heroicons/vue/20/solid";
 
-  const props = defineProps<{
-    success?: boolean,
-    error?: boolean,
-    warning?: boolean
-  }>()
+const props = defineProps<{
+  success?: boolean;
+  error?: boolean;
+  warning?: boolean;
+}>();
 
-const { success, error, warning } = toRefs(props);
+const {success, error, warning} = toRefs(props);
 </script>
 <template>
-  <div class="relative">
-    <div :class="{ 'border-r-4 border-red-500' : error, 'border-r-4 border-yellow-500' : warning, 'border-r-4 border-green-500' : success, }" class="absolute p-4 top-2 right-4 h-auto bg-gray-800 shadow-md rounded-md text-sm text-white flex items-center" style="min-width: 200px;">
-      <slot></slot>
+  <div
+      class="flex items-center gap-x-6 py-3 px-6 sm:px-3.5 sm:before:flex-1"
+      :class="{
+        'bg-red-100': error,
+        'bg-orange-100': warning,
+        'bg-green-100': success,
+      }"
+  >
+    <p class="text-sm leading-6"
+       :class="{
+        'text-red-500': error,
+        'text-orange-400': warning,
+        'text-green-600': success,
+      }"
+    >
+      <slot/>
+    </p>
+    <div class="flex flex-1 justify-end">
+      <button
+          type="button"
+          class="-m-3 p-3 focus-visible:outline-offset-[-4px]"
+          :class="{
+        'text-red-900/70 hover:text-red-900 hover:bg-red-200': error,
+        'text-orange-900/70 hover:text-orange-900 hover:bg-orange-200': warning,
+        'text-green-900/70 hover:text-green-900 hover:bg-green-200': success,
+      }"
+      >
+        <span class="sr-only">Dismiss</span>
+        <XMarkIcon
+            class="h-5 w-5"
+            aria-hidden="true"
+        />
+      </button>
     </div>
   </div>
 </template>

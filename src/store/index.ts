@@ -1,6 +1,7 @@
 import { createStore, Store } from 'vuex'
 import apiCall from "@/utils/api"
 import axios, {AxiosResponse} from "axios"
+import {KeycloakUser} from "@/Users/types";
 import {RoleUsers} from "@/types/roleTypes";
 import {InjectionKey} from "vue";
 
@@ -33,7 +34,7 @@ export interface State {
 export const key: InjectionKey<Store<State>> = Symbol()
 
 const store = createStore<State>({
-    state () {
+    state() {
         return {
             user: null,
             notification: {
@@ -52,7 +53,7 @@ const store = createStore<State>({
         getAllUsers: (state) => state.allUsers
     },
     mutations: {
-        set_current_user(state: any, payload: object) {
+        set_current_user(state: any, payload: KeycloakUser) {
             state.user = payload
         },
         set_notification(state: any, payload: { message: string, success?: boolean, warning?: boolean, error?: boolean }) {
@@ -113,7 +114,7 @@ const store = createStore<State>({
                 }
             })
         },
-        defineNotification({ commit }, payload) {
+        defineNotification({commit}, payload) {
             commit("set_notification", payload)
         },
         async userDisable({commit}, payload) {
@@ -125,7 +126,7 @@ const store = createStore<State>({
                     },
                     body: JSON.stringify(payload)
                 })
-                if (response.status === 200)  {
+                if (response.status === 200) {
                     const data = await response.json()
                     resolve(data)
                 } else {
@@ -142,7 +143,7 @@ const store = createStore<State>({
                     },
                     body: JSON.stringify(payload)
                 })
-                if (response.status === 200)  {
+                if (response.status === 200) {
                     const data = await response.json()
                     resolve(data)
                 } else {
@@ -162,13 +163,13 @@ const store = createStore<State>({
                     resolve('unique')
                 }
 
-                if (response.status === 200)  {
+                if (response.status === 200) {
                     const data = await response.json()
                     resolve(data)
                 }
             })
         },
-        logout({ commit },payload) {
+        logout({commit}, payload) {
             const url = import.meta.env.VITE_DOMAIN_URL + '/'
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
@@ -187,7 +188,7 @@ const store = createStore<State>({
                 }
             })
         },
-        getUsersRoles({ }, payload: any) {
+        getUsersRoles({}, payload: any) {
             const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/roles/user/' + payload
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
@@ -206,7 +207,7 @@ const store = createStore<State>({
                 }
             })
         },
-        passChange({ }, payload: any) {
+        passChange({}, payload: any) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/update-password?notifyUser=${payload.notifyUser}`
             delete payload.notifyUser
             const method = 'POST'
@@ -227,68 +228,65 @@ const store = createStore<State>({
                 }
             })
         },
-        pinChange({ }, payload: any) {
+        pinChange({}, payload: any) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/auth/ussd/pin?notifyUser=${payload.notifyUser}`
             delete payload.notifyUser
-            return new Promise(async (resolve, reject) => {
-                const response = await fetch( url, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                })
-                const data = await response.json()
-
-                if (response.status !== 200) {
-                    reject(data)
-                } else {
-                    resolve(data)
+            return fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                if (response.ok) {
+                    return response.json()
                 }
+                throw new Error(response.statusText)
             })
-        },
-        passReset({ }, payload: any) {
-            const url = import.meta.env.VITE_DOMAIN_URL + '/api/users/reset-password'
-            const method = 'POST'
-            return new Promise(async (resolve, reject) => {
-                let response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                .catch(error => {
+                    throw new Error(error)
                 })
-                const data = await response.json()
-
-                if (response.status !== 200) {
-                    reject(data)
-                } else {
-                    resolve(data)
+        },
+        passReset({}, payload: any) {
+            const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/reset-password`
+            return fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                if (response.ok) {
+                    return response.json()
                 }
+                throw new Error(response.statusText)
             })
-        },
-       /* getUserAdminRoles({ }, roleIds: []): Promise<any> {
-
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
-
-            const myHeaders = new Headers()
-
-            myHeaders.append("Authorization", `*!/!*`)
-
-            const headers = myHeaders
-
-            const method = 'GET'
-
-            return new Promise((resolve, reject) => {
-                apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
-                    resolve(data)
-                }).catch((e: any) => {
-                    reject(e)
+                .catch(error => {
+                    throw new Error(error)
                 })
-            })
-        },*/
-        getRole({ }, keyCloakId: any): Promise<any> {
-            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/"+keyCloakId
+        },
+        /* getUserAdminRoles({ }, roleIds: []): Promise<any> {
+
+             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
+
+             const myHeaders = new Headers()
+
+             myHeaders.append("Authorization", `*!/!*`)
+
+             const headers = myHeaders
+
+             const method = 'GET'
+
+             return new Promise((resolve, reject) => {
+                 apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
+                     resolve(data)
+                 }).catch((e: any) => {
+                     reject(e)
+                 })
+             })
+         },*/
+        getRole({}, keyCloakId: any): Promise<any> {
+            const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/" + keyCloakId
 
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
@@ -329,7 +327,7 @@ const store = createStore<State>({
                 return Promise.reject(e)
             }
         },
-        getUser({ }, route: any ): Promise<any> {
+        getUser({}, route: any): Promise<any> {
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/" + route.params.id
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
@@ -364,12 +362,12 @@ const store = createStore<State>({
                     return Promise.reject(`${response.status}: Failed to delete user.`);
                 }
             } catch (e: any) {
-                console.error("delete user",  e);
+                console.error("delete user", e);
                 return Promise.reject(e.message);
             }
 
         },
-        getPermissions({ }):  Promise<any> {
+        getPermissions({}): Promise<any> {
 
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/permissions"
             const method = 'GET'
@@ -389,7 +387,7 @@ const store = createStore<State>({
                 }
             })
         },
-        async createRole({ }, payload: any): Promise<any> {
+        async createRole({}, payload: any): Promise<any> {
             const url = import.meta.env.VITE_DOMAIN_URL + '/api/roles'
             const method = 'POST'
             return new Promise(async (resolve, reject) => {
@@ -409,7 +407,7 @@ const store = createStore<State>({
                 }
             })
         },
-        async updateRole({ }, payload: any): Promise<any> {
+        async updateRole({}, payload: any): Promise<any> {
             const url = import.meta.env.VITE_DOMAIN_URL + '/users-admin/api/v1/roles'
             const method = 'PUT'
             return new Promise(async (resolve, reject) => {
@@ -429,7 +427,7 @@ const store = createStore<State>({
                 }
             })
         },
-        getServices({ }): Promise<any> {
+        getServices({}): Promise<any> {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/api/organizations/services`
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
@@ -448,7 +446,7 @@ const store = createStore<State>({
                 }
             })
         },
-        getRoles({ }, query: string = ''): Promise<any> {
+        getRoles({}, query: string = ''): Promise<any> {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles${query}`
             const method = 'GET'
             return new Promise(async (resolve, reject) => {
@@ -487,7 +485,7 @@ const store = createStore<State>({
             })
 
         },
-        async editTheUser({}, { payload, route }): Promise<any> {
+        async editTheUser({}, {payload, route}): Promise<any> {
 
             const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users"
 
@@ -529,7 +527,7 @@ const store = createStore<State>({
             })
 
         },
-        syncRoles({},payload) {
+        syncRoles({}, payload) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles/sync-roles`
             const method = `POST`
             return new Promise(async (resolve, reject) => {
@@ -549,7 +547,7 @@ const store = createStore<State>({
             })
 
         },
-        assignRoles({}, { userRefId, payload }) {
+        assignRoles({}, {userRefId, payload}) {
             const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/roles/users/${userRefId}/assign`
             const method = `POST`
             return new Promise(async (resolve, reject) => {
