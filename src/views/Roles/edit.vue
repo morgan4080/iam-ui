@@ -336,7 +336,7 @@ const addUsersToRole = async () => {
         });
         console.log("response adding users to role", response);
         await store.dispatch("defineNotification", {
-          message: `Added ${idsToAddToRole.value.length} users to role ${role.name} successfully`,
+          message: `Added ${idsToAddToRole.value.length} users to role ${role.value.name} successfully`,
           success: true,
         });
         // reload onMounted
