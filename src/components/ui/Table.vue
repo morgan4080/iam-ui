@@ -4,7 +4,7 @@ import type { Pageables } from "@/Users/types";
 
 const props = defineProps<{
   headers: string[];
-  loading: boolean
+  loading: boolean;
   dataLength: number;
   pageables: Pageables;
 }>();
@@ -37,18 +37,19 @@ const emit = defineEmits(["next", "previous"]);
       </thead>
       <tbody class="divide-y divide-gray-200 bg-white">
         <slot />
-        <tr >
+        <tr>
           <td
-              v-if="loading"
-              :colspan="headers.length + 1"
-              class="h-2 animate-pulse bg-gray-300">
-          </td>
+            v-if="loading"
+            :colspan="headers.length + 1"
+            class="h-2 animate-pulse bg-gray-300"
+          ></td>
         </tr>
         <tr v-if="dataLength === 0 && !loading">
           <td
-              :colspan="headers.length + 1"
-              align="center"
-              class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            :colspan="headers.length + 1"
+            align="center"
+            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+          >
             No Data Available
           </td>
         </tr>

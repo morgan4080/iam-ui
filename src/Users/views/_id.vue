@@ -48,12 +48,12 @@ function getInitials(fullName: string) {
   return initials;
 }
 
-
 const fetchUserData = async () => {
-    console.log("Run")
-  const userRefId = (route.params.id as string);
-  await fetchUser(userRefId).then( async (data) => {
-    if (data && user.value?.keycloakId) await fetchUserRoles(user.value.keycloakId);
+  console.log("Run");
+  const userRefId = route.params.id as string;
+  await fetchUser(userRefId).then(async data => {
+    if (data && user.value?.keycloakId)
+      await fetchUserRoles(user.value.keycloakId);
   });
 };
 
@@ -126,7 +126,7 @@ const disableUser = async () => {
         message: "User Account Disabled",
         success: true,
       });
-      await  fetchUserData();
+      await fetchUserData();
     } catch (e: any) {
       console.log("disableUser error", e);
       await store.dispatch("defineNotification", {
@@ -206,7 +206,10 @@ onBeforeMount(async () => await fetchUserData());
         </button>
       </nav>
     </div>
-    <main class="py-10" v-if="user">
+    <main
+      class="py-10"
+      v-if="user"
+    >
       <!-- Page header -->
       <div
         class="px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:px-8"
@@ -215,7 +218,7 @@ onBeforeMount(async () => await fetchUserData());
           <div class="flex-shrink-0">
             <div class="relative">
               <span class="h-24 w-24 rounded-full border-2 p-2 border-black/50">
-                {{ getInitials(user.firstName + ' ' + user.lastName) }}
+                {{ getInitials(user.firstName + " " + user.lastName) }}
               </span>
             </div>
           </div>
@@ -514,8 +517,7 @@ onBeforeMount(async () => await fetchUserData());
                           class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                         >
                           <div class="flex w-0 flex-1 items-center">
-                            <span class="ml-2 w-0 flex-1 truncate"
-                              >
+                            <span class="ml-2 w-0 flex-1 truncate">
                               Web Access
                             </span>
                           </div>
@@ -523,14 +525,19 @@ onBeforeMount(async () => await fetchUserData());
                             <span
                               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                               :class="
-                                user.isEnabled ? user.email
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-700'
+                                user.isEnabled
+                                  ? user.email
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-700'
                                   : 'bg-red-100 text-red-700'
                               "
                             >
                               {{
-                                user.isEnabled ? user.email ? "Yes" : "No" : "No"
+                                user.isEnabled
+                                  ? user.email
+                                    ? "Yes"
+                                    : "No"
+                                  : "No"
                               }}
                             </span>
                           </div>

@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import {BarsArrowUpIcon, BarsArrowDownIcon, MagnifyingGlassIcon, XMarkIcon} from "@heroicons/vue/20/solid";
-import type {Pageables} from "@/Users/types";
+import {
+  BarsArrowUpIcon,
+  BarsArrowDownIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+} from "@heroicons/vue/20/solid";
+import type { Pageables } from "@/Users/types";
 
 const props = defineProps<{
   title: string;
@@ -8,7 +13,7 @@ const props = defineProps<{
   description: string;
 }>();
 
-const emit = defineEmits(["sort", "search"])
+const emit = defineEmits(["sort", "search"]);
 </script>
 
 <template>
@@ -25,43 +30,43 @@ const emit = defineEmits(["sort", "search"])
       <div class="flex rounded-md shadow-sm">
         <div class="relative flex focus-within:z-10">
           <div
-              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
           >
             <MagnifyingGlassIcon
-                class="h-5 w-5 text-gray-400"
-                aria-hidden="true"
+              class="h-5 w-5 text-gray-400"
+              aria-hidden="true"
             />
           </div>
           <input
-              v-model="pageables.searchTerm"
-              @change="emit('search')"
-              type="search"
-              name="search"
-              id="search"
-              class="block rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
-              placeholder="Search term"
+            v-model="pageables.searchTerm"
+            @change="emit('search')"
+            type="search"
+            name="search"
+            id="search"
+            class="block rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+            placeholder="Search term"
           />
         </div>
         <button
-            @click="emit('sort')"
-            type="button"
-            class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          @click="emit('sort')"
+          type="button"
+          class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
           <BarsArrowUpIcon
-              v-if="pageables.sort === 'ASC'"
-              class="-ml-0.5 h-5 w-5 text-gray-400"
-              aria-hidden="true"
+            v-if="pageables.sort === 'ASC'"
+            class="-ml-0.5 h-5 w-5 text-gray-400"
+            aria-hidden="true"
           />
           <BarsArrowDownIcon
-              v-if="pageables.sort === 'DESC'"
-              class="-ml-0.5 h-5 w-5 text-gray-400"
-              aria-hidden="true"
+            v-if="pageables.sort === 'DESC'"
+            class="-ml-0.5 h-5 w-5 text-gray-400"
+            aria-hidden="true"
           />
 
           Sort
         </button>
       </div>
-      <slot name="actionButton"/>
+      <slot name="actionButton" />
     </div>
   </div>
 </template>

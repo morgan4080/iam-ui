@@ -49,10 +49,12 @@ async function resetWebPassword() {
 
   await passReset(payload)
     .then((response: any) => {
-      if (response.messages.some((message: any) => message.type === "SUCCESS")) {
+      if (
+        response.messages.some((message: any) => message.type === "SUCCESS")
+      ) {
         loading.value = false;
         resetSuccessful.value = true;
-      }else {
+      } else {
         loading.value = false;
         defineNotification({ message: "Something went wrong", error: true });
       }
@@ -76,9 +78,12 @@ async function resetUSSDPin() {
     if (response.messages.some((message: any) => message.type === "SUCCESS")) {
       loading.value = false;
       resetSuccessful.value = true;
-    }else {
+    } else {
       loading.value = false;
-      await defineNotification({ message: "Something went wrong", error: true });
+      await defineNotification({
+        message: "Something went wrong",
+        error: true,
+      });
     }
   } catch (e: any) {
     console.log(e);
