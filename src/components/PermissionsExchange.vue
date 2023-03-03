@@ -6,7 +6,7 @@
       >
         <p
           v-if="nonAssociatedServicePermissions.length > 0"
-          class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100"
+          class="-mt-1 mb-2 text-sm font-medium text-gray-700 bg-gray-100"
         >
           Available
           {{
@@ -102,9 +102,10 @@
       >
         <p
           v-if="existingServicePermissions.length > 0"
-          class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100"
+          class="-mt-1 mb-2 text-sm font-medium text-gray-700 bg-gray-100"
         >
-          Permissions Associated To Role {{ role_name }}
+          Permissions Associated To Service
+          {{ services[selectedService].clientId }}
         </p>
         <div
           v-if="existingServicePermissions.length === 0"
@@ -125,7 +126,7 @@
             />
           </svg>
           <p>
-            Permissions not available for service
+            Permissions not associated to service
             <span class="font-bold">{{
               services[selectedService].clientId
             }}</span>
@@ -199,7 +200,7 @@ const nonAssociatedServicePermissions = computed(() => {
       permission =>
         existing.value.findIndex(
           index => index !== permission.keycloakRoleId
-        ) !== -1
+        ) === -1
     );
   }
   return [];
