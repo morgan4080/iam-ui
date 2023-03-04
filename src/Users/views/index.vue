@@ -151,7 +151,7 @@ onBeforeMount(async () => await fetchUsers());
               >
                 <div class="flex space-x-4 justify-center">
                   <router-link
-                    :to="`/profiles/${user.id}/edit`"
+                    :to="`/users/${user.id}/edit`"
                     class="text-indigo-600 hover:text-indigo-900"
                     >Edit
                     <span class="sr-only">, {{ user.firstName }}</span>

@@ -340,7 +340,7 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100"
                   >
                     <router-link
-                      :to="`/profiles/${route.params.id}/edit`"
+                      :to="`/users/${route.params.id}/edit`"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm',

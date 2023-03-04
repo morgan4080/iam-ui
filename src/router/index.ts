@@ -11,11 +11,6 @@ const routes = [
     component: () => import("@/views/Dashboard.vue"),
   },
   {
-    path: "/profiles/:id/edit",
-    name: "ProfilesEdit",
-    component: () => import("@/views/Users/Edit.vue"),
-  },
-  {
     path: "/password/reset",
     name: "Password-Reset",
     component: () => import("@/views/RecoverPassword.vue"),
