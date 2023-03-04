@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { computed, onBeforeMount, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useUsers } from "@/Users/composables/useUsers";
 import { QrInterface, EditUserPayload } from "@/Users/types";
 import { mapActions } from "@/modules/mapStore";
 
+const props = defineProps<{
+  refId: string;
+}>();
 const { defineNotification } = mapActions();
 const router = useRouter();
-const route = useRoute();
 const store = useStore();
 const { user, isLoading, fetchUser, verifyUnique, editUser } = useUsers();
 
@@ -165,7 +167,7 @@ async function edit() {
           message: `User Edited successfully`,
           success: true,
         });
-        await router.push(`/users/${route.params.id}`);
+        await router.push(`/users/${props.refId}/view`);
       }
     })
     .catch(async (error: string) => {
@@ -176,22 +178,19 @@ async function edit() {
     });
 }
 
-if (route.params.id) {
-  const userRefId = route.params.id.toString();
-  onBeforeMount(async () => {
-    await fetchUser(userRefId).then(() => {
-      if (!user.value) return;
-      form.username = user.value.username;
-      form.firstName = user.value.firstName;
-      form.lastName = user.value.lastName;
-      form.emailAddress = user.value.email;
-      form.username = user.value.username;
-      form.phoneNumber = user.value.phoneNumber;
-      form.ussdPhoneNumber = user.value.ussdPhoneNumber;
-      form.company = organisation.value;
-    });
+onBeforeMount(async () => {
+  await fetchUser(props.refId).then(() => {
+    if (!user.value) return;
+    form.username = user.value.username;
+    form.firstName = user.value.firstName;
+    form.lastName = user.value.lastName;
+    form.emailAddress = user.value.email;
+    form.username = user.value.username;
+    form.phoneNumber = user.value.phoneNumber;
+    form.ussdPhoneNumber = user.value.ussdPhoneNumber;
+    form.company = organisation.value;
   });
-}
+});
 </script>
 
 <template>
@@ -213,7 +212,7 @@ if (route.params.id) {
               <li>
                 <div class="flex items-center">
                   <router-link
-                    :to="`/users/${route.params.id}`"
+                    :to="`/users/${refId}/view`"
                     class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                     style="color: #9e9e9e"
                     >User Profile

@@ -34,7 +34,8 @@ const userData = ref({
   userType: "",
   username: "",
 });
-store.dispatch('getUser', route)
+store
+  .dispatch("getUser", route)
   .then(data => {
     const { user } = data;
     userData.value = {
@@ -79,12 +80,12 @@ async function changePassword() {
       message: "Password Change Successful",
       success: true,
     });
-    await router.push(`/users/${route.params.id}`);
+    await router.push(`/users/${route.params.id}/view`);
   } catch (e: any) {
     alert(e.message);
   } finally {
     loading.value = false;
-    await router.push(`/users/${route.params.id}`);
+    await router.push(`/users/${route.params.id}/view`);
   }
 }
 </script>
@@ -105,7 +106,7 @@ async function changePassword() {
                 <li>
                   <div class="flex items-center">
                     <router-link
-                      :to="`/users/${route.params.id}`"
+                      :to="`/users/${route.params.id}/view`"
                       class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                       style="color: #9e9e9e"
                       >User Profile</router-link

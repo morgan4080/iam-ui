@@ -13,6 +13,7 @@ export interface User {
   pinStatus: string;
   username: string;
   pinAttempts: number;
+  passwordStatus: string;
 }
 
 export interface KeycloakUser {

@@ -97,6 +97,31 @@ export const useUsers = () => {
     }
   }
 
+  async function syncUsers(payload: { syncAllUsers: boolean }) {
+    isLoading.value = true;
+    error.value = null;
+
+    return await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+      .then(response => {
+        if (!response.ok) throw new Error(response.statusText);
+        return response.json();
+      })
+      .catch(err => {
+        error.value = err;
+        throw new Error(err);
+      })
+      .finally(() => (isLoading.value = true));
+  }
+
   async function enableOrDisableUser(payload: EnableUserPayload) {
     isLoading.value = true;
     error.value = null;
@@ -213,6 +238,7 @@ export const useUsers = () => {
     isLoading,
     error,
     syncUser,
+    syncUsers,
     enableOrDisableUser,
     fetchUser,
     editUser,

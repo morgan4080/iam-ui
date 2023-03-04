@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
@@ -8,17 +7,21 @@ import ResetCredentialsModal from "@/components/ResetCredentialsModal.vue";
 import { useRoles } from "@/Roles/composables/useRoles";
 import { useUsers } from "@/Users/composables/useUsers";
 
+const props = defineProps<{
+  refId: string;
+}>();
+
 const { fetchUserRoles, userRoles } = useRoles();
 const { user, fetchUser, syncUser, enableOrDisableUser } = useUsers();
 
-const route = useRoute();
-
 const store = useStore();
 
-const loading = ref(<boolean>false);
+const loading = ref(false);
 
 const resetCredentialModalOpen = ref(false);
-const resetCredentialsAction = ref<"USSD" | "WEB" | null>(null);
+
+type ResetCredentialsAction = null | "USSD" | "WEB";
+const resetCredentialsAction = ref<ResetCredentialsAction>(null);
 
 function openResetCredentialsModal() {
   resetCredentialModalOpen.value = true;
@@ -29,13 +32,9 @@ function closeResetCredentialsModal() {
   resetCredentialModalOpen.value = false;
 }
 
-const tenantId = computed(() =>
-  store.state.user ? store.state.user.tenantId : null
-);
-
 function getInitials(fullName: string) {
   let initials = "";
-  let names = fullName.split(" ");
+  const names = fullName.split(" ");
   if (names.length > 1) {
     initials += names[0].charAt(0).toUpperCase();
     initials += names[names.length - 1].charAt(0).toUpperCase();
@@ -47,9 +46,7 @@ function getInitials(fullName: string) {
 }
 
 const fetchUserData = async () => {
-  console.log("Run");
-  const userRefId = route.params.id as string;
-  await fetchUser(userRefId).then(async (data: any) => {
+  await fetchUser(props.refId).then(async data => {
     if (data && user.value?.keycloakId)
       await fetchUserRoles(user.value.keycloakId);
   });
@@ -69,13 +66,15 @@ const synchronizeUser = async () => {
   loading.value = true;
   if (!user.value) return;
   await syncUser(`${user.value.id}`)
-    .then(async (response: any) => {
-      await store.dispatch("defineNotification", {
-        message: "User Account Synchronised",
-        success: true,
-      });
+    .then(async response => {
+      if (response) {
+        await store.dispatch("defineNotification", {
+          message: "User Account Synchronised",
+          success: true,
+        });
+      }
     })
-    .catch(async (e: any) => {
+    .catch(async e => {
       await store.dispatch("defineNotification", {
         message: e.message,
         error: true,
@@ -88,19 +87,21 @@ const enableUser = async () => {
   if (!user.value) return;
   if (confirm(`You are about to enable user ${user.value.firstName}`)) {
     loading.value = true;
-    const payload: { userRefId: string | any; isEnabled: boolean } = {
-      userRefId: route.params.id,
+    const payload: { userRefId: string; isEnabled: boolean } = {
+      userRefId: props.refId,
       isEnabled: true,
     };
     await enableOrDisableUser(payload)
-      .then(async (response: any) => {
-        await store.dispatch("defineNotification", {
-          message: "User Account Enabled",
-          success: true,
-        });
-        await fetchUserData();
+      .then(async response => {
+        if (response) {
+          await store.dispatch("defineNotification", {
+            message: "User Account Enabled",
+            success: true,
+          });
+          await fetchUserData();
+        }
       })
-      .catch(async (e: any) => {
+      .catch(async e => {
         await store.dispatch("defineNotification", {
           message: e.message,
           error: true,
@@ -114,19 +115,21 @@ const disableUser = async () => {
   if (!user.value) return;
   if (confirm(`You are about to disable user ${user.value.firstName}`)) {
     loading.value = true;
-    const payload: { userRefId: string | any; isEnabled: boolean } = {
-      userRefId: route.params.id,
+    const payload: { userRefId: string; isEnabled: boolean } = {
+      userRefId: props.refId,
       isEnabled: false,
     };
     await enableOrDisableUser(payload)
-      .then(async (response: any) => {
-        await store.dispatch("defineNotification", {
-          message: "User Account Disabled",
-          success: true,
-        });
-        await fetchUserData();
+      .then(async response => {
+        if (response) {
+          await store.dispatch("defineNotification", {
+            message: "User Account Disabled",
+            success: true,
+          });
+          await fetchUserData();
+        }
       })
-      .catch(async (e: any) => {
+      .catch(async e => {
         await store.dispatch("defineNotification", {
           message: e.message,
           error: true,
@@ -184,9 +187,9 @@ onBeforeMount(async () => await fetchUserData());
           </li>
         </ol>
         <button
-          @click="synchronizeUser"
           type="button"
           class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          @click="synchronizeUser"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -204,8 +207,8 @@ onBeforeMount(async () => await fetchUserData());
       </nav>
     </div>
     <main
-      class="py-10"
       v-if="user"
+      class="py-10"
     >
       <!-- Page header -->
       <div
@@ -279,11 +282,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200"
                   >
                     <a
-                      @click.prevent="resetUSSDPin"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="resetUSSDPin"
                     >
                       Reset USSD Pin
                     </a>
@@ -293,11 +296,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200"
                   >
                     <a
-                      @click.prevent="resetWebPassword"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="resetWebPassword"
                     >
                       Reset Web Password
                     </a>
@@ -340,7 +343,7 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100"
                   >
                     <router-link
-                      :to="`/users/${route.params.id}/edit`"
+                      :to="`/users/${refId}/edit`"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm',
@@ -355,11 +358,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200"
                   >
                     <a
-                      @click.prevent="disableUser"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="disableUser"
                     >
                       Disable User
                     </a>
@@ -370,11 +373,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100"
                   >
                     <a
-                      @click.prevent="enableUser"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="enableUser"
                     >
                       Enable User
                     </a>
@@ -471,8 +474,8 @@ onBeforeMount(async () => await fetchUserData());
                         >
                           <div class="flex w-0 flex-1 items-center">
                             <span class="ml-2 w-0 flex-1 truncate"
-                              >Pin Status</span
-                            >
+                              >Pin Status
+                            </span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
                             <span
@@ -544,8 +547,8 @@ onBeforeMount(async () => await fetchUserData());
                         >
                           <div class="flex w-0 flex-1 items-center">
                             <span class="ml-2 w-0 flex-1 truncate"
-                              >Username</span
-                            >
+                              >Username
+                            </span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
                             <span
@@ -560,8 +563,8 @@ onBeforeMount(async () => await fetchUserData());
                         >
                           <div class="flex w-0 flex-1 items-center">
                             <span class="ml-2 w-0 flex-1 truncate"
-                              >Password Status</span
-                            >
+                              >Password Status
+                            </span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
                             <span
@@ -616,7 +619,7 @@ onBeforeMount(async () => await fetchUserData());
             </div>
             <div class="justify-stretch mt-6 flex flex-col">
               <router-link
-                :to="`/users/${route.params.id}/assign-roles`"
+                :to="`/users/${refId}/assign-roles`"
                 class="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-0"
               >
                 Assign Roles
