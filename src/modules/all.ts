@@ -40,31 +40,6 @@ export function syncServices() {
 }
 
 // moved
-export async function editTheUser(payload: {}, route: any): Promise<any> {
-  const url: string =
-    import.meta.env.VITE_DOMAIN_URL +
-    "/users-admin/api/users/" +
-    route.params.id;
-
-  const method: string = "PUT";
-
-  try {
-    const options: any = {
-      method,
-      headers: { "content-type": "application/json" },
-      data: payload,
-      config: {
-        withCredentials: false,
-      },
-      url,
-    };
-    const { data } = await axios(options);
-    return data;
-  } catch (e: any) {
-    alert(e.message);
-  }
-}
-//moved
 export function getUsers(query: string = ""): Promise<any> {
   const url = `${
     import.meta.env.VITE_DOMAIN_URL
