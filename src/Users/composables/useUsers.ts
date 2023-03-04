@@ -1,5 +1,10 @@
 import { reactive, ref } from "vue";
-import { EnableUserPayload, Pageables, User } from "@/Users/types";
+import {
+  EditUserPayload,
+  EnableUserPayload,
+  Pageables,
+  User,
+} from "@/Users/types";
 
 export const useUsers = () => {
   const user = ref<User | null>(null);
@@ -19,7 +24,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/${userRefId}`,
         {
           method: "GET",
@@ -44,7 +49,7 @@ export const useUsers = () => {
     error.value = null;
     const query = generateQueryParams();
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users?${query}`,
         {
           method: "GET",
@@ -70,7 +75,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${
           import.meta.env.VITE_DOMAIN_URL
         }/users-admin/api/v1/roles/users/${userRefId}/sync`,
@@ -96,7 +101,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
         {
           method: "PUT",
@@ -115,36 +120,37 @@ export const useUsers = () => {
     }
   }
 
-  async function editUser(keycloakId: string, payload: any) {
+  async function editUser(payload: EditUserPayload) {
     isLoading.value = true;
     error.value = null;
-    try {
-      let response = await fetch(
-        `${
-          import.meta.env.VITE_DOMAIN_URL
-        }/users-admin/api/users/${keycloakId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-      return await response.json();
-    } catch (err: any) {
-      error.value = err;
-      throw new Error(err);
-    } finally {
-      isLoading.value = false;
-    }
+    return await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+      .then(response => {
+        if (response.ok) return response.json();
+        throw new Error(response.statusText);
+      })
+      .catch(error => {
+        error.value = error;
+        throw new Error(error);
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
   }
 
   async function deleteUser(keycloakId: string) {
     isLoading.value = true;
     error.value = null;
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${
           import.meta.env.VITE_DOMAIN_URL
         }/users-admin/api/v1/users?keycloakId=${keycloakId}&force=false`,
@@ -169,7 +175,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${
           import.meta.env.VITE_DOMAIN_URL
         }/users-admin/api/v1/users/by-identifier/${params}`,
@@ -180,9 +186,8 @@ export const useUsers = () => {
           },
         }
       );
-
-      const data = await response.json();
-      return data;
+      if (!response.ok) return "not-unique";
+      if (response.status === 204) return "unique";
     } catch (err) {
       error.value = err;
     } finally {
@@ -210,6 +215,7 @@ export const useUsers = () => {
     syncUser,
     enableOrDisableUser,
     fetchUser,
+    editUser,
     fetchUsers,
     deleteUser,
     verifyUnique,

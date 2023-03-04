@@ -17,7 +17,7 @@ const userRoutes = [
   {
     path: "/users/:id/edit",
     name: "UsersEdit",
-    component: () => import("@/views/Users/Edit.vue"),
+    component: () => import("@users/views/editUser.vue"),
   },
   {
     path: "/users/:id/change-password",

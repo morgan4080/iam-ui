@@ -39,3 +39,21 @@ export interface Pageables {
   searchTerm: string | null;
   sort: "ASC" | "DESC";
 }
+
+export interface EditUserPayload {
+  userRefId: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  ussdPhoneNumber: string;
+  email: string | undefined;
+  phoneNumber: string | undefined;
+  isEnabled: boolean;
+}
+
+export interface QrInterface {
+  phoneNumber: string;
+  ussdPhoneNumber: string;
+  email: string;
+  username: string;
+}

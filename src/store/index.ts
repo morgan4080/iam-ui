@@ -448,28 +448,6 @@ const store = createStore<State>({
         }
       });
     },
-    async editTheUser({}, { payload, route }): Promise<any> {
-      const url: string =
-        import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users";
-
-      const method: string = "PUT";
-      return new Promise(async (resolve, reject) => {
-        let response = await fetch(url, {
-          method: method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
-      });
-    },
     syncServices({}) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL

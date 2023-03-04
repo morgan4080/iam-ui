@@ -14,17 +14,6 @@ export function syncRoles() {
   return apiCall({ url, method, headers }, { withCredentials: true });
 }
 // lenny
-export function syncUsers() {
-  const url = `${
-    import.meta.env.VITE_DOMAIN_URL
-  }/users-admin/api/users/sync-users`;
-  const method = `POST`;
-  const myHeaders = new Headers();
-  myHeaders.append("Authorization", `*/*`);
-  const headers = myHeaders;
-
-  return apiCall({ url, method, headers }, { withCredentials: true });
-}
 
 // moved
 export function syncServices() {
@@ -39,16 +28,6 @@ export function syncServices() {
   return apiCall({ url, method, headers }, { withCredentials: true });
 }
 
-// moved
-export function getUsers(query: string = ""): Promise<any> {
-  const url = `${
-    import.meta.env.VITE_DOMAIN_URL
-  }/users-admin/api/users${query}`;
-
-  const method = "GET";
-
-  return apiCall({ url, method }, { withCredentials: true });
-}
 //moved
 export async function getRoles(query: string = ""): Promise<any> {
   const url = `${
@@ -114,24 +93,6 @@ export function getPermissions(): Promise<any> {
   return apiCall({ url, method, headers }, { withCredentials: true });
 }
 //moved
-export async function postUser(payload: any): Promise<any> {
-  try {
-    const options: any = {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      data: payload,
-      config: {
-        withCredentials: false,
-      },
-      url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/users",
-    };
-    const { data } = await axios(options);
-    return data;
-  } catch (e: any) {
-    alert(e.message);
-  }
-}
-//moved
 export async function getRole(keyCloakId: any): Promise<any> {
   const url: string =
     import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/" + keyCloakId;
@@ -168,48 +129,6 @@ export function logout() {
   const url = import.meta.env.VITE_DOMAIN_URL + "/";
   const method = "GET";
   return apiCall({ url, method }, { withCredentials: true });
-}
-
-export function passReset(payload: any) {
-  const options: any = {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    data: payload,
-    config: {
-      withCredentials: false,
-    },
-    url:
-      import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/reset-password",
-  };
-  return axios(options);
-}
-
-export function pinChange(payload: any) {
-  const options: any = {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    data: payload,
-    config: {
-      withCredentials: false,
-    },
-    url: import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/auth/ussd/pin",
-  };
-  return axios(options);
-}
-
-export function passChange(payload: any) {
-  const options: any = {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    data: payload,
-    config: {
-      withCredentials: false,
-    },
-    url:
-      import.meta.env.VITE_DOMAIN_URL +
-      "/users-admin/api/users/update-password",
-  };
-  return axios(options);
 }
 
 export function getUsersRoles(payload: any) {
