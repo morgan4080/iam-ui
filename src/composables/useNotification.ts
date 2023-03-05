@@ -2,11 +2,11 @@ import { Notification } from "@/types";
 import { ref } from "vue";
 
 export const useNotification = () => {
-  const notification = ref<Notification | null>(null);
+  const notification = ref();
 
   async function toggleNotification(payload: Notification) {
-    notification.value = { ...notification.value, ...payload };
-    setTimeout(() => resetNotification(), 10000);
+    notification.value = payload;
+    // setTimeout(async () => await resetNotification(), 10000);
   }
 
   async function resetNotification() {

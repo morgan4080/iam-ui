@@ -4,16 +4,17 @@ import { useUsers } from "@/Users/composables/useUsers";
 import Table from "../../components/ui/Table.vue";
 import TableActions from "../../components/ui/TableActions.vue";
 import { useRouter } from "vue-router";
-import { User } from "@/Users/types";
 import { mapActions } from "@/modules/mapStore";
 import { usePagination } from "@/composables/usePagination";
 import { useSort } from "@/composables/useSort";
+import { useSearch } from "@/composables/useSearch";
 
 const router = useRouter();
 const { users, pageables, isLoading, fetchUsers, deleteUser, syncUsers } =
   useUsers();
 const { next, previous } = usePagination(pageables, fetchUsers);
 const { sort } = useSort(pageables, fetchUsers);
+const { search } = useSearch(pageables, fetchUsers);
 const { defineNotification } = mapActions();
 const tableHeaders = [
   "Name",
@@ -23,64 +24,6 @@ const tableHeaders = [
   "USSD Access",
   "Status",
 ];
-
-async function searchUsers() {
-  if (pageables.searchTerm?.length === 0) {
-    pageables.searchTerm = null;
-  }
-  pageables.currentPage = 0;
-  await fetchUsers();
-}
-
-async function delUser(user: User) {
-  if (
-    !confirm(
-      `Are you sure you want to delete ${user.firstName} ${user.lastName}`
-    )
-  )
-    return;
-  await deleteUser(user.keycloakId)
-    .then(async (response: string) => {
-      if (response) {
-        defineNotification({
-          message: "User deleted successfully",
-          success: true,
-        });
-        await fetchUsers();
-      } else {
-        defineNotification({
-          message: "User deleted successfully",
-          success: true,
-        });
-      }
-    })
-    .catch(error => {
-      defineNotification({ message: error, error: true });
-    });
-}
-
-async function sync() {
-  const payload = {
-    syncAllUsers: true,
-  };
-  await syncUsers(payload)
-    .then(async response => {
-      if (response) {
-        await defineNotification({
-          message: `Users synced successfully`,
-          success: true,
-        });
-        pageables.currentPage = 0;
-        await fetchUsers();
-      }
-    })
-    .catch(async (error: string) => {
-      await defineNotification({
-        message: error,
-        error: true,
-      });
-    });
-}
 
 onBeforeMount(async () => await fetchUsers());
 </script>
@@ -93,8 +36,8 @@ onBeforeMount(async () => await fetchUsers());
       description=" A list of all the users including their name, username, ussd and web access details."
       :loading="isLoading"
       @sort="sort"
-      @search="searchUsers"
-      @sync="sync"
+      @search="search"
+      @sync="syncUsers"
     >
       <template #actionButton>
         <button
@@ -167,7 +110,7 @@ onBeforeMount(async () => await fetchUsers());
                     </router-link>
                     <a
                       class="text-red-600 hover:text-red-900"
-                      @click.prevent="delUser(user)"
+                      @click.prevent="deleteUser(user)"
                     >
                       Delete
                       <span class="sr-only"> {{ user.firstName }}</span>

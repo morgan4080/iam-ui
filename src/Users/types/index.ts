@@ -43,6 +43,21 @@ export interface EditUserPayload {
   isEnabled: boolean;
 }
 
+export interface EditUserForm {
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  emailAddress: string | null;
+  company: string | null;
+  phoneNumber: string | null;
+  ussdPhoneNumber: string | null;
+  password: string | null;
+  passwordConfirmation: string | null;
+  pinSecret: string | null;
+  pinSecretConfirmation: string | null;
+  user_roles: string[];
+}
+
 export interface QrInterface {
   phoneNumber: string;
   ussdPhoneNumber: string;

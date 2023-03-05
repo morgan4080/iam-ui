@@ -6,3 +6,10 @@ export interface Pageables {
   searchTerm: string | null;
   sort: "ASC" | "DESC";
 }
+
+export interface Notification {
+  message: string | null;
+  success?: boolean;
+  warning?: boolean;
+  error?: boolean;
+}

@@ -1,12 +1,11 @@
 import { reactive, ref } from "vue";
-import {
-  EditUserPayload,
-  EnableUserPayload,
-  Pageables,
-  User,
-} from "@/Users/types";
+import { EditUserPayload, EnableUserPayload, User } from "@/Users/types";
+import { Pageables } from "@/types";
+import { mapActions } from "@/modules/mapStore";
+import { useQueryParams } from "@/composables/useQueryParams";
 
 export const useUsers = () => {
+  const { defineNotification } = mapActions();
   const user = ref<User | null>(null);
   const users = ref<User[] | null>(null);
   const isLoading = ref(false);
@@ -19,6 +18,8 @@ export const useUsers = () => {
     sort: "ASC",
     searchTerm: null,
   }) as Pageables;
+
+  const { params, generateParams } = useQueryParams(pageables);
 
   async function fetchUser(userRefId: string) {
     isLoading.value = true;
@@ -44,31 +45,43 @@ export const useUsers = () => {
     }
   }
 
-  async function fetchUsers(params?: string) {
+  async function fetchUsers() {
     isLoading.value = true;
     error.value = null;
-    const query = generateQueryParams();
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users?${query}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+    await generateParams();
+    return await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users?${
+        params.value
+      }`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then(async response => {
+        if (!response.ok) {
+          await defineNotification({
+            message: response.text(),
+            error: true,
+          });
+          return;
         }
-      );
-
-      const data = await response.json();
-      users.value = data.records;
-      pageables.totalRecords = data.totalRecords;
-      pageables.totalPages = data.totalPages;
-      pageables.currentPage = data.currentPage + 1;
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
+        const data = await response.json();
+        users.value = data.records;
+        pageables.totalRecords = data.totalRecords;
+        pageables.totalPages = data.totalPages;
+        pageables.currentPage = data.currentPage + 1;
+        return;
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   async function syncUser(userRefId: string) {
@@ -97,9 +110,13 @@ export const useUsers = () => {
     }
   }
 
-  async function syncUsers(payload: { syncAllUsers: boolean }) {
+  async function syncUsers() {
     isLoading.value = true;
     error.value = null;
+
+    const payload = {
+      syncAllUsers: true,
+    };
 
     return await fetch(
       `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`,
@@ -111,15 +128,27 @@ export const useUsers = () => {
         body: JSON.stringify(payload),
       }
     )
-      .then(response => {
-        if (!response.ok) throw new Error(response.statusText);
-        return response.json();
+      .then(async response => {
+        if (!response.ok) {
+          await defineNotification({
+            message: response.text(),
+            error: true,
+          });
+          return;
+        }
+        await defineNotification({
+          message: `Users synced successfully`,
+          success: true,
+        });
+        pageables.currentPage = 0;
+        await fetchUsers();
+        return;
       })
       .catch(err => {
         error.value = err;
         throw new Error(err);
       })
-      .finally(() => (isLoading.value = true));
+      .finally(() => (isLoading.value = false));
   }
 
   async function enableOrDisableUser(payload: EnableUserPayload) {
@@ -171,29 +200,47 @@ export const useUsers = () => {
       });
   }
 
-  async function deleteUser(keycloakId: string) {
+  async function deleteUser(user: User) {
+    if (
+      !confirm(
+        `Are you sure you want to delete ${user.firstName} ${user.lastName}`
+      )
+    )
+      return;
+
     isLoading.value = true;
     error.value = null;
-    try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_DOMAIN_URL
-        }/users-admin/api/v1/users?keycloakId=${keycloakId}&force=false`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+
+    await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users?keycloakId=${
+        user.keycloakId
+      }&force=false`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then(async response => {
+        if (response.ok) {
+          defineNotification({
+            message: "User deleted successfully",
+            success: true,
+          });
+          await fetchUsers();
+        } else {
+          const data = await response.text();
+          defineNotification({ message: data, error: true });
         }
-      );
-      const data = await response.text();
-      return data;
-    } catch (err) {
-      error.value = err;
-      throw new Error("Something went wrong");
-    } finally {
-      isLoading.value = false;
-    }
+      })
+      .catch(error => {
+        error.value = error;
+        throw new Error(error);
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
   }
 
   async function verifyUnique(params: string) {
@@ -218,17 +265,6 @@ export const useUsers = () => {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  function generateQueryParams() {
-    const params = new URLSearchParams();
-    params.set("pageIndex", pageables.currentPage.toString());
-    params.set("pageSize", pageables.recordsPerPage.toString());
-    if (pageables.searchTerm) params.set("searchTerm", pageables.searchTerm);
-    params.set("sort", pageables.sort);
-    params.set("order", pageables.sort);
-
-    return params.toString();
   }
 
   return {

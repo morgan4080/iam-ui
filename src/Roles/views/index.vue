@@ -9,21 +9,15 @@ import { syncRoles, syncServices } from "@/modules/all";
 import store from "@/store";
 import { usePagination } from "@/composables/usePagination";
 import { useSort } from "@/composables/useSort";
+import { useSearch } from "@/composables/useSearch";
 
 const router = useRouter();
 const { roles, pageables, isLoading, fetchRoles } = useRoles();
 const { next, previous } = usePagination(pageables, fetchRoles);
 const { sort } = useSort(pageables, fetchRoles);
+const { search } = useSearch(pageables, fetchRoles);
 const { defineNotification } = mapActions();
 const tableHeaders = ["Name", "Type", "Description"];
-
-async function searchRoles() {
-  if (pageables.searchTerm?.length === 0) {
-    pageables.searchTerm = null;
-  }
-  pageables.currentPage = 0;
-  await fetchRoles();
-}
 
 async function sync() {
   await syncServices();
@@ -45,7 +39,7 @@ onBeforeMount(async () => await fetchRoles());
       title="Roles"
       description=" A list of all the roles including their type and description"
       @sort="sort"
-      @search="searchRoles"
+      @search="search"
       @sync="sync"
     >
       <template v-slot:actionButton>
