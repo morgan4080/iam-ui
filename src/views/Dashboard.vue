@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { getRoles, getUsers } from "@/modules/all";
-import { ref, computed } from "vue";
+import { getRoles } from "@/modules/all";
+import { ref, computed, onBeforeMount } from "vue";
 import { useStore } from "vuex";
+import { useUsers } from "@/Users/composables/useUsers";
 
+const { fetchUsers, users } = useUsers();
 const store = useStore();
 // defineProps<{ user: object }>()
 
@@ -10,19 +12,9 @@ const user = computed(() => {
   return store.state.user ? store.state.user : null;
 });
 
-const userCount = ref(0);
-
 const roleCount = ref(0);
 
 const query = ref(<string>"?order=ASC&sort=ASC&pageSize=1");
-
-getUsers(query.value)
-  .then((data: { totalRecords: number }) => {
-    userCount.value = data.totalRecords;
-  })
-  .catch((e: any) => {
-    alert(e.message);
-  });
 
 getRoles()
   .then(({ totalRecords }) => {
@@ -31,6 +23,8 @@ getRoles()
   .catch((e: any) => {
     alert(e.message);
   });
+
+onBeforeMount(async () => await fetchUsers(query.value));
 </script>
 <template>
   <div
@@ -54,15 +48,14 @@ getRoles()
               <router-link
                 to="/users"
                 class="flex text-blue-600"
+                ><span class="pr-3">Users:</span>
+                {{ users && users.length }}</router-link
               >
-                <span class="pr-3">Users:</span> {{ userCount }}
-              </router-link>
               <router-link
                 to="/roles"
                 class="flex text-blue-600"
+                ><span class="pr-3">Roles:</span> {{ roleCount }}</router-link
               >
-                <span class="pr-3">Roles:</span> {{ roleCount }}
-              </router-link>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block hidden">
@@ -98,13 +91,15 @@ getRoles()
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-              >IAM documentation</a>
+                >IAM documentation</a
+              >
               <a
                 href="https://support.presta.co.ke/portal/en/home"
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-              >Additional resources</a>
+                >Additional resources</a
+              >
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block">
@@ -117,13 +112,15 @@ getRoles()
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-              >Contact us</a>
+                >Contact us</a
+              >
               <a
                 href="https://support.presta.co.ke/portal/en/home"
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-              >Support</a>
+                >Support</a
+              >
             </div>
           </div>
         </div>

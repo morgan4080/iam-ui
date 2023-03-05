@@ -1,5 +1,6 @@
 import { reactive, ref } from "vue";
 import type { Role } from "@/Roles/types";
+import { Pageables } from "@/types";
 
 export const useRoles = () => {
   const roles = ref<Role | null>(null);
@@ -13,7 +14,7 @@ export const useRoles = () => {
     currentPage: 0,
     sort: "ASC",
     searchTerm: null,
-  });
+  }) as Pageables;
   async function fetchRoles(params?: string) {
     isLoading.value = true;
     error.value = null;

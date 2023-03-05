@@ -7,40 +7,17 @@ import { mapActions } from "@/modules/mapStore";
 import { useRoles } from "@/Roles/composables/useRoles";
 import { syncRoles, syncServices } from "@/modules/all";
 import store from "@/store";
+import { usePagination } from "@/composables/usePagination";
+import { useSort } from "@/composables/useSort";
+import { useSearch } from "@/composables/useSearch";
 
 const router = useRouter();
 const { roles, pageables, isLoading, fetchRoles } = useRoles();
+const { next, previous } = usePagination(pageables, fetchRoles);
+const { sort } = useSort(pageables, fetchRoles);
+const { search } = useSearch(pageables, fetchRoles);
 const { defineNotification } = mapActions();
 const tableHeaders = ["Name", "Type", "Description"];
-
-async function next() {
-  if (pageables.currentPage <= 1) return;
-  pageables.currentPage -= 1;
-  await fetchRoles();
-}
-
-async function previous() {
-  if (pageables.currentPage > pageables.totalPages) return;
-  pageables.currentPage -= 1;
-  await fetchRoles();
-}
-
-async function sortRoles() {
-  pageables.sort =
-    pageables.sort === "ASC"
-      ? (pageables.sort = "DESC")
-      : (pageables.sort = "ASC");
-  pageables.currentPage = 0;
-  await fetchRoles();
-}
-
-async function searchRoles() {
-  if (pageables.searchTerm?.length === 0) {
-    pageables.searchTerm = null;
-  }
-  pageables.currentPage = 0;
-  await fetchRoles();
-}
 
 async function sync() {
   await syncServices();
@@ -61,8 +38,8 @@ onBeforeMount(async () => await fetchRoles());
       :loading="isLoading"
       title="Roles"
       description=" A list of all the roles including their type and description"
-      @sort="sortRoles"
-      @search="searchRoles"
+      @sort="sort"
+      @search="search"
       @sync="sync"
     >
       <template #actionButton>

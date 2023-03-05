@@ -83,7 +83,7 @@ const assignRoles = async () => {
       message: messages[0].message,
       success: true,
     });
-    await router.push(`/users/${route.params.id}`);
+    await router.push(`/users/${route.params.id}/view`);
   } catch (e: any) {
     alert(e.message);
   } finally {
@@ -154,7 +154,7 @@ const addRolesToUser = async () => {
           message: messages[0].message,
           success: true,
         });
-        await router.push(`/users/${route.params.id}`);
+        await router.push(`/users/${route.params.id}/view`);
       } catch (e: any) {
         alert(e.message);
       } finally {
@@ -192,7 +192,7 @@ const removeRolesFromUser = async () => {
           message: messages[0].message,
           success: true,
         });
-        await router.push(`/users/${route.params.id}`);
+        await router.push(`/users/${route.params.id}/view`);
       } catch (e: any) {
         alert(e.message);
       } finally {
@@ -220,7 +220,7 @@ const removeRolesFromUser = async () => {
                   <li>
                     <div class="flex items-center">
                       <router-link
-                        :to="`/users/${route.params.id}`"
+                        :to="`/users/${route.params.id}/view`"
                         class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                         style="color: #9e9e9e"
                       >

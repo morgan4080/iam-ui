@@ -2,7 +2,7 @@ const userRoutes = [
   {
     path: "/users",
     name: "Users",
-    component: () => import("@users/views/index.vue"),
+    component: () => import("@users/views/userIndex.vue"),
   },
   {
     path: "/users/create",
@@ -10,14 +10,16 @@ const userRoutes = [
     component: () => import("@/views/Users/create.vue"),
   },
   {
-    path: "/users/:id",
+    path: "/users/:refId/view",
     name: "UserView",
-    component: () => import("@users/views/_id.vue"),
+    props: true,
+    component: () => import("@users/views/userView.vue"),
   },
   {
-    path: "/users/:id/edit",
-    name: "UsersEdit",
-    component: () => import("@/views/Users/Edit.vue"),
+    path: "/users/:refId/edit",
+    name: "UserEdit",
+    props: true,
+    component: () => import("@users/views/userEdit.vue"),
   },
   {
     path: "/users/:id/change-password",
