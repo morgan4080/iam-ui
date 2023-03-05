@@ -1,142 +1,48 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { computed, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { computed, onBeforeMount, reactive, ref } from "vue";
 import { useStore } from "vuex";
+import { useUsers } from "@/Users/composables/useUsers";
+import { QrInterface, EditUserPayload } from "@/Users/types";
 import { mapActions } from "@/modules/mapStore";
+
+const props = defineProps<{
+  refId: string;
+}>();
+const { defineNotification } = mapActions();
 const router = useRouter();
-
 const store = useStore();
+const { user, isLoading, fetchUser, verifyUnique, editUser } = useUsers();
 
-const route = useRoute();
-
-const { defineNotification, verifyUnique } = mapActions();
-
-interface User {
-  id: string;
-  keycloakId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  tenantId: string;
-  userAssignedRolesId: any[];
-  userType: string;
-  username: string;
-}
+const query = ref("?");
 
 const form = reactive({
   username: "",
   firstName: "",
   lastName: "",
   emailAddress: "",
-  company: <any>"",
+  company: "",
   phoneNumber: "",
   ussdPhoneNumber: "",
   password: "",
   passwordConfirmation: "",
   pinSecret: "",
   pinSecretConfirmation: "",
-  user_roles: <any>[],
+  user_roles: [],
 });
 
 const organisation = computed(() =>
   store.state.user ? store.state.user.companyName : null
 );
 
-let arrayFocus: {
-  id: number;
-  name: string;
-  permissions: string;
-  description: string;
-}[] = [];
-
-const userData = ref(<User>{
-  firstName: "",
-  lastName: "",
-  email: "",
+const qrObject: QrInterface = {
   phoneNumber: "",
-});
+  ussdPhoneNumber: "",
+  email: "",
+  username: "",
+};
 
-store.dispatch('getUser', route)
-  .then(data => {
-    // User
-    console.log("user data", data);
-    const { user } = data;
-    userData.value = {
-      ...userData.value,
-      ...user,
-    };
-    form.username = user.username;
-    form.firstName = user.firstName;
-    form.lastName = user.lastName;
-    form.emailAddress = user.email;
-    form.username = user.username;
-    form.phoneNumber = user.phoneNumber;
-    form.ussdPhoneNumber = user.ussdPhoneNumber;
-    form.company = organisation;
-  })
-  .catch((e: any) => {
-    alert(e.message);
-  });
-
-const loading = ref(false);
-
-function editUser() {
-  loading.value = true;
-  let payload: {
-    userRefId: string;
-    userName: string;
-    firstName: string;
-    lastName: string;
-    ussdPhoneNumber: string;
-    email: string | undefined;
-    phoneNumber: string | undefined;
-    isEnabled: boolean;
-  } = {
-    userRefId: userData.value.id,
-    userName: form.username,
-    firstName: form.firstName,
-    lastName: form.lastName,
-    email: form.emailAddress,
-    phoneNumber: form.phoneNumber,
-    ussdPhoneNumber: form.ussdPhoneNumber,
-    isEnabled: true,
-  };
-
-  if (form.emailAddress === "") {
-    delete payload.email;
-  }
-  if (form.phoneNumber === "") {
-    delete payload.phoneNumber;
-  }
-
-  store
-    .dispatch("editTheUser", { payload, route })
-    .then(async (response: any) => {
-      console.log("edit response", response);
-      await store.dispatch("defineNotification", {
-        message: `User Edited successfully`,
-        success: true,
-      });
-      await router.push(`/users/${route.params.id}`);
-    })
-    .catch((e: any) => {
-      console.log(e.message);
-    })
-    .finally(async () => {
-      loading.value = false;
-      await router.push(`/users/${route.params.id}`);
-    });
-}
-
-interface qrInterface {
-  phoneNumber: string;
-  ussdPhoneNumber: string;
-  email: string;
-  username: string;
-}
-let query = ref(<string>`?`);
-const byIdentifier = async () => {
+async function byIdentifier() {
   for (const [key, value] of Object.entries(qrObject)) {
     if (value && query.value === "?") {
       query.value += `${key}=${value}`;
@@ -144,42 +50,34 @@ const byIdentifier = async () => {
       query.value += `&${key}=${value}`;
     }
   }
-  console.log(query.value);
 
-  let response = await verifyUnique(query.value);
-
-  query.value = `?`;
+  const response = await verifyUnique(query.value);
+  query.value = "?";
 
   return response === "unique";
-};
+}
 
-let qrObject: qrInterface = {
-  phoneNumber: "",
-  ussdPhoneNumber: "",
-  email: "",
-  username: "",
-};
-
-const setQuery = async (e: any) => {
-  if (e.target.id === "email") {
+async function setQuery(e: Event) {
+  const el = e.target as HTMLInputElement;
+  if (el.id === "email") {
     qrObject.phoneNumber = "";
     qrObject.email = form.emailAddress;
     qrObject.username = "";
   }
-  if (e.target.id === "phone-number") {
+  if (el.id === "phone-number") {
     qrObject.phoneNumber = form.phoneNumber;
     qrObject.email = "";
     qrObject.username = "";
   }
-  if (e.target.id === "phone-number") {
-    if (e.target.value.length > 12) {
-      e.target.classList.add("focus:ring-red-400");
-      e.target.classList.add("focus:border-red-400");
-      e.target.onblur = () => {
-        e.target.classList.remove("focus:ring-red-400");
-        e.target.classList.remove("focus:border-red-400");
+  if (el.id === "phone-number") {
+    if (el.value.length > 12) {
+      el.classList.add("focus:ring-red-400");
+      el.classList.add("focus:border-red-400");
+      el.onblur = () => {
+        el.classList.remove("focus:ring-red-400");
+        el.classList.remove("focus:border-red-400");
       };
-      e.target.value = e.target.value.slice(0, 4);
+      el.value = el.value.slice(0, 4);
       await defineNotification({
         message: "No more than 12 characters",
         error: true,
@@ -189,21 +87,21 @@ const setQuery = async (e: any) => {
     qrObject.email = "";
     qrObject.username = "";
   }
-  if (e.target.id === "ussd-phone-number") {
-    if (e.target.value.length > 12) {
-      e.target.classList.add("focus:ring-red-400");
-      e.target.classList.add("focus:border-red-400");
-      e.target.onblur = () => {
-        e.target.classList.remove("focus:ring-red-400");
-        e.target.classList.remove("focus:border-red-400");
+  if (el.id === "ussd-phone-number") {
+    if (el.value.length > 12) {
+      el.classList.add("focus:ring-red-400");
+      el.classList.add("focus:border-red-400");
+      el.onblur = () => {
+        el.classList.remove("focus:ring-red-400");
+        el.classList.remove("focus:border-red-400");
       };
-      e.target.value = e.target.value.slice(0, 4);
+      el.value = el.value.slice(0, 4);
       await defineNotification({
         message: "No more than 12 characters",
         error: true,
       });
     }
-    let response0 = await verifyUnique(`?phoneNumber=${form.phoneNumber}`);
+    const response0 = await verifyUnique(`?phoneNumber=${form.phoneNumber}`);
     if (response0 !== "unique") {
       form.phoneNumber = "";
       await defineNotification({
@@ -213,13 +111,13 @@ const setQuery = async (e: any) => {
     }
     return;
   }
-  if (e.target.id === "username") {
+  if (el.id === "username") {
     qrObject.phoneNumber = "";
     qrObject.email = "";
     qrObject.username = form.username;
   }
 
-  let response = await byIdentifier();
+  const response = await byIdentifier();
 
   if (!response) {
     for (const [key, value] of Object.entries(qrObject)) {
@@ -240,7 +138,59 @@ const setQuery = async (e: any) => {
       }
     }
   }
-};
+}
+
+async function edit() {
+  if (!user.value) return;
+  const payload: EditUserPayload = {
+    userRefId: user.value.id,
+    userName: form.username,
+    firstName: form.firstName,
+    lastName: form.lastName,
+    email: form.emailAddress,
+    phoneNumber: form.phoneNumber,
+    ussdPhoneNumber: form.ussdPhoneNumber,
+    isEnabled: true,
+  };
+
+  if (form.emailAddress === "") {
+    delete payload.email;
+  }
+  if (form.phoneNumber === "") {
+    delete payload.phoneNumber;
+  }
+
+  await editUser(payload)
+    .then(async response => {
+      if (response) {
+        await defineNotification({
+          message: `User Edited successfully`,
+          success: true,
+        });
+        await router.push(`/users/${props.refId}/view`);
+      }
+    })
+    .catch(async (error: string) => {
+      await defineNotification({
+        message: error,
+        error: true,
+      });
+    });
+}
+
+onBeforeMount(async () => {
+  await fetchUser(props.refId).then(() => {
+    if (!user.value) return;
+    form.username = user.value.username;
+    form.firstName = user.value.firstName;
+    form.lastName = user.value.lastName;
+    form.emailAddress = user.value.email;
+    form.username = user.value.username;
+    form.phoneNumber = user.value.phoneNumber;
+    form.ussdPhoneNumber = user.value.ussdPhoneNumber;
+    form.company = organisation.value;
+  });
+});
 </script>
 
 <template>
@@ -262,11 +212,11 @@ const setQuery = async (e: any) => {
               <li>
                 <div class="flex items-center">
                   <router-link
-                    :to="`/users/${route.params.id}`"
+                    :to="`/users/${refId}/view`"
                     class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                     style="color: #9e9e9e"
-                    >User Profile</router-link
-                  >
+                    >User Profile
+                  </router-link>
                 </div>
               </li>
 
@@ -296,15 +246,16 @@ const setQuery = async (e: any) => {
           </nav>
         </div>
         <form
-          @submit.prevent="editUser"
+          v-if="user"
           method="POST"
+          @submit.prevent="edit"
         >
           <div class="md:flex md:flex-col md:justify-between">
             <div class="flex-1 min-w-0">
               <div
                 class="text-xl font-semibold leading-7 text-gray-900 py-2 sm:leading-9 sm:truncate border-b border-gray-200"
               >
-                {{ userData.firstName + " " + userData.lastName }}
+                {{ user.firstName + " " + user.lastName }}
               </div>
               <div class="py-3 md:flex md:justify-between">
                 <div class="text-sm block w-full">
@@ -321,10 +272,10 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
+                            id="username"
                             v-model="form.username"
                             type="text"
                             name="username"
-                            id="username"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
                           />
@@ -343,10 +294,10 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
+                            id="first-name"
                             v-model="form.firstName"
                             type="text"
                             name="first-name"
-                            id="first-name"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
                           />
@@ -365,10 +316,10 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
+                            id="last-name"
                             v-model="form.lastName"
                             type="text"
                             name="last-name"
-                            id="last-name"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
                           />
@@ -387,13 +338,13 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
-                            @change="setQuery($event)"
+                            id="email"
                             v-model="form.emailAddress"
                             type="email"
                             name="email"
-                            id="email"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
+                            @change="setQuery($event)"
                           />
                         </div>
                       </div>
@@ -415,8 +366,8 @@ const setQuery = async (e: any) => {
                             <label
                               for="country"
                               class="sr-only"
-                              >Country</label
-                            >
+                              >Country
+                            </label>
                             <select
                               id="country"
                               class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md"
@@ -425,12 +376,12 @@ const setQuery = async (e: any) => {
                             </select>
                           </div>
                           <input
-                            @change="setQuery($event)"
-                            type="number"
                             id="ussd-phone-number"
                             v-model="form.ussdPhoneNumber"
+                            type="number"
                             class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md"
                             required
+                            @change="setQuery($event)"
                           />
                         </div>
                       </div>
@@ -452,8 +403,8 @@ const setQuery = async (e: any) => {
                             <label
                               for="country"
                               class="sr-only"
-                              >Country</label
-                            >
+                              >Country
+                            </label>
                             <select
                               id="country"
                               class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md"
@@ -462,12 +413,12 @@ const setQuery = async (e: any) => {
                             </select>
                           </div>
                           <input
-                            @change="setQuery($event)"
-                            type="number"
                             id="phone-number"
                             v-model="form.phoneNumber"
+                            type="number"
                             class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md"
                             required
+                            @change="setQuery($event)"
                           />
                         </div>
                       </div>
@@ -480,11 +431,11 @@ const setQuery = async (e: any) => {
           <div class="flex w-full">
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="isLoading"
               class="inline-flex mt-4 ml-auto items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500"
             >
               <svg
-                v-if="loading"
+                v-if="isLoading"
                 class="animate-spin -ml-1 mr-1 h-3 w-3 text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

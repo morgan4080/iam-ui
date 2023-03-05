@@ -13,6 +13,7 @@ export interface User {
   pinStatus: string;
   username: string;
   pinAttempts: number;
+  passwordStatus: string;
 }
 
 export interface KeycloakUser {
@@ -31,11 +32,35 @@ export interface EnableUserPayload {
   isEnabled: boolean;
 }
 
-export interface Pageables {
-  recordsPerPage: number;
-  totalRecords: number;
-  totalPages: number;
-  currentPage: number;
-  searchTerm: string | null;
-  sort: "ASC" | "DESC";
+export interface EditUserPayload {
+  userRefId: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  ussdPhoneNumber: string;
+  email: string | undefined;
+  phoneNumber: string | undefined;
+  isEnabled: boolean;
+}
+
+export interface EditUserForm {
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  emailAddress: string | null;
+  company: string | null;
+  phoneNumber: string | null;
+  ussdPhoneNumber: string | null;
+  password: string | null;
+  passwordConfirmation: string | null;
+  pinSecret: string | null;
+  pinSecretConfirmation: string | null;
+  user_roles: string[];
+}
+
+export interface QrInterface {
+  phoneNumber: string;
+  ussdPhoneNumber: string;
+  email: string;
+  username: string;
 }
