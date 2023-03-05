@@ -32,15 +32,6 @@ export interface EnableUserPayload {
   isEnabled: boolean;
 }
 
-export interface Pageables {
-  recordsPerPage: number;
-  totalRecords: number;
-  totalPages: number;
-  currentPage: number;
-  searchTerm: string | null;
-  sort: "ASC" | "DESC";
-}
-
 export interface EditUserPayload {
   userRefId: string;
   userName: string;

@@ -6,10 +6,12 @@ import TableActions from "../../components/ui/TableActions.vue";
 import { useRouter } from "vue-router";
 import { User } from "@/Users/types";
 import { mapActions } from "@/modules/mapStore";
+import { usePagination } from "@/composables/usePagination";
 
 const router = useRouter();
 const { users, pageables, isLoading, fetchUsers, deleteUser, syncUsers } =
   useUsers();
+const { next, previous } = usePagination(pageables, fetchUsers);
 const { defineNotification } = mapActions();
 const tableHeaders = [
   "Name",
@@ -19,18 +21,6 @@ const tableHeaders = [
   "USSD Access",
   "Status",
 ];
-
-async function next() {
-  if (pageables.currentPage <= 1) return;
-  pageables.currentPage -= 1;
-  await fetchUsers();
-}
-
-async function previous() {
-  if (pageables.currentPage > pageables.totalPages) return;
-  pageables.currentPage -= 1;
-  await fetchUsers();
-}
 
 async function sortUsers() {
   pageables.sort =

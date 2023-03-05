@@ -7,23 +7,13 @@ import { mapActions } from "@/modules/mapStore";
 import { useRoles } from "@/Roles/composables/useRoles";
 import { syncRoles, syncServices } from "@/modules/all";
 import store from "@/store";
+import { usePagination } from "@/composables/usePagination";
 
 const router = useRouter();
 const { roles, pageables, isLoading, fetchRoles } = useRoles();
+const { next, previous } = usePagination(pageables, fetchRoles);
 const { defineNotification } = mapActions();
 const tableHeaders = ["Name", "Type", "Description"];
-
-async function next() {
-  if (pageables.currentPage <= 1) return;
-  pageables.currentPage -= 1;
-  await fetchRoles();
-}
-
-async function previous() {
-  if (pageables.currentPage > pageables.totalPages) return;
-  pageables.currentPage -= 1;
-  await fetchRoles();
-}
 
 async function sortRoles() {
   pageables.sort =
