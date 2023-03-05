@@ -76,7 +76,7 @@ const store = createStore<State>({
           warning: false,
           error: false,
         };
-      }, 10000);
+      }, 15000);
     },
     set_role_users(state, payload: RoleUsers[]) {
       state.roleUsers = payload;
@@ -388,7 +388,7 @@ const store = createStore<State>({
     getServices({}): Promise<any> {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
-      }/api/organizations/services`;
+      }/users-admin/api/organizations/services`;
       const method = "GET";
       return new Promise(async (resolve, reject) => {
         let response = await fetch(url, {
@@ -558,10 +558,10 @@ const store = createStore<State>({
     },
     updateUsersInRole(
       {},
-      { role_id, keyCloakIds }: { role_id: string; keyCloakIds: string[] }
+      { role_id, userRefIds }: { role_id: string; userRefIds: string[] }
     ) {
       const payload = {
-        userKeyCloakIds: keyCloakIds,
+        userRefIds,
       };
 
       const url = `${

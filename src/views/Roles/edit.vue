@@ -1,19 +1,16 @@
-<script setup lang="ts">
-import {
-  ArrowRightCircleIcon,
-  ArrowLeftCircleIcon,
-} from "@heroicons/vue/24/solid";
-import { useRoute, useRouter } from "vue-router";
-import { computed, ComputedRef, onMounted, reactive, ref } from "vue";
-import { getRole, getServices, getUsers } from "@/modules/all";
-import { useStore } from "vuex";
+<script lang="ts" setup>
+import {ArrowLeftCircleIcon, ArrowRightCircleIcon,} from "@heroicons/vue/24/solid";
+import {useRoute, useRouter} from "vue-router";
+import {computed, ComputedRef, onMounted, reactive, ref} from "vue";
+import {getRole} from "@/modules/all";
+import {useStore} from "vuex";
+import {mapActions} from "@/modules/mapStore";
+import {RoleUsers} from "@/types/roleTypes";
+import PermissionsExchange from "@/components/PermissionsExchange.vue";
+
 const route = useRoute();
 const store = useStore();
 const router = useRouter();
-import PermissionsList from "@/components/PermissionsList.vue";
-import { mapActions } from "@/modules/mapStore";
-import { RoleUsers } from "@/types/roleTypes";
-import PermissionsExchange from "@/components/PermissionsExchange.vue";
 
 const { updateRole } = mapActions();
 
@@ -40,8 +37,6 @@ interface formInterface {
   keycloakRoleId: string;
   name: string;
   description: string;
-  keycloakRoleIdsToAdd: string[];
-  keycloakRoleIdsToRemove: string[];
 }
 
 const currentPage = ref(<number>1);
@@ -75,9 +70,7 @@ const initialKeycloakIds = new Set<string>();
 const form = ref(<formInterface>{
   keycloakRoleId: role.value.keycloakRoleId,
   name: "",
-  description: "",
-  keycloakRoleIdsToAdd: [],
-  keycloakRoleIdsToRemove: [],
+  description: ""
 });
 
 const selectedService = ref<number | null>(null);
@@ -88,24 +81,11 @@ const roleUsers: ComputedRef<RoleUsers[]> = computed(() => {
 
 const loadPage = async () => {
   try {
-    const response: serviceInterface[] = await getServices();
+    services.value = await store.dispatch("getServices");
 
-    services.value = response.map((service: serviceInterface) => {
-      return {
-        ...service,
-        checked: false,
-      };
-    });
-
-    const r = await getRole(route.params.id);
-
-    console.log("role", r);
-
-    role.value = r;
+    role.value = await getRole(route.params.id);
 
     form.value.name = role.value.name;
-
-    form.value.keycloakRoleId = role.value.keycloakRoleId;
 
     form.value.description = role.value.description
       ? role.value.description
@@ -122,8 +102,6 @@ const loadPage = async () => {
           acc = [...acc, ...curr];
           return acc;
         }, []);
-
-      form.value.keycloakRoleIdsToAdd = keycloakIds.value;
 
       keycloakIds.value.forEach((key: string) => {
         initialKeycloakIds.add(key);
@@ -167,39 +145,11 @@ onMounted(async () => {
   await loadPage();
 });
 
-function setPermissionToService(e: any, permission: permissionInterface) {
-  if (e.target.checked) {
-    form.value.keycloakRoleIdsToAdd.push(permission.keycloakRoleId);
-  } else {
-    let index = form.value.keycloakRoleIdsToAdd.findIndex(
-      (item): boolean => item === permission.keycloakRoleId
-    );
-    form.value.keycloakRoleIdsToAdd.splice(index, 1);
-  }
-}
-
 const loading = ref(<boolean>false);
 
 const actionUpdateRole = async () => {
   try {
     loading.value = true;
-    let existing: string[] = Array.from(initialKeycloakIds);
-    form.value.keycloakRoleIdsToRemove = existing.reduce(
-      (acc: string[], current: string) => {
-        if (
-          form.value.keycloakRoleIdsToAdd.findIndex(
-            (k: string) => k === current
-          ) === -1
-        ) {
-          acc.push(current);
-        }
-        return acc;
-      },
-      []
-    );
-    form.value.keycloakRoleIdsToAdd = form.value.keycloakRoleIdsToAdd.filter(
-      (keyId: string) => existing.indexOf(keyId) === -1
-    );
     if (
       form.value.name.toLowerCase() === "sales_person" ||
       form.value.name.toLowerCase() === "relationship_manager"
@@ -207,7 +157,6 @@ const actionUpdateRole = async () => {
       form.value.name = form.value.name.toUpperCase();
     }
     const response = await updateRole(form.value);
-    console.log(response);
     await store.dispatch("defineNotification", {
       message: response.messages[0].message,
       success: true,
@@ -241,12 +190,12 @@ const allUsers: ComputedRef<
 
 const idsToAddToRole = ref<string[]>([]);
 
-const setUserIdsToAddToRole = (e: any, keycloakId: string) => {
+const setUserIdsToAddToRole = (e: any, refId: string) => {
   if (e.target.checked) {
-    idsToAddToRole.value.push(keycloakId);
+    idsToAddToRole.value.push(refId);
   } else {
     let index = idsToAddToRole.value.findIndex(
-      (id: string): boolean => id === keycloakId
+      (id: string): boolean => id === refId
     );
     idsToAddToRole.value.splice(index, 1);
   }
@@ -254,12 +203,12 @@ const setUserIdsToAddToRole = (e: any, keycloakId: string) => {
 
 const idsToRemoveFromRole = ref<string[]>([]);
 
-const setUserIdsToRemoveFromRole = (e: any, keycloakId: string) => {
+const setUserIdsToRemoveFromRole = (e: any, refId: string) => {
   if (e.target.checked) {
-    idsToRemoveFromRole.value.push(keycloakId);
+    idsToRemoveFromRole.value.push(refId);
   } else {
     let index = idsToRemoveFromRole.value.findIndex(
-      (id: string): boolean => id === keycloakId
+      (id: string): boolean => id === refId
     );
     idsToRemoveFromRole.value.splice(index, 1);
   }
@@ -280,19 +229,19 @@ const removeUsersFromRole = async () => {
       try {
         // call action to update role users
         //filter role users to remove idsToRemoveFromRole
-        const roleUsersKeyCloakIds = roleUsers.value.map(
-          user => user.keycloakId
+        const roleUsersIds = roleUsers.value.map(
+          user => user.id
         );
-        const newKeycloakIds = roleUsersKeyCloakIds.filter(
-          keycloakId => idsToRemoveFromRole.value.indexOf(keycloakId) !== -1
+        const newIds = roleUsersIds.filter(
+          refId => idsToRemoveFromRole.value.indexOf(refId) !== -1
         );
         const response = await store.dispatch("updateUsersInRole", {
-          role_id: role.value.id,
-          keyCloakIds: newKeycloakIds,
+          role_id: route.params.id,
+          userRefIds: newIds,
         });
         console.log("response removing users from role", response);
         await store.dispatch("defineNotification", {
-          message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.name} successfully`,
+          message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.value.name} successfully`,
           success: true,
         });
         // reload onMounted
@@ -327,12 +276,13 @@ const addUsersToRole = async () => {
         // call action to update role users
         // map role users to return keycloak id only
         // spread role users keycloak ids and keycloak idsToAddToRole
-        const roleUsersKeyCloakIds = roleUsers.value.map(
-          user => user.keycloakId
+        const roleUsersIds = roleUsers.value.map(
+          user => user.id
         );
+        console.log([...roleUsersIds, ...idsToAddToRole.value])
         const response = await store.dispatch("updateUsersInRole", {
-          role_id: role.value.id,
-          keyCloakIds: [...roleUsersKeyCloakIds, ...idsToAddToRole.value],
+          role_id: route.params.id,
+          userRefIds: [...roleUsersIds, ...idsToAddToRole.value],
         });
         console.log("response adding users to role", response);
         await store.dispatch("defineNotification", {
@@ -357,9 +307,11 @@ const addUsersToRole = async () => {
 
 const filteredUsers = computed(() => {
   // remove from allUsers, users present in roleUsers
-  const roleUsersKeyCloakIds = roleUsers.value.map(user => user.keycloakId);
+  const roleUsersIds = roleUsers.value.map(user => user.id);
+  console.log(roleUsersIds)
+  console.log(allUsers.value)
   return allUsers.value.reduce((acc: typeof allUsers.value, user) => {
-    if (roleUsersKeyCloakIds.indexOf(user.keycloakId) === -1) {
+    if (roleUsersIds.indexOf(user.id) === -1) {
       acc.push(user);
     }
     return acc;
@@ -386,8 +338,9 @@ const filteredUsers = computed(() => {
                       :to="`/roles/${route.params.id}`"
                       class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                       style="color: #9e9e9e"
-                      >Role</router-link
                     >
+                      Role
+                    </router-link>
                   </div>
                 </li>
 
@@ -417,7 +370,9 @@ const filteredUsers = computed(() => {
             </nav>
             <div class="py-2 px-4 sm:p-6">
               <div>
-                <h3 class="text-xl font-semibold text-gray-900">Edit Role</h3>
+                <h3 class="text-xl font-semibold text-gray-900">
+                  Edit Role
+                </h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">
                   Add new permissions
                 </p>
@@ -435,18 +390,18 @@ const filteredUsers = computed(() => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg space-y-4">
                       <input
+                        id="role_name"
                         v-model="form.name"
                         type="text"
                         name="role_name"
-                        id="role_name"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                      >
 
                       <div
                         v-show="
                           form.name.toLowerCase() === 'sales_person' ||
-                          form.name.toLowerCase() === 'relationship_manager'
+                            form.name.toLowerCase() === 'relationship_manager'
                         "
                         class="flex max-w-lg rounded-sm border p-2"
                         style="background-color: #ffeeb3; border-color: #fb6b27"
@@ -464,7 +419,7 @@ const filteredUsers = computed(() => {
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-                          ></path>
+                          />
                         </svg>
                         <div>
                           <p
@@ -509,12 +464,12 @@ const filteredUsers = computed(() => {
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <textarea
-                      v-model="form.description"
                       id="description"
+                      v-model="form.description"
                       rows="2"
                       class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
                       required
-                    ></textarea>
+                    />
                     <p class="mt-2 text-sm text-gray-500">
                       Write a short description about the role.
                     </p>
@@ -534,7 +489,9 @@ const filteredUsers = computed(() => {
                       v-model="selectedService"
                       class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
                     >
-                      <option :value="null">Select Service</option>
+                      <option :value="null">
+                        Select Service
+                      </option>
                       <option
                         v-for="(service, i) in services"
                         :key="i"
@@ -567,7 +524,6 @@ const filteredUsers = computed(() => {
                     :role_name="form.name"
                     :selected-service="selectedService"
                     :services="services"
-                    :setPermissionToService="setPermissionToService"
                   />
                 </div>
 
@@ -593,17 +549,18 @@ const filteredUsers = computed(() => {
                         <ul class="list-decimal list-inside space-y-2">
                           <li
                             v-for="(user, index) in filteredUsers"
+                            :key="index"
                             class="flex items-center justify-between"
                           >
                             <label :for="index">
                               {{ user.firstName }} {{ user.lastName }}
                             </label>
                             <input
-                              @change="setUserIdsToAddToRole($event, user.id)"
                               :id="index"
                               type="checkbox"
                               class="text-xs text-gray-500"
-                            />
+                              @change="setUserIdsToAddToRole($event, user.id)"
+                            >
                           </li>
                         </ul>
                       </div>
@@ -611,17 +568,17 @@ const filteredUsers = computed(() => {
 
                     <div class="flex flex-col items-center space-y-3 my-2">
                       <button
-                        @click="addUsersToRole"
                         type="button"
                         class="mx-4"
+                        @click="addUsersToRole"
                       >
                         <ArrowRightCircleIcon class="w-6 h-6" />
                       </button>
 
                       <button
-                        @click="removeUsersFromRole"
                         type="button"
                         class="mx-4"
+                        @click="removeUsersFromRole"
                       >
                         <ArrowLeftCircleIcon class="w-6 h-6" />
                       </button>
@@ -639,19 +596,20 @@ const filteredUsers = computed(() => {
                         <ul class="list-decimal list-inside space-y-2">
                           <li
                             v-for="(user, index) in roleUsers"
+                            :key="index"
                             class="flex items-center justify-between"
                           >
                             <label :for="index">
                               {{ user.firstName }} {{ user.lastName }}
                             </label>
                             <input
-                              @change="
-                                setUserIdsToRemoveFromRole($event, user.id)
-                              "
                               :id="index"
                               type="checkbox"
                               class="text-xs text-gray-500"
-                            />
+                              @change="
+                                setUserIdsToRemoveFromRole($event, user.id)
+                              "
+                            >
                           </li>
                         </ul>
                       </div>
@@ -684,12 +642,12 @@ const filteredUsers = computed(() => {
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               Update: Role
             </button>

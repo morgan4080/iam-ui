@@ -52,12 +52,12 @@
               permission.name
             }}</label>
             <input
-              @change="setPermissionToService($event, permission)"
-              v-model="permission.checked"
               :id="`allPermission${permission.id}`"
+              v-model="permission.checked"
               aria-describedby="all-service-permissions"
               type="checkbox"
-            />
+              @change="setPermissionToService($event, permission)"
+            >
           </li>
         </ul>
       </div>
@@ -104,8 +104,7 @@
           v-if="existingServicePermissions.length > 0"
           class="-mt-1 mb-2 text-sm font-medium text-gray-700 bg-gray-100"
         >
-          Permissions Associated To Service
-          {{ services[selectedService].clientId }}
+          Associated To {{ services[selectedService].clientId }}
         </p>
         <div
           v-if="existingServicePermissions.length === 0"
@@ -145,12 +144,12 @@
               permission.name
             }}</label>
             <input
-              @change="setPermissionToService($event, permission)"
-              v-model="permission.checked"
               :id="`existingPermission${permission.id}`"
+              v-model="permission.checked"
               aria-describedby="existing-service-permissions"
               type="checkbox"
-            />
+              @change="setPermissionToService($event, permission)"
+            >
           </li>
         </ul>
       </div>
@@ -171,7 +170,6 @@ const props = defineProps<{
   selectedService: number | null;
   role_name: string;
   services: serviceInterface[];
-  setPermissionToService: (e: any, permission: permissionInterface) => void;
 }>();
 
 const {
@@ -179,13 +177,11 @@ const {
   role_name,
   services,
   selectedService,
-  setPermissionToService,
 } = toRefs(props);
 
 const existingServicePermissions = computed(() => {
   if (selectedService.value) {
-    return services.value[selectedService.value].permissions.filter(
-      permission =>
+    return services.value[selectedService.value].permissions.filter( permission =>
         existing.value.findIndex(
           index => index === permission.keycloakRoleId
         ) !== -1
@@ -196,13 +192,16 @@ const existingServicePermissions = computed(() => {
 
 const nonAssociatedServicePermissions = computed(() => {
   if (selectedService.value) {
-    return services.value[selectedService.value].permissions.filter(
-      permission =>
-        existing.value.findIndex(
-          index => index !== permission.keycloakRoleId
-        ) === -1
-    );
+    return services.value[selectedService.value].permissions.filter(permission => {
+      return existing.value.findIndex(
+          index => index === permission.keycloakRoleId
+      ) === -1;
+    })
   }
-  return [];
+  return []
 });
+
+const setPermissionToService = (e: any, permission: any) => {
+
+};
 </script>

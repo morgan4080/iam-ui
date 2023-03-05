@@ -42,7 +42,7 @@ const emit = defineEmits(["next", "previous"]);
             v-if="loading"
             :colspan="headers.length + 1"
             class="h-2 animate-pulse bg-gray-300"
-          ></td>
+          />
         </tr>
         <tr v-if="dataLength === 0 && !loading">
           <td

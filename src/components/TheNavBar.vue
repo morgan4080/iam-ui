@@ -44,11 +44,11 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
           <!-- Mobile menu button-->
           <button
-            @click="mobileMenu = !mobileMenu"
             type="button"
             class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-400 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             aria-controls="mobile-menu"
             aria-expanded="false"
+            @click="mobileMenu = !mobileMenu"
           >
             <span class="sr-only">Open main menu</span>
             <!--
@@ -109,8 +109,7 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
               <TheLogo class="h-8 w-auto" />
               <span
                 class="text-white ml-4 mt-2 hidden sm:block font-semibold"
-                >{{ organisation }}</span
-              >
+              >{{ organisation }}</span>
             </a>
           </div>
           <!--          sm:block-->
@@ -119,12 +118,12 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
               <div class="ml-6 relative">
                 <div>
                   <button
-                    @click="servicesMenu = !servicesMenu"
+                    id="services-menu-button"
                     type="button"
                     class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-gray-100 bg-gray-800 hover:text-gray-400 focus:outline-none focus:ring-1 transition"
-                    id="services-menu-button"
                     aria-expanded="false"
                     aria-haspopup="true"
+                    @click="servicesMenu = !servicesMenu"
                   >
                     <span class="sr-only">Open services menu</span>
                     Services
@@ -136,7 +135,7 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
                       <path
                         d="M6 6L14 10L6 14V6Z"
                         fill="currentColor"
-                      ></path>
+                      />
                     </svg>
                   </button>
                 </div>
@@ -159,21 +158,19 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
                   >
                     <!-- Active: "bg-gray-100", Not Active: "" -->
                     <a
-                      href="#"
-                      class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
-                      role="menuitem"
-                      tabindex="-1"
                       id="service-menu-item-0"
-                      >Service 1</a
-                    >
-                    <a
                       href="#"
                       class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
                       role="menuitem"
                       tabindex="-1"
+                    >Service 1</a>
+                    <a
                       id="service-menu-item-2"
-                      >Service 2</a
-                    >
+                      href="#"
+                      class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
+                      role="menuitem"
+                      tabindex="-1"
+                    >Service 2</a>
                   </div>
                 </transition>
               </div>
@@ -187,12 +184,12 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
           <div class="ml-3 relative">
             <div>
               <button
-                @click="accountMenu = !accountMenu"
+                id="user-menu-button"
                 type="button"
                 class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-gray-100 bg-gray-800 hover:text-gray-400 focus:outline-none focus:ring-1 transition"
-                id="user-menu-button"
                 aria-expanded="false"
                 aria-haspopup="true"
+                @click="accountMenu = !accountMenu"
               >
                 <span class="sr-only">Open user menu</span>
                 {{ user ? user.firstName + " " + user.lastName : "loading.." }}
@@ -204,7 +201,7 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
                   <path
                     d="M6 6L14 10L6 14V6Z"
                     fill="currentColor"
-                  ></path>
+                  />
                 </svg>
               </button>
             </div>
@@ -228,13 +225,12 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
                 <!-- Active: "bg-gray-100", Not Active: "" -->
                 <!--              <router-link :to="`/profiles/${user.id}`" @click="accountMenu = !accountMenu" class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</router-link>-->
                 <a
-                  @click="doLogout"
+                  id="user-menu-item-2"
                   class="navbar cursor-pointer block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
                   role="menuitem"
                   tabindex="-1"
-                  id="user-menu-item-2"
-                  >Sign out</a
-                >
+                  @click="doLogout"
+                >Sign out</a>
               </div>
             </transition>
           </div>
@@ -245,8 +241,8 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
     <!-- Mobile menu, show/hide based on menu state. -->
     <div
       v-if="mobileMenu"
-      class="sm:hidden"
       id="mobile-menu"
+      class="sm:hidden"
     >
       <div class="px-2 pt-2 pb-3 space-y-1">
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-gray-400" -->
@@ -254,26 +250,22 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
           href="#"
           class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
           aria-current="page"
-          >Dashboard</a
-        >
+        >Dashboard</a>
 
         <a
           href="#"
           class="text-gray-300 hover:bg-gray-700 hover:text-gray-400 block px-3 py-2 rounded-md text-base font-medium"
-          >Users</a
-        >
+        >Users</a>
 
         <a
           href="#"
           class="text-gray-300 hover:bg-gray-700 hover:text-gray-400 block px-3 py-2 rounded-md text-base font-medium"
-          >Roles</a
-        >
+        >Roles</a>
 
         <a
           href="#"
           class="text-gray-300 hover:bg-gray-700 hover:text-gray-400 block px-3 py-2 rounded-md text-base font-medium"
-          >Customers</a
-        >
+        >Customers</a>
       </div>
     </div>
   </nav>

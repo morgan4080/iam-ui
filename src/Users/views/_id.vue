@@ -156,7 +156,8 @@ onBeforeMount(async () => await fetchUserData());
                 to="/users"
                 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                 style="color: rgb(158, 158, 158)"
-                >Users
+              >
+                Users
               </router-link>
             </div>
           </li>
@@ -173,7 +174,7 @@ onBeforeMount(async () => await fetchUserData());
                   fill-rule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd"
-                ></path>
+                />
               </svg>
               <h1
                 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
@@ -184,9 +185,9 @@ onBeforeMount(async () => await fetchUserData());
           </li>
         </ol>
         <button
-          @click="synchronizeUser"
           type="button"
           class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+          @click="synchronizeUser"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -198,14 +199,14 @@ onBeforeMount(async () => await fetchUserData());
               fill-rule="evenodd"
               d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
               clip-rule="evenodd"
-            ></path>
+            />
           </svg>
         </button>
       </nav>
     </div>
     <main
-      class="py-10"
       v-if="user"
+      class="py-10"
     >
       <!-- Page header -->
       <div
@@ -279,11 +280,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200"
                   >
                     <a
-                      @click.prevent="resetUSSDPin"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="resetUSSDPin"
                     >
                       Reset USSD Pin
                     </a>
@@ -293,11 +294,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200"
                   >
                     <a
-                      @click.prevent="resetWebPassword"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="resetWebPassword"
                     >
                       Reset Web Password
                     </a>
@@ -355,11 +356,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-red-700 hover:font-medium hover:bg-red-200"
                   >
                     <a
-                      @click.prevent="disableUser"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="disableUser"
                     >
                       Disable User
                     </a>
@@ -370,11 +371,11 @@ onBeforeMount(async () => await fetchUserData());
                     class="rounded-md hover:text-teal-700 hover:font-medium hover:bg-teal-100"
                   >
                     <a
-                      @click.prevent="enableUser"
                       :class="[
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm hover:cursor-pointer',
                       ]"
+                      @click.prevent="enableUser"
                     >
                       Enable User
                     </a>
@@ -407,19 +408,25 @@ onBeforeMount(async () => await fetchUserData());
               <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
                 <dl class="grid grid-cols-1 gap-x-4 gap-y-12 sm:grid-cols-2">
                   <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Name</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                      Name
+                    </dt>
                     <dd class="mt-1 text-sm text-gray-900">
                       {{ user.firstName + " " + user.lastName }}
                     </dd>
                   </div>
                   <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Username</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                      Username
+                    </dt>
                     <dd class="mt-1 text-sm text-gray-900">
                       {{ user.username }}
                     </dd>
                   </div>
                   <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Email</dt>
+                    <dt class="text-sm font-medium text-gray-500">
+                      Email
+                    </dt>
                     <dd class="mt-1 text-sm text-gray-900">
                       {{ user.email }}
                     </dd>
@@ -445,8 +452,7 @@ onBeforeMount(async () => await fetchUserData());
                           class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                         >
                           <div class="flex w-0 flex-1 items-center">
-                            <span class="ml-2 w-0 flex-1 truncate"
-                              >USSD Status
+                            <span class="ml-2 w-0 flex-1 truncate">USSD Status
                             </span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
@@ -470,9 +476,7 @@ onBeforeMount(async () => await fetchUserData());
                           class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                         >
                           <div class="flex w-0 flex-1 items-center">
-                            <span class="ml-2 w-0 flex-1 truncate"
-                              >Pin Status</span
-                            >
+                            <span class="ml-2 w-0 flex-1 truncate">Pin Status</span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
                             <span
@@ -486,8 +490,7 @@ onBeforeMount(async () => await fetchUserData());
                           class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                         >
                           <div class="flex w-0 flex-1 items-center">
-                            <span class="ml-2 w-0 flex-1 truncate"
-                              >Remaining Pin Attempts
+                            <span class="ml-2 w-0 flex-1 truncate">Remaining Pin Attempts
                             </span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
@@ -543,9 +546,7 @@ onBeforeMount(async () => await fetchUserData());
                           class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                         >
                           <div class="flex w-0 flex-1 items-center">
-                            <span class="ml-2 w-0 flex-1 truncate"
-                              >Username</span
-                            >
+                            <span class="ml-2 w-0 flex-1 truncate">Username</span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
                             <span
@@ -559,9 +560,7 @@ onBeforeMount(async () => await fetchUserData());
                           class="flex items-center justify-between py-3 pl-3 pr-4 text-sm"
                         >
                           <div class="flex w-0 flex-1 items-center">
-                            <span class="ml-2 w-0 flex-1 truncate"
-                              >Password Status</span
-                            >
+                            <span class="ml-2 w-0 flex-1 truncate">Password Status</span>
                           </div>
                           <div class="ml-4 flex-shrink-0">
                             <span

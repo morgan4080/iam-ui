@@ -172,8 +172,9 @@ const setNotificationStatus = (e: any): void => {
                       :to="`/users/${route.params.id}`"
                       class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                       style="color: #9e9e9e"
-                      >User Profile</router-link
                     >
+                      User Profile
+                    </router-link>
                   </div>
                 </li>
 
@@ -209,8 +210,7 @@ const setNotificationStatus = (e: any): void => {
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">
                   Provide a new pin for
                   <span class="font-bold">
-                    {{ userData.firstName }} {{ userData.lastName }}</span
-                  >
+                    {{ userData.firstName }} {{ userData.lastName }}</span>
                 </p>
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
@@ -228,14 +228,14 @@ const setNotificationStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
-                        @input="validatePhone($event)"
+                        id="phone"
                         v-model.lazy="form.ussdPhoneNumber"
                         type="text"
                         name="phone"
-                        id="phone"
                         class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                        @input="validatePhone($event)"
+                      >
                     </div>
                   </div>
                 </div>
@@ -259,14 +259,16 @@ const setNotificationStatus = (e: any): void => {
                     >
                       <div class="flex-1 flex items-center h-12">
                         <input
-                          @change="setNotificationStatus"
+                          id="notificationStatus"
                           type="checkbox"
                           name="notificationStatus"
-                          id="notificationStatus"
                           class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                           checked
-                        />
-                        <p class="text-xs text-gray-500 ml-2">Notify User</p>
+                          @change="setNotificationStatus"
+                        >
+                        <p class="text-xs text-gray-500 ml-2">
+                          Notify User
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -281,7 +283,9 @@ const setNotificationStatus = (e: any): void => {
                     >
                       Pin Status
                     </label>
-                    <p class="mt-2 text-xs text-gray-500">Default is SET.</p>
+                    <p class="mt-2 text-xs text-gray-500">
+                      Default is SET.
+                    </p>
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div
@@ -289,13 +293,13 @@ const setNotificationStatus = (e: any): void => {
                     >
                       <div class="flex-1 flex items-center h-12">
                         <input
-                          @change="setPinStatus"
+                          id="pinStatus"
                           type="checkbox"
                           name="pinStatus"
-                          id="pinStatus"
                           class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                           checked
-                        />
+                          @change="setPinStatus"
+                        >
                         <p class="text-xs text-gray-500 ml-2">
                           Set as temporary
                         </p>
@@ -320,15 +324,15 @@ const setNotificationStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
-                        @input="validatePin($event)"
+                        id="pin"
                         v-model.lazy="form.pin"
                         type="password"
                         name="pin"
-                        id="pin"
                         pattern="[0-9]{4,4}"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                        @input="validatePin($event)"
+                      >
                     </div>
                   </div>
                 </div>
@@ -349,15 +353,15 @@ const setNotificationStatus = (e: any): void => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
-                        @input="validatePin($event)"
+                        id="pin-confirmation"
                         v-model.lazy="form.pinConfirmation"
                         type="password"
                         name="pin-confirmation"
                         pattern="[0-9]{4,4}"
-                        id="pin-confirmation"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                        @input="validatePin($event)"
+                      >
                     </div>
                   </div>
                 </div>
@@ -387,12 +391,12 @@ const setNotificationStatus = (e: any): void => {
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               Save: Pin
             </button>

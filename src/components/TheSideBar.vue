@@ -21,13 +21,13 @@ const setWidth = ref(true);
         <h1>Identity and Access</h1>
         <h1>Management (IAM)</h1>
       </div>
-      <div class="pb-2 border-b mr-4"></div>
+      <div class="pb-2 border-b mr-4" />
       <button
         v-if="setWidth"
-        @click="setWidth = !setWidth"
         type="button"
         class="absolute rounded px-1 border-b border-l border-r rotate-90 -right-3 top-2 bg-white"
         style="background: white"
+        @click="setWidth = !setWidth"
       >
         <svg
           class="rotate-90 flex-shrink-0 h-5 w-5 transform hover:text-gray-900 transition-colors ease-in-out duration-150 text-gray-500"
@@ -37,15 +37,15 @@ const setWidth = ref(true);
           <path
             d="M6 6L14 10L6 14V6Z"
             fill="currentColor"
-          ></path>
+          />
         </svg>
       </button>
       <button
         v-if="!setWidth"
-        @click="setWidth = !setWidth"
         type="button"
         class="absolute rounded px-1 border-b border-l border-r rotate-270 -right-3 top-2 bg-white"
         style="background: white"
+        @click="setWidth = !setWidth"
       >
         <svg
           class="rotate-90 flex-shrink-0 h-5 w-5 transform hover:text-gray-900 transition-colors ease-in-out duration-150 text-gray-500"
@@ -55,7 +55,7 @@ const setWidth = ref(true);
           <path
             d="M6 6L14 10L6 14V6Z"
             fill="currentColor"
-          ></path>
+          />
         </svg>
       </button>
     </div>
@@ -80,8 +80,8 @@ const setWidth = ref(true);
               type="button"
               class="bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-controls="sub-menu-1"
-              @click="open0 = !open0"
               aria-expanded="false"
+              @click="open0 = !open0"
             >
               <svg
                 class="mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150 text-gray-300"
@@ -95,14 +95,14 @@ const setWidth = ref(true);
                 <path
                   d="M6 6L14 10L6 14V6Z"
                   fill="currentColor"
-                ></path>
+                />
               </svg>
               Access management
             </button>
             <div
+              id="sub-menu-1"
               :class="{ block: open0, hidden: !open0 }"
               class="space-y-1"
-              id="sub-menu-1"
             >
               <router-link
                 to="/users"
@@ -124,8 +124,8 @@ const setWidth = ref(true);
               type="button"
               class="bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 group w-full flex items-center pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-controls="sub-menu-1"
-              @click="open = !open"
               aria-expanded="false"
+              @click="open = !open"
             >
               <svg
                 class="mr-2 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150 text-gray-300"
@@ -139,14 +139,14 @@ const setWidth = ref(true);
                 <path
                   d="M6 6L14 10L6 14V6Z"
                   fill="currentColor"
-                ></path>
+                />
               </svg>
               Management reports
             </button>
             <div
+              id="sub-menu-2"
               :class="{ block: open, hidden: !open }"
               class="space-y-1"
-              id="sub-menu-2"
             >
               <a
                 href="#"

@@ -28,12 +28,12 @@ const doReturn = (i: string): boolean => {
   <li class="flex items-center justify-between">
     <label :for="`permission${permission.id}`">{{ permission.name }}</label>
     <input
-      @change="$emit('change', $event, permission)"
-      :checked="existing ? existing.findIndex(doReturn) !== -1 : false"
-      v-model="permission.checked"
       :id="`permission${permission.id}`"
+      v-model="permission.checked"
+      :checked="existing ? existing.findIndex(doReturn) !== -1 : false"
       aria-describedby="service-permissions"
       type="checkbox"
-    />
+      @change="$emit('change', $event, permission)"
+    >
   </li>
 </template>

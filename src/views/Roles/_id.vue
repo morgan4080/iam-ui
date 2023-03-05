@@ -29,8 +29,9 @@ getRole(route.params.id).then((r: any) => {
                 :to="`/roles/`"
                 class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                 style="color: #9e9e9e"
-                >Roles</router-link
               >
+                Roles
+              </router-link>
             </div>
           </li>
 
@@ -58,9 +59,9 @@ getRole(route.params.id).then((r: any) => {
           </li>
         </ol>
         <button
-          @click="$router.push(`/roles/${role.keycloakRoleId}/edit`)"
           type="button"
           class="inline-flex justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          @click="$router.push(`/roles/${role.keycloakRoleId}/edit`)"
         >
           Edit Role
           <svg
@@ -97,7 +98,9 @@ getRole(route.params.id).then((r: any) => {
                   </span>
                 </span>
               </h3>
-              <p class="text-base text-gray-500">{{ role.name }}</p>
+              <p class="text-base text-gray-500">
+                {{ role.name }}
+              </p>
             </div>
             <div class="min-w-0 flex-1">
               <h3 class="text-base font-medium text-gray-900">
@@ -110,7 +113,9 @@ getRole(route.params.id).then((r: any) => {
                   </span>
                 </span>
               </h3>
-              <p class="text-base text-gray-500">{{ role.roleType }}</p>
+              <p class="text-base text-gray-500">
+                {{ role.roleType }}
+              </p>
             </div>
             <div class="min-w-0 flex-1">
               <h3 class="text-base font-medium text-gray-900">
@@ -123,7 +128,9 @@ getRole(route.params.id).then((r: any) => {
                   </span>
                 </span>
               </h3>
-              <p class="text-base text-gray-500">{{ role.description }}</p>
+              <p class="text-base text-gray-500">
+                {{ role.description }}
+              </p>
             </div>
           </div>
         </div>
@@ -137,16 +144,16 @@ getRole(route.params.id).then((r: any) => {
             class="mt-2 grid gap-16 pt-4 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-12"
           >
             <div
-              class="border border-gray-300 rounded-md p-2"
               v-for="post in role.services"
               :key="post.id"
+              class="border border-gray-300 rounded-md p-2"
             >
               <p class="text-xl font-semibold text-gray-900">
                 {{ post.clientId }}
               </p>
               <div
-                class="p-1 rounded"
                 v-for="(permission, i) in post.permissions"
+                class="p-1 rounded"
                 :class="{ 'bg-gray-100': i % 2 === 0 }"
               >
                 <div class="flex">

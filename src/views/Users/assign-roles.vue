@@ -223,8 +223,9 @@ const removeRolesFromUser = async () => {
                         :to="`/users/${route.params.id}`"
                         class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                         style="color: #9e9e9e"
-                        >User Profile</router-link
                       >
+                        User Profile
+                      </router-link>
                     </div>
                   </li>
 
@@ -276,14 +277,14 @@ const removeRolesFromUser = async () => {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
+                        id="email"
                         disabled
                         type="email"
                         name="email"
-                        id="email"
                         :value="userData.email"
                         class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                      >
                     </div>
                   </div>
                 </div>
@@ -308,17 +309,18 @@ const removeRolesFromUser = async () => {
                         <ul class="list-decimal list-inside space-y-2">
                           <li
                             v-for="(role, index) in filteredRoles"
+                            :key="index"
                             class="flex items-center justify-between"
                           >
                             <label :for="index">
                               {{ role.name }}
                             </label>
                             <input
-                              @change="setRoleIdsToAddToUser($event, role.id)"
                               :id="index"
                               type="checkbox"
                               class="text-xs text-gray-500"
-                            />
+                              @change="setRoleIdsToAddToUser($event, role.id)"
+                            >
                           </li>
                         </ul>
                       </div>
@@ -326,17 +328,17 @@ const removeRolesFromUser = async () => {
 
                     <div class="flex flex-col items-center space-y-3 my-2">
                       <button
-                        @click="addRolesToUser"
                         type="button"
                         class="mx-4"
+                        @click="addRolesToUser"
                       >
                         <ArrowRightCircleIcon class="w-6 h-6" />
                       </button>
 
                       <button
-                        @click="removeRolesFromUser"
                         type="button"
                         class="mx-4"
+                        @click="removeRolesFromUser"
                       >
                         <ArrowLeftCircleIcon class="w-6 h-6" />
                       </button>
@@ -354,19 +356,20 @@ const removeRolesFromUser = async () => {
                         <ul class="list-decimal list-inside space-y-2">
                           <li
                             v-for="(role, index) in userRoles"
+                            :key="index"
                             class="flex items-center justify-between"
                           >
                             <label :for="index">
                               {{ role.name }}
                             </label>
                             <input
-                              @change="
-                                setRoleIdsToRemoveFromUser($event, role.id)
-                              "
                               :id="index"
                               type="checkbox"
                               class="text-xs text-gray-500"
-                            />
+                              @change="
+                                setRoleIdsToRemoveFromUser($event, role.id)
+                              "
+                            >
                           </li>
                         </ul>
                       </div>

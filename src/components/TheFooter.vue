@@ -4,7 +4,7 @@
       <div class="relative flex items-center justify-between py-2">
         <div
           class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start"
-        ></div>
+        />
         <div
           class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"
         >

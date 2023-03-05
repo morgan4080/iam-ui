@@ -25,22 +25,21 @@ function resetPassword() {
       </p>
 
       <form
-        @submit.prevent="resetPassword"
         method="POST"
+        @submit.prevent="resetPassword"
       >
         <div class="relative">
           <label
             for="email-address"
             class="sr-only"
-            >Email address</label
-          >
+          >Email address</label>
           <input
-            v-model="resetForm.email"
             id="email-address"
+            v-model="resetForm.email"
             type="email"
             class="text-gray-900 ring-gray-900 ring-opacity-5 placeholder-gray-400 appearance-none bg-white rounded-md block w-full px-3 py-2 border border-transparent shadow ring-1 sm:text-sm focus:border-teal-500 focus:ring-teal-500 focus:outline-none"
             placeholder="Email address"
-          />
+          >
         </div>
 
         <button
@@ -56,5 +55,5 @@ function resetPassword() {
     src="/beams-corner-light.jpg"
     alt=""
     class="absolute bottom-0 right-0 w-[45.875rem]"
-  />
+  >
 </template>

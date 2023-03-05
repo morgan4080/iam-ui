@@ -87,11 +87,11 @@ onBeforeMount(async () => await fetchUsers());
       @sort="sortUsers"
       @search="searchUsers"
     >
-      <template v-slot:actionButton>
+      <template #actionButton>
         <button
-          @click="router.push('/users/create')"
           type="button"
           class="block rounded-md bg-blue-500 hover:bg-blue-700 py-2 px-3 text-center text-sm font-semibold text-white shadow-sm"
+          @click="router.push('/users/create')"
         >
           Add user
         </button>
@@ -105,13 +105,13 @@ onBeforeMount(async () => await fetchUsers());
             :headers="tableHeaders"
             :pageables="pageables"
             :loading="isLoading"
-            :dataLength="users.length"
+            :data-length="users.length"
             @next="next"
             @previous="previous"
           >
             <tr
-              v-if="users.length && !isLoading"
               v-for="user in users"
+              v-if="users.length && !isLoading"
               :key="user.id"
               class="hover:bg-gray-200 hover:cursor-pointer"
               @click="router.push(`/users/${user.id}`)"
@@ -153,12 +153,13 @@ onBeforeMount(async () => await fetchUsers());
                   <router-link
                     :to="`/profiles/${user.id}/edit`"
                     class="text-indigo-600 hover:text-indigo-900"
-                    >Edit
+                  >
+                    Edit
                     <span class="sr-only">, {{ user.firstName }}</span>
                   </router-link>
                   <a
-                    @click.prevent="delUser(user)"
                     class="text-red-600 hover:text-red-900"
+                    @click.prevent="delUser(user)"
                   >
                     Delete
                     <span class="sr-only">, {{ user.firstName }}</span>

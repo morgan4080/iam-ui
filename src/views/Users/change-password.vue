@@ -108,8 +108,9 @@ async function changePassword() {
                       :to="`/users/${route.params.id}`"
                       class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                       style="color: #9e9e9e"
-                      >User Profile</router-link
                     >
+                      User Profile
+                    </router-link>
                   </div>
                 </li>
 
@@ -168,14 +169,16 @@ async function changePassword() {
                     >
                       <div class="flex-1 flex items-center h-12">
                         <input
-                          @change="setNotificationStatus"
+                          id="notificationStatus"
                           type="checkbox"
                           name="notificationStatus"
-                          id="notificationStatus"
                           class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                           checked
-                        />
-                        <p class="text-xs text-gray-500 ml-2">Notify User</p>
+                          @change="setNotificationStatus"
+                        >
+                        <p class="text-xs text-gray-500 ml-2">
+                          Notify User
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -192,14 +195,14 @@ async function changePassword() {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
+                        id="email"
                         disabled
                         type="email"
                         name="email"
-                        id="email"
                         :value="userData.email"
                         class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                      >
                     </div>
                   </div>
                 </div>
@@ -215,13 +218,13 @@ async function changePassword() {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
+                        id="password"
                         v-model="form.password"
                         type="password"
                         name="password"
-                        id="password"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                      >
                     </div>
                   </div>
                 </div>
@@ -237,13 +240,13 @@ async function changePassword() {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg flex rounded-md shadow-sm">
                       <input
+                        id="password-confirmation"
                         v-model="form.passwordConfirmation"
                         type="password"
                         name="password-confirmation"
-                        id="password-confirmation"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      />
+                      >
                     </div>
                   </div>
                 </div>
@@ -273,12 +276,12 @@ async function changePassword() {
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               Save: Password
             </button>

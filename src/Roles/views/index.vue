@@ -65,11 +65,11 @@ onBeforeMount(async () => await fetchRoles());
       @search="searchRoles"
       @sync="sync"
     >
-      <template v-slot:actionButton>
+      <template #actionButton>
         <button
-          @click="router.push('/roles/create')"
           type="button"
           class="block rounded-md bg-blue-500 hover:bg-blue-700 py-2 px-3 text-center text-sm font-semibold text-white shadow-sm"
+          @click="router.push('/roles/create')"
         >
           Add Role
         </button>
@@ -83,13 +83,13 @@ onBeforeMount(async () => await fetchRoles());
             :headers="tableHeaders"
             :pageables="pageables"
             :loading="isLoading"
-            :dataLength="roles.length"
+            :data-length="roles.length"
             @next="next"
             @previous="previous"
           >
             <tr
-              v-if="roles.length && !isLoading"
               v-for="role in roles"
+              v-if="roles.length && !isLoading"
               :key="role.id"
               class="hover:bg-gray-200 hover:cursor-pointer"
               @click="router.push(`/roles/${role.keycloakRoleId}`)"
@@ -112,7 +112,8 @@ onBeforeMount(async () => await fetchRoles());
                 <router-link
                   :to="`/roles/${role.keycloakRoleId}/edit`"
                   class="text-indigo-600 hover:text-indigo-900"
-                  >Edit
+                >
+                  Edit
                   <span class="sr-only">, {{ role.description }}</span>
                 </router-link>
               </td>

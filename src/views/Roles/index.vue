@@ -168,9 +168,9 @@ const roleSync = async () => {
       <section>
         <div class="py-6 px-4 sm:p-6 flex flex-wrap items-center justify-start">
           <button
-            @click="$router.push('/roles/create')"
             type="button"
             class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded shadow-sm text-white bg-blue-500 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500"
+            @click="$router.push('/roles/create')"
           >
             Add roles
           </button>
@@ -180,8 +180,7 @@ const roleSync = async () => {
                 <label
                   for="filter"
                   class="sr-only"
-                  >Filter</label
-                >
+                >Filter</label>
                 <select
                   id="filter"
                   class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md text-sm"
@@ -191,16 +190,16 @@ const roleSync = async () => {
                 </select>
               </div>
               <input
-                type="text"
                 id="search"
+                type="text"
                 class="px-4 py-1 h-full block w-full pl-20 focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md text-sm"
                 placeholder="search term..."
-              />
+              >
             </div>
             <button
-              @click="roleSync"
               type="button"
               class="relative inline-flex items-center px-2.5 py-1.5 rounded-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              @click="roleSync"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -250,9 +249,8 @@ const roleSync = async () => {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody v-if="all_roles.length > 0">
               <tr
-                v-if="all_roles.length > 0"
                 v-for="(role, i) in all_roles"
                 :key="i"
                 :class="{ 'bg-white': i % 2 === 0, 'bg-gray-50': i % 2 !== 0 }"
@@ -264,7 +262,7 @@ const roleSync = async () => {
                     <span
                       v-if="role.name === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
-                    ></span>
+                    />
                     {{ role.name }}
                   </router-link>
                 </td>
@@ -273,7 +271,7 @@ const roleSync = async () => {
                     <span
                       v-if="role.roleType === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
-                    ></span>
+                    />
                     {{ role.roleType }}
                   </router-link>
                 </td>
@@ -282,7 +280,7 @@ const roleSync = async () => {
                     <span
                       v-if="role.description === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
-                    ></span>
+                    />
                     {{ role.description }}
                   </router-link>
                 </td>
@@ -294,12 +292,14 @@ const roleSync = async () => {
                     <span
                       v-if="role.description === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
-                    ></span>
+                    />
                     <span v-else>Edit</span>
                   </router-link>
                 </td>
               </tr>
-              <tr v-else>
+            </tbody>
+            <tbody v-else>
+              <tr>
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
                 >
@@ -370,11 +370,11 @@ const roleSync = async () => {
                         </div>
                         <button
                           type="button"
-                          @click="pageCountOpen = !pageCountOpen"
                           class="relative inline-flex items-center bg-blue-500 p-2 rounded-l-none rounded-r-md text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:z-10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-blue-500"
                           aria-haspopup="listbox"
                           aria-expanded="true"
                           aria-labelledby="listbox-label"
+                          @click="pageCountOpen = !pageCountOpen"
                         >
                           <span class="sr-only">Change records count</span>
                           <svg
@@ -413,17 +413,17 @@ const roleSync = async () => {
                       >
                         <li
                           v-for="(lot, i) in lots"
+                          id="listbox-option-0"
                           :key="i"
-                          @click="choose(i)"
-                          @mouseenter="activeIndex = i"
-                          @mouseleave="activeIndex = null"
                           :class="{
                             'text-white bg-blue-500': activeIndex === i,
                             'text-gray-900': !(activeIndex === i),
                           }"
                           class="cursor-pointer select-none relative p-4 text-sm"
-                          id="listbox-option-0"
                           role="option"
+                          @click="choose(i)"
+                          @mouseenter="activeIndex = i"
+                          @mouseleave="activeIndex = null"
                         >
                           <div class="flex flex-col">
                             <div class="flex justify-between">

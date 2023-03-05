@@ -34,7 +34,7 @@ interface formInterface {
 
 const services = ref(<serviceInterface[]>[]);
 
-getServices()
+store.dispatch("getServices")
   .then((response: serviceInterface[]) => {
     services.value = response.map((service: serviceInterface) => {
       return {
@@ -125,18 +125,18 @@ async function saveToState() {
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div class="max-w-lg space-y-4">
                       <input
+                        id="username"
                         v-model="form.name"
                         type="text"
                         name="username"
-                        id="username"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300 shadow-sm"
                         required
-                      />
+                      >
 
                       <div
                         v-show="
                           form.name.toLowerCase() === 'sales_person' ||
-                          form.name.toLowerCase() === 'relationship_manager'
+                            form.name.toLowerCase() === 'relationship_manager'
                         "
                         class="flex max-w-lg rounded-sm border p-2"
                         style="background-color: #ffeeb3; border-color: #fb6b27"
@@ -154,7 +154,7 @@ async function saveToState() {
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-                          ></path>
+                          />
                         </svg>
                         <div>
                           <p
@@ -199,12 +199,12 @@ async function saveToState() {
                   </label>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <textarea
-                      v-model="form.description"
                       id="description"
+                      v-model="form.description"
                       rows="3"
                       class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
                       required
-                    ></textarea>
+                    />
                     <p class="mt-2 text-sm text-gray-500">
                       Write a short description about the role.
                     </p>
@@ -243,8 +243,8 @@ async function saveToState() {
                       v-for="(permission, index) in services[i].permissions"
                       :key="`${i}${index}`"
                       :permission="permission"
-                      @change="setPermissionToService"
                       :existing="[]"
+                      @change="setPermissionToService"
                     />
                   </div>
                 </div>
@@ -275,12 +275,12 @@ async function saveToState() {
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               Save: Role
             </button>

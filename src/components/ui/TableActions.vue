@@ -29,8 +29,8 @@ const emit = defineEmits(["sort", "search", "sync"]);
     </div>
     <div class="flex space-x-4 mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
       <div
-        @click.prevent="emit('sync')"
         class="flex items-center hover:cursor-pointer"
+        @click.prevent="emit('sync')"
       >
         <ArrowPathIcon
           class="h-6 w-6 text-gray-400"
@@ -48,19 +48,19 @@ const emit = defineEmits(["sort", "search", "sync"]);
             />
           </div>
           <input
+            id="search"
             v-model="pageables.searchTerm"
-            @change="emit('search')"
             type="search"
             name="search"
-            id="search"
             class="block rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
             placeholder="Search term"
-          />
+            @change="emit('search')"
+          >
         </div>
         <button
-          @click="emit('sort')"
           type="button"
           class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          @click="emit('sort')"
         >
           <BarsArrowUpIcon
             v-if="pageables.sort === 'ASC'"

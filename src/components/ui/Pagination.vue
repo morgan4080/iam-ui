@@ -54,8 +54,8 @@ const to = computed(() =>
       >
         <a
           href="#"
-          @click.prevent="emit('previous')"
           class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+          @click.prevent="emit('previous')"
         >
           <span class="sr-only">Previous</span>
           <ChevronLeftIcon
@@ -72,8 +72,8 @@ const to = computed(() =>
         </button>
         <a
           href="#"
-          @click.prevent="emit('next')"
           class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+          @click.prevent="emit('next')"
         >
           <span class="sr-only">Next</span>
           <ChevronRightIcon

@@ -214,8 +214,7 @@ async function reset() {
                         class="text-gray-500 text-sm"
                       >
                         A password reset email has been sent to
-                        <strong>{{ user.email }}</strong
-                        >. <br />
+                        <strong>{{ user.email }}</strong>. <br>
                         Once they click on the email or access the web service,
                         they will be prompted to set a new password.
                       </p>
@@ -239,7 +238,7 @@ async function reset() {
                       <p
                         class="text-gray-500 leading-7 text-sm"
                         v-html="message"
-                      ></p>
+                      />
                     </div>
                   </div>
                 </div>
@@ -249,11 +248,13 @@ async function reset() {
                 class="mt-2 px-4 text-sm space-y-4"
               >
                 <div class="space-y-1">
-                  <p class="text-gray-600">Name</p>
+                  <p class="text-gray-600">
+                    Name
+                  </p>
                   <div class="ml-1 flex space-x-2">
                     <DocumentDuplicateIcon
-                      @click.prevent="copyToClipboard('NAME')"
                       class="h-5 w-5 hover:cursor-pointer"
+                      @click.prevent="copyToClipboard('NAME')"
                     />
                     <p>{{ user.firstName + " " + user.lastName }}</p>
                   </div>
@@ -264,8 +265,8 @@ async function reset() {
                   </p>
                   <div class="ml-1 flex space-x-2">
                     <DocumentDuplicateIcon
-                      @click.prevent="copyToClipboard('EMAIL')"
                       class="h-5 w-5 hover:cursor-pointer"
+                      @click.prevent="copyToClipboard('EMAIL')"
                     />
                     <p>
                       {{
@@ -278,9 +279,9 @@ async function reset() {
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
                 <button
                   v-if="!resetSuccessful"
-                  @click.prevent="reset"
                   type="button"
                   class="inline-flex w-full justify-center relative rounded-md border border-transparent bg-red-600 px-4 py-1.5 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  @click.prevent="reset"
                 >
                   <svg
                     v-show="loading"
@@ -296,12 +297,12 @@ async function reset() {
                       r="10"
                       stroke="currentColor"
                       stroke-width="4"
-                    ></circle>
+                    />
                     <path
                       class="opacity-75"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       fill="currentColor"
-                    ></path>
+                    />
                   </svg>
                   <span :class="{ invisible: loading }"> Reset</span>
                 </button>

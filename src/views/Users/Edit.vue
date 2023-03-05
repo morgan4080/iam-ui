@@ -265,8 +265,9 @@ const setQuery = async (e: any) => {
                     :to="`/users/${route.params.id}`"
                     class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                     style="color: #9e9e9e"
-                    >User Profile</router-link
                   >
+                    User Profile
+                  </router-link>
                 </div>
               </li>
 
@@ -296,8 +297,8 @@ const setQuery = async (e: any) => {
           </nav>
         </div>
         <form
-          @submit.prevent="editUser"
           method="POST"
+          @submit.prevent="editUser"
         >
           <div class="md:flex md:flex-col md:justify-between">
             <div class="flex-1 min-w-0">
@@ -321,13 +322,13 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
+                            id="username"
                             v-model="form.username"
                             type="text"
                             name="username"
-                            id="username"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
-                          />
+                          >
                         </div>
                       </div>
                     </div>
@@ -343,13 +344,13 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
+                            id="first-name"
                             v-model="form.firstName"
                             type="text"
                             name="first-name"
-                            id="first-name"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
-                          />
+                          >
                         </div>
                       </div>
                     </div>
@@ -365,13 +366,13 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
+                            id="last-name"
                             v-model="form.lastName"
                             type="text"
                             name="last-name"
-                            id="last-name"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
-                          />
+                          >
                         </div>
                       </div>
                     </div>
@@ -387,14 +388,14 @@ const setQuery = async (e: any) => {
                       <div class="mt-1 sm:mt-0 sm:col-span-2">
                         <div class="max-w-lg flex rounded-md shadow-sm">
                           <input
-                            @change="setQuery($event)"
+                            id="email"
                             v-model="form.emailAddress"
                             type="email"
                             name="email"
-                            id="email"
                             class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                             required
-                          />
+                            @change="setQuery($event)"
+                          >
                         </div>
                       </div>
                     </div>
@@ -415,8 +416,7 @@ const setQuery = async (e: any) => {
                             <label
                               for="country"
                               class="sr-only"
-                              >Country</label
-                            >
+                            >Country</label>
                             <select
                               id="country"
                               class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md"
@@ -425,13 +425,13 @@ const setQuery = async (e: any) => {
                             </select>
                           </div>
                           <input
-                            @change="setQuery($event)"
-                            type="number"
                             id="ussd-phone-number"
                             v-model="form.ussdPhoneNumber"
+                            type="number"
                             class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md"
                             required
-                          />
+                            @change="setQuery($event)"
+                          >
                         </div>
                       </div>
                     </div>
@@ -452,8 +452,7 @@ const setQuery = async (e: any) => {
                             <label
                               for="country"
                               class="sr-only"
-                              >Country</label
-                            >
+                            >Country</label>
                             <select
                               id="country"
                               class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md"
@@ -462,13 +461,13 @@ const setQuery = async (e: any) => {
                             </select>
                           </div>
                           <input
-                            @change="setQuery($event)"
-                            type="number"
                             id="phone-number"
                             v-model="form.phoneNumber"
+                            type="number"
                             class="py-1 px-4 block w-full pl-20 focus:ring-blue-500 focus:border-indigo-500 border-gray-300 rounded-md"
                             required
-                          />
+                            @change="setQuery($event)"
+                          >
                         </div>
                       </div>
                     </div>
@@ -497,12 +496,12 @@ const setQuery = async (e: any) => {
                   r="10"
                   stroke="currentColor"
                   stroke-width="4"
-                ></circle>
+                />
                 <path
                   class="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               Save user
             </button>
