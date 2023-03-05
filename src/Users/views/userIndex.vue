@@ -7,11 +7,13 @@ import { useRouter } from "vue-router";
 import { User } from "@/Users/types";
 import { mapActions } from "@/modules/mapStore";
 import { usePagination } from "@/composables/usePagination";
+import { useSort } from "@/composables/useSort";
 
 const router = useRouter();
 const { users, pageables, isLoading, fetchUsers, deleteUser, syncUsers } =
   useUsers();
 const { next, previous } = usePagination(pageables, fetchUsers);
+const { sort } = useSort(pageables, fetchUsers);
 const { defineNotification } = mapActions();
 const tableHeaders = [
   "Name",
@@ -21,15 +23,6 @@ const tableHeaders = [
   "USSD Access",
   "Status",
 ];
-
-async function sortUsers() {
-  pageables.sort =
-    pageables.sort === "ASC"
-      ? (pageables.sort = "DESC")
-      : (pageables.sort = "ASC");
-  pageables.currentPage = 0;
-  await fetchUsers();
-}
 
 async function searchUsers() {
   if (pageables.searchTerm?.length === 0) {
@@ -99,7 +92,7 @@ onBeforeMount(async () => await fetchUsers());
       title="Users"
       description=" A list of all the users including their name, username, ussd and web access details."
       :loading="isLoading"
-      @sort="sortUsers"
+      @sort="sort"
       @search="searchUsers"
       @sync="sync"
     >

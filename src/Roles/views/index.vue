@@ -8,21 +8,14 @@ import { useRoles } from "@/Roles/composables/useRoles";
 import { syncRoles, syncServices } from "@/modules/all";
 import store from "@/store";
 import { usePagination } from "@/composables/usePagination";
+import { useSort } from "@/composables/useSort";
 
 const router = useRouter();
 const { roles, pageables, isLoading, fetchRoles } = useRoles();
 const { next, previous } = usePagination(pageables, fetchRoles);
+const { sort } = useSort(pageables, fetchRoles);
 const { defineNotification } = mapActions();
 const tableHeaders = ["Name", "Type", "Description"];
-
-async function sortRoles() {
-  pageables.sort =
-    pageables.sort === "ASC"
-      ? (pageables.sort = "DESC")
-      : (pageables.sort = "ASC");
-  pageables.currentPage = 0;
-  await fetchRoles();
-}
 
 async function searchRoles() {
   if (pageables.searchTerm?.length === 0) {
@@ -51,7 +44,7 @@ onBeforeMount(async () => await fetchRoles());
       :loading="isLoading"
       title="Roles"
       description=" A list of all the roles including their type and description"
-      @sort="sortRoles"
+      @sort="sort"
       @search="searchRoles"
       @sync="sync"
     >
