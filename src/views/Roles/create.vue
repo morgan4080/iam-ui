@@ -119,7 +119,7 @@ const addKeycloakIdsToRemove = (ids: string[]) => {
               </div>
               <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
                 <div
-                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
+                  class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
                 >
                   <label
                     for="username"
@@ -194,7 +194,7 @@ const addKeycloakIdsToRemove = (ids: string[]) => {
                   </div>
                 </div>
                 <div
-                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
+                  class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
                 >
                   <label
                     for="description"
@@ -216,7 +216,7 @@ const addKeycloakIdsToRemove = (ids: string[]) => {
                   </div>
                 </div>
                 <div
-                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
+                  class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
                 >
                   <label
                     for="description"

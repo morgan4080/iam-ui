@@ -215,10 +215,12 @@ const associatePermissionToService = () => {
   setTimeout(() => {
     const keyArray = Array.from(keycloakIdsToAdd.value);
     addTargets.value.forEach((target, i) => {
-      console.log(
-        "existingPermission",
-        document.getElementById(`existingPermission${keyArray[i]}`)
-      );
+      const elem: HTMLInputElement | null = document.getElementById(
+        `existingPermission${keyArray[i]}`
+      ) as HTMLInputElement;
+      if (elem && elem.checked) {
+        elem.checked = false;
+      }
       target.checked = false;
     });
   }, 2000);
@@ -229,10 +231,10 @@ const dissociatePermissionFromService = () => {
   setTimeout(() => {
     const keyArray = Array.from(keycloakIdsToRemove.value);
     removeTargets.value.forEach((target, i) => {
-      console.log(
-        "allPermission",
-        document.getElementById(`allPermission${keyArray[i]}`)
-      );
+      const elem: HTMLInputElement | null = document.getElementById(`allPermission${keyArray[i]}`) as HTMLInputElement;
+      if (elem && elem.checked) {
+        elem.checked = false;
+      }
       target.checked = false;
     });
   }, 2000);
