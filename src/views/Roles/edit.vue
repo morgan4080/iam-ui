@@ -160,7 +160,12 @@ const actionUpdateRole = async () => {
     ) {
       form.value.name = form.value.name.toUpperCase();
     }
-    const response = await store.dispatch("updateRole", form.value);
+    const payload = {
+      keycloakRoleId: form.value.keycloakRoleId,
+      name: form.value.name,
+      description: form.value.description,
+    };
+    const response = await store.dispatch("updateRole", payload);
     console.log("action update role", response);
     await store.dispatch("defineNotification", {
       message: response.messages[0].message,
@@ -180,17 +185,55 @@ const actionUpdateRole = async () => {
 const addKeycloakIdsToAdd = async (ids: string[]) => {
   form.value.keycloakRoleIdsToRemove = [];
   form.value.keycloakRoleIdsToAdd = ids;
-  await actionUpdateRole();
+  if (
+    form.value.name.toLowerCase() === "sales_person" ||
+    form.value.name.toLowerCase() === "relationship_manager"
+  ) {
+    form.value.name = form.value.name.toUpperCase();
+  }
+  const response = await store.dispatch("updateRole", form.value);
+  console.log("action update role", response);
+  if (response && response.error) {
+    await store.dispatch("defineNotification", {
+      message: `${JSON.stringify(response)}`,
+      error: true,
+    });
+  } else {
+    await store.dispatch("defineNotification", {
+      message: response.messages[0].message,
+      success: true,
+    });
+  }
   form.value.keycloakRoleIdsToAdd = [];
   form.value.keycloakRoleIdsToRemove = [];
+  await loadPage();
 };
 
 const addKeycloakIdsToRemove = async (ids: string[]) => {
   form.value.keycloakRoleIdsToAdd = [];
   form.value.keycloakRoleIdsToRemove = ids;
-  await actionUpdateRole();
+  if (
+    form.value.name.toLowerCase() === "sales_person" ||
+    form.value.name.toLowerCase() === "relationship_manager"
+  ) {
+    form.value.name = form.value.name.toUpperCase();
+  }
+  const response = await store.dispatch("updateRole", form.value);
+  console.log("action update role", response);
+  if (response && response.error) {
+    await store.dispatch("defineNotification", {
+      message: `${JSON.stringify(response)}`,
+      error: true,
+    });
+  } else {
+    await store.dispatch("defineNotification", {
+      message: response.messages[0].message,
+      success: true,
+    });
+  }
   form.value.keycloakRoleIdsToAdd = [];
   form.value.keycloakRoleIdsToRemove = [];
+  await loadPage();
 };
 </script>
 <template>

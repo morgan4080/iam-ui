@@ -4,11 +4,50 @@
       <div
         class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
       >
-        <p
-          class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100"
+        <div
+          class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 space-y-2"
         >
-          Available Users
-        </p>
+          <div class="bg-gray-100">Available Users</div>
+          <div class="flex rounded-md shadow-sm">
+            <div class="relative flex focus-within:z-10">
+              <div
+                class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+              >
+                <MagnifyingGlassIcon
+                  class="h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <input
+                id="search"
+                v-model="pageables.searchTerm"
+                type="search"
+                name="search"
+                class="block rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+                placeholder="Search term"
+                @change="searchUsers"
+              />
+            </div>
+            <button
+              type="button"
+              class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              @click="sortUsers"
+            >
+              <BarsArrowUpIcon
+                v-if="pageables.sort === 'ASC'"
+                class="-ml-0.5 h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <BarsArrowDownIcon
+                v-if="pageables.sort === 'DESC'"
+                class="-ml-0.5 h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+
+              Sort
+            </button>
+          </div>
+        </div>
         <ul class="list-decimal list-inside space-y-2">
           <li
             v-for="(user, index) in filteredUsers"
@@ -31,16 +70,24 @@
 
     <div class="flex flex-col items-center space-y-3 my-2">
       <button
+        :disabled="filteredUsers.length === 0"
         type="button"
         class="mx-4"
+        :class="{
+          'cursor-not-allowed': filteredUsers.length === 0,
+        }"
         @click="addUsersToRole"
       >
         <ArrowRightCircleIcon class="w-6 h-6" />
       </button>
 
       <button
+        :disabled="roleUsers.length === 0"
         type="button"
         class="mx-4"
+        :class="{
+          'cursor-not-allowed': roleUsers.length === 0,
+        }"
         @click="removeUsersFromRole"
       >
         <ArrowLeftCircleIcon class="w-6 h-6" />
@@ -82,8 +129,11 @@
 import {
   ArrowLeftCircleIcon,
   ArrowRightCircleIcon,
+  BarsArrowUpIcon,
+  BarsArrowDownIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/vue/24/solid";
-import { computed, ComputedRef, ref, toRefs } from "vue";
+import { computed, ComputedRef, reactive, ref, toRefs } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 const store = useStore();
@@ -107,6 +157,15 @@ const props = defineProps<{
 }>();
 
 const { roleUsers, role, loadPage } = toRefs(props);
+
+const pageables = reactive({
+  recordsPerPage: 10,
+  totalRecords: 0,
+  totalPages: 0,
+  currentPage: 0,
+  sort: "ASC",
+  searchTerm: null,
+});
 
 const allUsers: ComputedRef<
   {
@@ -262,4 +321,17 @@ const filteredUsers = computed(() => {
     return acc;
   }, []);
 });
+
+const sortUsers = () => {
+  if (pageables.sort === "ASC") {
+    pageables.sort = "DESC";
+  } else if (pageables.sort === "DESC") {
+    pageables.sort = "ASC";
+  }
+  console.log(pageables.sort);
+};
+
+const searchUsers = () => {
+  console.log(pageables.searchTerm);
+};
 </script>
