@@ -12,7 +12,7 @@ import {
   CheckCircleIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/vue/24/outline";
-import type { User } from "@/Users/types";
+import type { User } from "@users/types";
 import { useStore } from "vuex";
 import { mapActions } from "@/modules/mapStore";
 
