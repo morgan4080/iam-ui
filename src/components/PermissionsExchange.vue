@@ -56,7 +56,7 @@
               v-model="permission.checked"
               aria-describedby="all-service-permissions"
               type="checkbox"
-              @change="setPermissionToService($event, permission)"
+              @change="addPermissionToService($event, permission)"
             />
           </li>
         </ul>
@@ -79,6 +79,7 @@
         }"
         type="button"
         class="mx-4"
+        @click="associatePermissionToService"
       >
         <ArrowRightCircleIcon class="w-6 h-6" />
       </button>
@@ -91,6 +92,7 @@
         }"
         type="button"
         class="mx-4"
+        @click="dissociatePermissionFromService"
       >
         <ArrowLeftCircleIcon class="w-6 h-6" />
       </button>
@@ -148,7 +150,7 @@
               v-model="permission.checked"
               aria-describedby="existing-service-permissions"
               type="checkbox"
-              @change="setPermissionToService($event, permission)"
+              @change="removePermissionFromService($event, permission)"
             />
           </li>
         </ul>
@@ -162,17 +164,17 @@ import {
   ArrowRightCircleIcon,
   ArrowLeftCircleIcon,
 } from "@heroicons/vue/24/solid";
-import { computed, toRefs } from "vue";
+import { computed, ref, toRefs } from "vue";
 import { permissionInterface, serviceInterface } from "@/types/roleTypes";
-
+const emit = defineEmits(["addKeycloakIdsToAdd", "addKeycloakIdsToRemove"]);
 const props = defineProps<{
   existing: string[];
   selectedService: number | null;
-  role_name: string;
+  role: any;
   services: serviceInterface[];
 }>();
 
-const { existing, role_name, services, selectedService } = toRefs(props);
+const { existing, role, services, selectedService } = toRefs(props);
 
 const existingServicePermissions = computed(() => {
   if (selectedService.value) {
@@ -201,7 +203,48 @@ const nonAssociatedServicePermissions = computed(() => {
   return [];
 });
 
-const setPermissionToService = (e: Event, permission: permissionInterface) => {
-  console.log(e, permission);
+const keycloakIdsToAdd = ref<Set<string>>(new Set());
+
+const keycloakIdsToRemove = ref<Set<string>>(new Set());
+
+const removeTargets = ref<HTMLInputElement[]>([]);
+
+const addTargets = ref<HTMLInputElement[]>([]);
+const associatePermissionToService = () => {
+  addTargets.value.forEach(target => (target.checked = false));
+  console.log("add", keycloakIdsToAdd.value);
+  emit("addKeycloakIdsToAdd", Array.from(keycloakIdsToAdd.value));
+};
+const dissociatePermissionFromService = () => {
+  removeTargets.value.forEach(target => (target.checked = false));
+  console.log("remove", keycloakIdsToRemove.value);
+  emit("addKeycloakIdsToRemove", Array.from(keycloakIdsToRemove.value));
+};
+
+const addPermissionToService = (e: Event, permission: permissionInterface) => {
+  console.log("running addPermissionToService");
+  addTargets.value.push(<HTMLInputElement>e.target);
+  const isChecked = (<HTMLInputElement>e.target).checked;
+  if (e.target && isChecked) {
+    keycloakIdsToAdd.value.add(permission.keycloakRoleId);
+  } else {
+    keycloakIdsToAdd.value.delete(permission.keycloakRoleId);
+    console.log(keycloakIdsToAdd.value);
+  }
+};
+
+const removePermissionFromService = (
+  e: Event,
+  permission: permissionInterface
+) => {
+  console.log("running removePermissionFromService");
+  removeTargets.value.push(<HTMLInputElement>e.target);
+  const isChecked = (<HTMLInputElement>e.target).checked;
+  if (e.target && isChecked) {
+    keycloakIdsToRemove.value.add(permission.keycloakRoleId);
+  } else {
+    keycloakIdsToRemove.value.delete(permission.keycloakRoleId);
+    console.log(keycloakIdsToRemove.value);
+  }
 };
 </script>
