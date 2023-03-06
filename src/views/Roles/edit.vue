@@ -1,21 +1,15 @@
 <script lang="ts" setup>
-import {
-  ArrowLeftCircleIcon,
-  ArrowRightCircleIcon,
-} from "@heroicons/vue/24/solid";
 import { useRoute, useRouter } from "vue-router";
 import { computed, ComputedRef, onMounted, reactive, ref } from "vue";
 import { getRole } from "@/modules/all";
 import { useStore } from "vuex";
-import { mapActions } from "@/modules/mapStore";
 import { RoleUsers } from "@/types/roleTypes";
 import PermissionsExchange from "@/components/PermissionsExchange.vue";
+import RolesExchange from "@/components/RolesExchange.vue";
 
 const route = useRoute();
 const store = useStore();
 const router = useRouter();
-
-const { updateRole } = mapActions();
 
 interface permissionInterface {
   id: number;
@@ -40,6 +34,8 @@ interface formInterface {
   keycloakRoleId: string;
   name: string;
   description: string;
+  keycloakRoleIdsToAdd: string[];
+  keycloakRoleIdsToRemove: string[];
 }
 
 const currentPage = ref(<number>1);
@@ -74,6 +70,8 @@ const form = ref(<formInterface>{
   keycloakRoleId: role.value.keycloakRoleId,
   name: "",
   description: "",
+  keycloakRoleIdsToAdd: [],
+  keycloakRoleIdsToRemove: [],
 });
 
 const selectedService = ref<number | null>(null);
@@ -89,6 +87,7 @@ const loadPage = async () => {
     role.value = await getRole(route.params.id);
 
     form.value.name = role.value.name;
+    form.value.keycloakRoleId = role.value.keycloakRoleId;
 
     form.value.description = role.value.description
       ? role.value.description
@@ -105,6 +104,8 @@ const loadPage = async () => {
           acc = [...acc, ...curr];
           return acc;
         }, []);
+
+      form.value.keycloakRoleIdsToAdd = keycloakIds.value;
 
       keycloakIds.value.forEach((key: string) => {
         initialKeycloakIds.add(key);
@@ -153,13 +154,36 @@ const loading = ref(<boolean>false);
 const actionUpdateRole = async () => {
   try {
     loading.value = true;
+
+    // suspect
+
+    const existing: string[] = Array.from(initialKeycloakIds);
+    form.value.keycloakRoleIdsToRemove = existing.reduce(
+      (acc: string[], current: string) => {
+        if (
+          form.value.keycloakRoleIdsToAdd.findIndex(
+            (k: string) => k === current
+          ) === -1
+        ) {
+          acc.push(current);
+        }
+        return acc;
+      },
+      []
+    );
+    form.value.keycloakRoleIdsToAdd = form.value.keycloakRoleIdsToAdd.filter(
+      (keyId: string) => existing.indexOf(keyId) === -1
+    );
+
+    // suspect
+
     if (
       form.value.name.toLowerCase() === "sales_person" ||
       form.value.name.toLowerCase() === "relationship_manager"
     ) {
       form.value.name = form.value.name.toUpperCase();
     }
-    const response = await updateRole(form.value);
+    const response = await store.dispatch("updateRole", form.value);
     await store.dispatch("defineNotification", {
       message: response.messages[0].message,
       success: true,
@@ -174,147 +198,6 @@ const actionUpdateRole = async () => {
     loading.value = false;
   }
 };
-
-const allUsers: ComputedRef<
-  {
-    keycloakId: string;
-    isEnabled: boolean;
-    username: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    ussdPhoneNumber: string;
-    id: string;
-  }[]
-> = computed(() => {
-  return store.getters.getAllUsers;
-});
-
-const idsToAddToRole = ref<string[]>([]);
-
-const setUserIdsToAddToRole = (e: any, refId: string) => {
-  if (e.target.checked) {
-    idsToAddToRole.value.push(refId);
-  } else {
-    const index = idsToAddToRole.value.findIndex(
-      (id: string): boolean => id === refId
-    );
-    idsToAddToRole.value.splice(index, 1);
-  }
-};
-
-const idsToRemoveFromRole = ref<string[]>([]);
-
-const setUserIdsToRemoveFromRole = (e: any, refId: string) => {
-  if (e.target.checked) {
-    idsToRemoveFromRole.value.push(refId);
-  } else {
-    const index = idsToRemoveFromRole.value.findIndex(
-      (id: string): boolean => id === refId
-    );
-    idsToRemoveFromRole.value.splice(index, 1);
-  }
-};
-
-const removeUsersFromRole = async () => {
-  if (idsToRemoveFromRole.value.length === 0) {
-    await store.dispatch("defineNotification", {
-      message: "Use the checkbox to select users to remove",
-      warning: true,
-    });
-  } else {
-    if (
-      confirm(
-        `You are about to remove ${idsToRemoveFromRole.value.length} users from role ${form.value.name}, proceed?`
-      )
-    ) {
-      try {
-        // call action to update role users
-        const roleUsersIds = roleUsers.value.map(user => user.id);
-        const newIds = roleUsersIds.filter(
-          refId => idsToRemoveFromRole.value.indexOf(refId) === -1
-        );
-        const response = await store.dispatch("updateUsersInRole", {
-          role_id: route.params.id,
-          userRefIds: newIds,
-        });
-        console.log(response);
-        await store.dispatch("defineNotification", {
-          message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.value.name} successfully`,
-          success: true,
-        });
-        // reload onMounted
-        // await loadPage();
-      } catch (e: any) {
-        if (e.message) {
-          await store.dispatch("defineNotification", {
-            message: e.message,
-            error: true,
-          });
-        } else {
-          console.warn("removeUsersFromRole", e);
-        }
-      }
-    }
-  }
-};
-
-const addUsersToRole = async () => {
-  if (idsToAddToRole.value.length === 0) {
-    await store.dispatch("defineNotification", {
-      message: "Use the checkbox to select users to add",
-      warning: true,
-    });
-  } else {
-    if (
-      confirm(
-        `You are about to add ${idsToAddToRole.value.length} users to role ${form.value.name}, proceed?`
-      )
-    ) {
-      try {
-        // call action to update role users
-        // map role users to return keycloak id only
-        // spread role users keycloak ids and keycloak idsToAddToRole
-        const roleUsersIds = roleUsers.value.map(user => user.id);
-        console.log([...roleUsersIds, ...idsToAddToRole.value]);
-        const response = await store.dispatch("updateUsersInRole", {
-          role_id: route.params.id,
-          userRefIds: [...roleUsersIds, ...idsToAddToRole.value],
-        });
-        console.log("response adding users to role", response);
-        await store.dispatch("defineNotification", {
-          message: `Added ${idsToAddToRole.value.length} users to role ${role.value.name} successfully`,
-          success: true,
-        });
-        // reload onMounted
-        await loadPage();
-      } catch (e: any) {
-        if (e.message) {
-          await store.dispatch("defineNotification", {
-            message: e.message,
-            error: true,
-          });
-        } else {
-          console.warn("addUsersToRole", e);
-        }
-      }
-    }
-  }
-};
-
-const filteredUsers = computed(() => {
-  // remove from allUsers, users present in roleUsers
-  const roleUsersIds = roleUsers.value.map(user => user.id);
-  console.log(roleUsersIds);
-  console.log(allUsers.value);
-  return allUsers.value.reduce((acc: typeof allUsers.value, user) => {
-    if (roleUsersIds.indexOf(user.id) === -1) {
-      acc.push(user);
-    }
-    return acc;
-  }, []);
-});
 </script>
 <template>
   <div class="w-full max-h-screen overflow-y-scroll pb-24">
@@ -529,85 +412,11 @@ const filteredUsers = computed(() => {
                   >
                     Role Users
                   </label>
-                  <div class="flex items-start col-span-4">
-                    <div class="mt-1 sm:mt-0 flex-1">
-                      <div
-                        class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
-                      >
-                        <p
-                          class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100"
-                        >
-                          Available Users
-                        </p>
-                        <ul class="list-decimal list-inside space-y-2">
-                          <li
-                            v-for="(user, index) in filteredUsers"
-                            :key="index"
-                            class="flex items-center justify-between"
-                          >
-                            <label :for="index">
-                              {{ user.firstName }} {{ user.lastName }}
-                            </label>
-                            <input
-                              :id="index"
-                              type="checkbox"
-                              class="text-xs text-gray-500"
-                              @change="setUserIdsToAddToRole($event, user.id)"
-                            />
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div class="flex flex-col items-center space-y-3 my-2">
-                      <button
-                        type="button"
-                        class="mx-4"
-                        @click="addUsersToRole"
-                      >
-                        <ArrowRightCircleIcon class="w-6 h-6" />
-                      </button>
-
-                      <button
-                        type="button"
-                        class="mx-4"
-                        @click="removeUsersFromRole"
-                      >
-                        <ArrowLeftCircleIcon class="w-6 h-6" />
-                      </button>
-                    </div>
-
-                    <div class="mt-1 sm:mt-0 flex-1">
-                      <div
-                        class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
-                      >
-                        <p
-                          class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100"
-                        >
-                          Users Associated To Role {{ form.name }}
-                        </p>
-                        <ul class="list-decimal list-inside space-y-2">
-                          <li
-                            v-for="(user, index) in roleUsers"
-                            :key="index"
-                            class="flex items-center justify-between"
-                          >
-                            <label :for="index">
-                              {{ user.firstName }} {{ user.lastName }}
-                            </label>
-                            <input
-                              :id="index"
-                              type="checkbox"
-                              class="text-xs text-gray-500"
-                              @change="
-                                setUserIdsToRemoveFromRole($event, user.id)
-                              "
-                            />
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
+                  <RolesExchange
+                    :role="role"
+                    :role-users="roleUsers"
+                    :load-page="loadPage"
+                  />
                 </div>
               </div>
             </div>
