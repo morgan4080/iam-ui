@@ -416,63 +416,63 @@ const store = createStore<State>({
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
       }/users-admin/api/users${query}`;
-      return new Promise(async (resolve, reject) => {
-        const response = await fetch(url, {
+      return new Promise((resolve, reject) => {
+        fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-        });
-        const data = await response.json();
-
-        if (!response.ok && response.status !== 200) {
-          reject(data);
-        } else {
-          if (data.records) commit("set_all_users", data.records);
-          resolve(data);
-        }
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.records) commit("set_all_users", data.records);
+            resolve(data);
+          })
+          .catch(error => {
+            reject(error);
+          });
       });
     },
-    syncServices({}) {
+    syncServices({ commit }) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
       }/users-admin/api/organizations/services/sync`;
       const method = `POST`;
-      return new Promise(async (resolve, reject) => {
-        const response = await fetch(url, {
+      return new Promise((resolve, reject) => {
+        fetch(url, {
           method: method,
           headers: {
             "Content-Type": "application/json",
           },
-        });
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
+        })
+          .then(response => response.json())
+          .then(data => {
+            resolve(data);
+          })
+          .catch(error => {
+            reject(error);
+          });
       });
     },
-    syncRoles({}, payload) {
+    syncRoles({ commit }, payload) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
       }/users-admin/api/roles/sync-roles`;
       const method = `POST`;
-      return new Promise(async (resolve, reject) => {
-        const response = await fetch(url, {
+      return new Promise((resolve, reject) => {
+        fetch(url, {
           method: method,
           headers: {
             "Content-Type": "application/json",
           },
-        });
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
+        })
+          .then(response => response.json())
+          .then(data => {
+            resolve(data);
+          })
+          .catch(error => {
+            reject(error);
+          });
       });
     },
     assignRoles({ commit }, { userRefId, payload }) {

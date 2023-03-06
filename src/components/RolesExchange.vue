@@ -133,7 +133,7 @@ import {
   BarsArrowDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/vue/24/solid";
-import { computed, ComputedRef, reactive, ref, toRefs } from "vue";
+import { computed, ComputedRef, reactive, ref, toRefs, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 const store = useStore();
@@ -164,7 +164,7 @@ const pageables = reactive({
   totalPages: 0,
   currentPage: 0,
   sort: "ASC",
-  searchTerm: null,
+  searchTerm: "",
 });
 
 const allUsers: ComputedRef<
@@ -322,16 +322,47 @@ const filteredUsers = computed(() => {
   }, []);
 });
 
-const sortUsers = () => {
+const filterUsers = async () => {
+  const urlParams = new URLSearchParams();
+  if (pageables.searchTerm !== "") {
+    urlParams.set("searchTerm", pageables.searchTerm);
+  }
+  urlParams.set("pageIndex", `${pageables.currentPage}`);
+  urlParams.set("pageSize", `${pageables.recordsPerPage}`);
+  urlParams.set("order", pageables.sort);
+  urlParams.set("sort", pageables.sort);
+  try {
+    await store.dispatch("getUsers", `?${urlParams.toString()}`);
+  } catch (e: any) {
+    if (e.message) {
+      await store.dispatch("defineNotification", {
+        message: e.message,
+        error: true,
+      });
+    } else {
+      console.warn("fetchRoleUsers", e);
+    }
+  }
+};
+
+const sortUsers = async () => {
   if (pageables.sort === "ASC") {
     pageables.sort = "DESC";
   } else if (pageables.sort === "DESC") {
     pageables.sort = "ASC";
   }
-  console.log(pageables.sort);
+  await filterUsers();
 };
 
-const searchUsers = () => {
-  console.log(pageables.searchTerm);
+const searchUsers = async () => {
+  await filterUsers();
 };
+
+watch(
+  () => pageables.searchTerm,
+  async searchTerm => {
+    console.log(searchTerm);
+    await filterUsers();
+  }
+);
 </script>
