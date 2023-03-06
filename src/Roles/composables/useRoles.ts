@@ -3,7 +3,7 @@ import type { Role } from "@/Roles/types";
 import { Pageables } from "@/types";
 
 export const useRoles = () => {
-  const roles = ref<Role | null>(null);
+  const roles = ref<Role[] | null>(null);
   const userRoles = ref();
   const isLoading = ref(false);
   const error = ref<null | unknown>(null);

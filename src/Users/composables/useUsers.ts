@@ -24,25 +24,35 @@ export const useUsers = () => {
   async function fetchUser(userRefId: string) {
     isLoading.value = true;
     error.value = null;
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/${userRefId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+    return await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/${userRefId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then(async response => {
+        if (response.ok) {
+          return await response.json();
         }
-      );
-
-      const data = await response.json();
-      user.value = data.user;
-      return data;
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
+        await defineNotification({
+          message: await response.text(),
+          error: true,
+        });
+      })
+      .then(async data => {
+        user.value = data.user;
+        return data.user;
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   async function fetchUsers() {
@@ -87,27 +97,33 @@ export const useUsers = () => {
   async function syncUser(userRefId: string) {
     isLoading.value = true;
     error.value = null;
-    try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_DOMAIN_URL
-        }/users-admin/api/v1/roles/users/${userRefId}/sync`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+    return await fetch(
+      `${
+        import.meta.env.VITE_DOMAIN_URL
+      }/users-admin/api/v1/roles/users/${userRefId}/sync`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then(async response => {
+        if (response.ok) {
+          return await response.json();
         }
-      );
-
-      const data = await response.json();
-
-      return data;
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
+        await defineNotification({
+          message: await response.text(),
+          error: true,
+        });
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   async function syncUsers() {
@@ -154,24 +170,16 @@ export const useUsers = () => {
   async function enableOrDisableUser(payload: EnableUserPayload) {
     isLoading.value = true;
     error.value = null;
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      return await response.json();
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
+    return await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
   }
 
   async function editUser(payload: EditUserPayload) {
@@ -197,7 +205,23 @@ export const useUsers = () => {
       })
       .finally(() => {
         isLoading.value = false;
-      });
+      })
+      .then(async response => {
+        if (response.ok) {
+          return await response.json();
+        }
+        await defineNotification({
+          message: await response.text(),
+          error: true,
+        });
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   async function deleteUser(user: User) {
@@ -246,25 +270,28 @@ export const useUsers = () => {
   async function verifyUnique(params: string) {
     isLoading.value = true;
     error.value = null;
-    try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_DOMAIN_URL
-        }/users-admin/api/v1/users/by-identifier/${params}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) return "not-unique";
-      if (response.status === 204) return "unique";
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
+    return await fetch(
+      `${
+        import.meta.env.VITE_DOMAIN_URL
+      }/users-admin/api/v1/users/by-identifier/${params}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then(async response => {
+        if (!response.ok) return "not-unique";
+        if (response.status === 204) return "unique";
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   return {

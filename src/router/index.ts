@@ -10,7 +10,9 @@ const routes = [
     name: "Dashboard",
     component: () => import("@/views/Dashboard.vue"),
   },
-].concat(userRoutes, rolesRoutes);
+  ...userRoutes,
+  ...rolesRoutes,
+];
 
 const router = createRouter({
   history: createWebHistory("/admin/"),

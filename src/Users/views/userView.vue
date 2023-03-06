@@ -632,7 +632,7 @@ onBeforeMount(async () => await fetchUserData());
   </div>
   <Teleport to="body">
     <ResetCredentialsModal
-      v-if="resetCredentialsAction"
+      v-if="resetCredentialsAction && user"
       :open="resetCredentialModalOpen"
       :action="resetCredentialsAction"
       :user="user"

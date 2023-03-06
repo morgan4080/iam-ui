@@ -646,7 +646,7 @@ const setNotificationStatus = (e: any): void => {
 </script>
 
 <template>
-  <div class="w-full max-h-screen overflow-y-scroll">
+  <div class="w-full">
     <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9 pb-40">
       <div class="shadow sm:overflow-hidden">
         <div class="bg-white py-6 px-4 sm:p-6">
@@ -668,7 +668,7 @@ const setNotificationStatus = (e: any): void => {
             <form
               @submit.prevent="setupFormContacts"
               v-if="currentStep === 1"
-              class="flex flex-col min-h-screen"
+              class="flex flex-col"
             >
               <div
                 class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-8 pb-8 sm:border-t sm:border-gray-200 mt-6"
@@ -959,7 +959,7 @@ const setNotificationStatus = (e: any): void => {
             <form
               v-if="currentStep === 2"
               @submit.prevent="setupFormWebAccess"
-              class="flex flex-col min-h-screen sm:border-t sm:border-gray-200 mt-3"
+              class="flex flex-col sm:border-t sm:border-gray-200 mt-3"
             >
               <div class="flex flex-col pb-2 mt-6">
                 <div>
@@ -1142,7 +1142,7 @@ const setNotificationStatus = (e: any): void => {
             <form
               v-if="currentStep === 3"
               @submit.prevent="setupFormUSSDAccess"
-              class="flex flex-col min-h-screen"
+              class="flex flex-col"
             >
               <div class="flex flex-col pb-2 mt-6">
                 <div>
@@ -1378,7 +1378,7 @@ const setNotificationStatus = (e: any): void => {
           >
             <div
               v-if="currentStep === 4"
-              class="flex flex-col min-h-screen pb-16"
+              class="flex flex-col pb-16"
             >
               <div>
                 <h3

@@ -48,10 +48,8 @@ async function resetWebPassword() {
   };
 
   await passReset(payload)
-    .then((response: any) => {
-      if (
-        response.messages.some((message: any) => message.type === "SUCCESS")
-      ) {
+    .then((response: boolean) => {
+      if (response) {
         loading.value = false;
         resetSuccessful.value = true;
       } else {

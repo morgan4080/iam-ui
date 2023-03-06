@@ -210,7 +210,7 @@ const store = createStore<State>({
       })
         .then(response => {
           if (response.ok) {
-            return response.json();
+            return true;
           }
           throw new Error(response.statusText);
         })
