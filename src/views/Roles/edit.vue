@@ -154,29 +154,6 @@ const loading = ref(<boolean>false);
 const actionUpdateRole = async () => {
   try {
     loading.value = true;
-
-    // suspect
-
-    const existing: string[] = Array.from(initialKeycloakIds);
-    form.value.keycloakRoleIdsToRemove = existing.reduce(
-      (acc: string[], current: string) => {
-        if (
-          form.value.keycloakRoleIdsToAdd.findIndex(
-            (k: string) => k === current
-          ) === -1
-        ) {
-          acc.push(current);
-        }
-        return acc;
-      },
-      []
-    );
-    form.value.keycloakRoleIdsToAdd = form.value.keycloakRoleIdsToAdd.filter(
-      (keyId: string) => existing.indexOf(keyId) === -1
-    );
-
-    // suspect
-
     if (
       form.value.name.toLowerCase() === "sales_person" ||
       form.value.name.toLowerCase() === "relationship_manager"
@@ -184,11 +161,13 @@ const actionUpdateRole = async () => {
       form.value.name = form.value.name.toUpperCase();
     }
     const response = await store.dispatch("updateRole", form.value);
+    console.log("action update role", response);
     await store.dispatch("defineNotification", {
       message: response.messages[0].message,
       success: true,
     });
-    await router.push(`/roles`);
+    // await router.push(`/roles`);
+    await loadPage();
   } catch (e: any) {
     await store.dispatch("defineNotification", {
       message: e.message,
@@ -197,6 +176,21 @@ const actionUpdateRole = async () => {
   } finally {
     loading.value = false;
   }
+};
+const addKeycloakIdsToAdd = async (ids: string[]) => {
+  form.value.keycloakRoleIdsToRemove = [];
+  form.value.keycloakRoleIdsToAdd = ids;
+  await actionUpdateRole();
+  form.value.keycloakRoleIdsToAdd = [];
+  form.value.keycloakRoleIdsToRemove = [];
+};
+
+const addKeycloakIdsToRemove = async (ids: string[]) => {
+  form.value.keycloakRoleIdsToAdd = [];
+  form.value.keycloakRoleIdsToRemove = ids;
+  await actionUpdateRole();
+  form.value.keycloakRoleIdsToAdd = [];
+  form.value.keycloakRoleIdsToRemove = [];
 };
 </script>
 <template>
@@ -397,9 +391,13 @@ const actionUpdateRole = async () => {
 
                   <PermissionsExchange
                     :existing="keycloakIds"
-                    :role_name="form.name"
+                    :role="role"
                     :selected-service="selectedService"
                     :services="services"
+                    :add-keycloak-ids-to-add="addKeycloakIdsToAdd"
+                    :add-keycloak-ids-to-remove="addKeycloakIdsToRemove"
+                    @add-keycloak-ids-to-add="addKeycloakIdsToAdd"
+                    @add-keycloak-ids-to-remove="addKeycloakIdsToRemove"
                   />
                 </div>
 

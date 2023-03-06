@@ -166,15 +166,15 @@ import {
 } from "@heroicons/vue/24/solid";
 import { computed, ref, toRefs } from "vue";
 import { permissionInterface, serviceInterface } from "@/types/roleTypes";
-
+const emit = defineEmits(["addKeycloakIdsToAdd", "addKeycloakIdsToRemove"]);
 const props = defineProps<{
   existing: string[];
   selectedService: number | null;
-  role_name: string;
+  role: any;
   services: serviceInterface[];
 }>();
 
-const { existing, role_name, services, selectedService } = toRefs(props);
+const { existing, role, services, selectedService } = toRefs(props);
 
 const existingServicePermissions = computed(() => {
   if (selectedService.value) {
@@ -213,10 +213,12 @@ const addTargets = ref<HTMLInputElement[]>([]);
 const associatePermissionToService = () => {
   addTargets.value.forEach(target => (target.checked = false));
   console.log("add", keycloakIdsToAdd.value);
+  emit("addKeycloakIdsToAdd", Array.from(keycloakIdsToAdd.value));
 };
 const dissociatePermissionFromService = () => {
   removeTargets.value.forEach(target => (target.checked = false));
   console.log("remove", keycloakIdsToRemove.value);
+  emit("addKeycloakIdsToRemove", Array.from(keycloakIdsToRemove.value));
 };
 
 const addPermissionToService = (e: Event, permission: permissionInterface) => {
