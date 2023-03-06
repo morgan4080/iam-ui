@@ -16,7 +16,6 @@ const { roles, pageables, isLoading, fetchRoles } = useRoles();
 const { next, previous } = usePagination(pageables, fetchRoles);
 const { sort } = useSort(pageables, fetchRoles);
 const { search } = useSearch(pageables, fetchRoles);
-const { defineNotification } = mapActions();
 const tableHeaders = ["Name", "Type", "Description"];
 
 async function sync() {
@@ -64,37 +63,37 @@ onBeforeMount(async () => await fetchRoles());
             @next="next"
             @previous="previous"
           >
-            <tr
-              v-for="role in roles"
-              v-if="roles.length && !isLoading"
-              :key="role.id"
-              class="hover:bg-gray-200 hover:cursor-pointer"
-              @click="router.push(`/roles/${role.keycloakRoleId}`)"
-            >
-              <td
-                class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+            <template v-if="roles.length && !isLoading">
+              <tr
+                v-for="role in roles"
+                :key="role.id"
+                class="hover:bg-gray-200 hover:cursor-pointer"
+                @click="router.push(`/roles/${role.keycloakRoleId}`)"
               >
-                {{ role.name }}
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {{ role.roleType }}
-              </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {{ role.description }}
-              </td>
-              <td
-                class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
-                @click="e => e.stopPropagation()"
-              >
-                <router-link
-                  :to="`/roles/${role.keycloakRoleId}/edit`"
-                  class="text-indigo-600 hover:text-indigo-900"
+                <td
+                  class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                 >
-                  Edit
-                  <span class="sr-only">, {{ role.description }}</span>
-                </router-link>
-              </td>
-            </tr>
+                  {{ role.name }}
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  {{ role.roleType }}
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  {{ role.description }}
+                </td>
+                <td
+                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                  @click="e => e.stopPropagation()"
+                >
+                  <router-link
+                    :to="`/roles/${role.keycloakRoleId}/edit`"
+                    class="text-indigo-600 hover:text-indigo-900"
+                    >Edit
+                    <span class="sr-only">, {{ role.description }}</span>
+                  </router-link>
+                </td>
+              </tr>
+            </template>
           </Table>
         </div>
       </div>

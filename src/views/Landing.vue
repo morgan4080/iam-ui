@@ -12,7 +12,7 @@ import TheSignIn from "../components/TheSignIn.vue";
         class="w-full h-full object-cover object-right"
         src="https://images.unsplash.com/photo-1573164574397-dd250bc8a598?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1920&amp;q=60&amp;sat=-100"
         alt=""
-      >
+      />
       <div
         aria-hidden="true"
         class="absolute inset-0 bg-gradient-to-r from-teal-500 to-cyan-600 mix-blend-multiply"

@@ -6,15 +6,8 @@ import { useUsers } from "@/Users/composables/useUsers";
 
 const { fetchUsers, users } = useUsers();
 const store = useStore();
-// defineProps<{ user: object }>()
-
-const user = computed(() => {
-  return store.state.user ? store.state.user : null;
-});
 
 const roleCount = ref(0);
-
-const query = ref(<string>"?order=ASC&sort=ASC&pageSize=1");
 
 getRoles()
   .then(({ totalRecords }) => {
@@ -24,7 +17,7 @@ getRoles()
     alert(e.message);
   });
 
-onBeforeMount(async () => await fetchUsers(query.value));
+onBeforeMount(async () => await fetchUsers());
 </script>
 <template>
   <div
@@ -48,14 +41,17 @@ onBeforeMount(async () => await fetchUsers(query.value));
               <router-link
                 to="/users"
                 class="flex text-blue-600"
-                ><span class="pr-3">Users:</span>
-                {{ users && users.length }}</router-link
               >
+                <span class="pr-3">Users:</span>
+                {{ users && users.length }}
+              </router-link>
               <router-link
                 to="/roles"
                 class="flex text-blue-600"
-                ><span class="pr-3">Roles:</span> {{ roleCount }}</router-link
               >
+                <span class="pr-3">Roles:</span>
+                {{ roleCount }}
+              </router-link>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block hidden">
@@ -91,15 +87,15 @@ onBeforeMount(async () => await fetchUsers(query.value));
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-                >IAM documentation</a
-              >
+                >IAM documentation
+              </a>
               <a
                 href="https://support.presta.co.ke/portal/en/home"
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-                >Additional resources</a
-              >
+                >Additional resources
+              </a>
             </div>
           </div>
           <div class="ml-3 mt-4 text-sm block">
@@ -112,15 +108,15 @@ onBeforeMount(async () => await fetchUsers(query.value));
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-                >Contact us</a
-              >
+                >Contact us
+              </a>
               <a
                 href="https://support.presta.co.ke/portal/en/home"
                 rel="noopener noreferrer"
                 target="_blank"
                 class="flex text-blue-600"
-                >Support</a
-              >
+                >Support
+              </a>
             </div>
           </div>
         </div>

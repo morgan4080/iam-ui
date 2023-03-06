@@ -35,7 +35,7 @@ async function doLogout() {
   }
 }
 
-let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
+const theUrl: any = import.meta.env.VITE_DOMAIN_URL;
 </script>
 <template>
   <nav class="bg-gray-800">
@@ -109,7 +109,8 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
               <TheLogo class="h-8 w-auto" />
               <span
                 class="text-white ml-4 mt-2 hidden sm:block font-semibold"
-              >{{ organisation }}</span>
+                >{{ organisation }}</span
+              >
             </a>
           </div>
           <!--          sm:block-->
@@ -163,14 +164,16 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
                       class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
                       role="menuitem"
                       tabindex="-1"
-                    >Service 1</a>
+                      >Service 1</a
+                    >
                     <a
                       id="service-menu-item-2"
                       href="#"
                       class="navbar block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700"
                       role="menuitem"
                       tabindex="-1"
-                    >Service 2</a>
+                      >Service 2</a
+                    >
                   </div>
                 </transition>
               </div>
@@ -230,7 +233,8 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
                   role="menuitem"
                   tabindex="-1"
                   @click="doLogout"
-                >Sign out</a>
+                  >Sign out</a
+                >
               </div>
             </transition>
           </div>
@@ -250,22 +254,26 @@ let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
           href="#"
           class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
           aria-current="page"
-        >Dashboard</a>
+          >Dashboard</a
+        >
 
         <a
           href="#"
           class="text-gray-300 hover:bg-gray-700 hover:text-gray-400 block px-3 py-2 rounded-md text-base font-medium"
-        >Users</a>
+          >Users</a
+        >
 
         <a
           href="#"
           class="text-gray-300 hover:bg-gray-700 hover:text-gray-400 block px-3 py-2 rounded-md text-base font-medium"
-        >Roles</a>
+          >Roles</a
+        >
 
         <a
           href="#"
           class="text-gray-300 hover:bg-gray-700 hover:text-gray-400 block px-3 py-2 rounded-md text-base font-medium"
-        >Customers</a>
+          >Customers</a
+        >
       </div>
     </div>
   </nav>

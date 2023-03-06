@@ -87,27 +87,6 @@ const store = createStore<State>({
   },
   actions: {
     //from all.ts
-    syncUsers({ commit }, payload) {
-      return new Promise(async (resolve, reject) => {
-        const response = await fetch(
-          import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/sync-users",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
-      });
-    },
     defineNotification({ commit }, payload) {
       commit("set_notification", payload);
     },
@@ -130,6 +109,8 @@ const store = createStore<State>({
         }
       });
     },
+
+    // refactored to fetchUserRoles in useRoles composables
     getUsersRoles({}, payload: any) {
       const url =
         import.meta.env.VITE_DOMAIN_URL +
@@ -152,6 +133,8 @@ const store = createStore<State>({
         }
       });
     },
+
+    // TODO remove this
     passChange({}, payload: any) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
@@ -175,6 +158,8 @@ const store = createStore<State>({
         }
       });
     },
+
+    // TODO remove this
     pinChange({}, payload: any) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
@@ -210,7 +195,7 @@ const store = createStore<State>({
       })
         .then(response => {
           if (response.ok) {
-            return response.json();
+            return true;
           }
           throw new Error(response.statusText);
         })
@@ -490,26 +475,26 @@ const store = createStore<State>({
         }
       });
     },
-    assignRoles({ commit }, { userRefId, payload }) {
+    assignRoles({}, { userRefId, payload }) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
       }/users-admin/api/v1/roles/users/${userRefId}/assign`;
       const method = `POST`;
-      return new Promise((resolve, reject) => {
-        fetch(url, {
+      return new Promise(async (resolve, reject) => {
+        const response = await fetch(url, {
           method: method,
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
-        })
-          .then(response => response.json())
-          .then(data => {
-            resolve(data);
-          })
-          .catch(error => {
-            reject(error);
-          });
+        });
+        const data = await response.json();
+
+        if (response.status !== 200) {
+          reject(data);
+        } else {
+          resolve(data);
+        }
       });
     },
     fetchRoleUsers({ commit }, role_id: string): Promise<any> {
@@ -517,25 +502,25 @@ const store = createStore<State>({
         import.meta.env.VITE_DOMAIN_URL
       }/users-admin/api/v1/roles/${role_id}/users`;
       const method = "GET";
-      return new Promise((resolve, reject) => {
-        fetch(url, {
+      return new Promise(async (resolve, reject) => {
+        const response = await fetch(url, {
           method: method,
           headers: {
             "Content-Type": "application/json",
           },
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.data) commit("set_role_users", data.data);
-            resolve(data);
-          })
-          .catch(error => {
-            reject(error);
-          });
+        });
+        const data = await response.json();
+
+        if (!response.ok && response.status !== 200) {
+          reject(data);
+        } else {
+          if (data.data) commit("set_role_users", data.data);
+          resolve(data);
+        }
       });
     },
     updateUsersInRole(
-      { commit },
+      {},
       { role_id, userRefIds }: { role_id: string; userRefIds: string[] }
     ) {
       const payload = {
@@ -546,53 +531,21 @@ const store = createStore<State>({
         import.meta.env.VITE_DOMAIN_URL
       }/users-admin/api/v1/roles/${role_id}/users`;
 
-      return new Promise((resolve, reject) => {
-        fetch(url, {
+      return new Promise(async (resolve, reject) => {
+        const response = await fetch(url, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
-        })
-          .then(response => response.json())
-          .then(data => {
-            resolve(data);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
-    },
-    deleteUsersInRole(
-      { commit },
-      {
-        role_id,
-        userKeyCloakIds,
-      }: { role_id: string; userKeyCloakIds: string[] }
-    ) {
-      const payload = {
-        userKeyCloakIds,
-      };
-
-      const url = `${
-        import.meta.env.VITE_DOMAIN_URL
-      }/users-admin/api/v1/roles/${role_id}/users`;
-
-      return new Promise((resolve, reject) => {
-        fetch(url, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        })
-          .then(response => response.json())
-          .then(data => {
-            resolve(data);
-          })
-          .catch(error => {
-            reject(error);
-          });
+        });
+        const data = await response.json();
+        console.log("updateUsersInRole", data);
+        if (!response.ok && response.status !== 200) {
+          reject(data);
+        } else {
+          resolve(data);
+        }
       });
     },
   },

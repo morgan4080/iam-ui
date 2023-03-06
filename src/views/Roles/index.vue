@@ -180,7 +180,8 @@ const roleSync = async () => {
                 <label
                   for="filter"
                   class="sr-only"
-                >Filter</label>
+                  >Filter</label
+                >
                 <select
                   id="filter"
                   class="h-full py-0 pl-4 pr-6 border-transparent bg-transparent text-gray-500 focus:ring-blue-500 focus:border-blue-500 rounded-md text-sm"
@@ -194,7 +195,7 @@ const roleSync = async () => {
                 type="text"
                 class="px-4 py-1 h-full block w-full pl-20 focus:ring-blue-500 focus:border-blue-500 border-gray-300 rounded-md text-sm"
                 placeholder="search term..."
-              >
+              />
             </div>
             <button
               type="button"

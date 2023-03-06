@@ -34,6 +34,6 @@ const doReturn = (i: string): boolean => {
       aria-describedby="service-permissions"
       type="checkbox"
       @change="$emit('change', $event, permission)"
-    >
+    />
   </li>
 </template>

@@ -12,7 +12,7 @@ import {
   CheckCircleIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/vue/24/outline";
-import type { User } from "@/Users/types";
+import type { User } from "@users/types";
 import { useStore } from "vuex";
 import { mapActions } from "@/modules/mapStore";
 
@@ -48,10 +48,8 @@ async function resetWebPassword() {
   };
 
   await passReset(payload)
-    .then((response: any) => {
-      if (
-        response.messages.some((message: any) => message.type === "SUCCESS")
-      ) {
+    .then((response: boolean) => {
+      if (response) {
         loading.value = false;
         resetSuccessful.value = true;
       } else {
@@ -214,7 +212,8 @@ async function reset() {
                         class="text-gray-500 text-sm"
                       >
                         A password reset email has been sent to
-                        <strong>{{ user.email }}</strong>. <br>
+                        <strong>{{ user.email }}</strong
+                        >. <br />
                         Once they click on the email or access the web service,
                         they will be prompted to set a new password.
                       </p>
@@ -248,9 +247,7 @@ async function reset() {
                 class="mt-2 px-4 text-sm space-y-4"
               >
                 <div class="space-y-1">
-                  <p class="text-gray-600">
-                    Name
-                  </p>
+                  <p class="text-gray-600">Name</p>
                   <div class="ml-1 flex space-x-2">
                     <DocumentDuplicateIcon
                       class="h-5 w-5 hover:cursor-pointer"

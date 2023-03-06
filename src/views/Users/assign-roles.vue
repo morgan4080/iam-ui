@@ -64,7 +64,7 @@ const setRoleIds = (e: any, id: any) => {
     form.value.roleIds.push(id);
     console.log(form.value.roleIds);
   } else {
-    let index = form.value.roleIds.findIndex(
+    const index = form.value.roleIds.findIndex(
       (roleId: any): boolean => roleId === id
     );
     form.value.roleIds.splice(index, 1);
@@ -97,7 +97,7 @@ const setRoleIdsToAddToUser = (e: any, roleId: string) => {
   if (e.target.checked) {
     idsToAddToUser.value.push(roleId);
   } else {
-    let index = idsToAddToUser.value.findIndex(
+    const index = idsToAddToUser.value.findIndex(
       (id: string): boolean => id === roleId
     );
     idsToAddToUser.value.splice(index, 1);
@@ -110,7 +110,7 @@ const setRoleIdsToRemoveFromUser = (e: any, roleId: string) => {
   if (e.target.checked) {
     idsToRemoveFromUser.value.push(roleId);
   } else {
-    let index = idsToRemoveFromUser.value.findIndex(
+    const index = idsToRemoveFromUser.value.findIndex(
       (id: string): boolean => id === roleId
     );
     idsToRemoveFromUser.value.splice(index, 1);
@@ -284,7 +284,7 @@ const removeRolesFromUser = async () => {
                         :value="userData.email"
                         class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ const removeRolesFromUser = async () => {
                               type="checkbox"
                               class="text-xs text-gray-500"
                               @change="setRoleIdsToAddToUser($event, role.id)"
-                            >
+                            />
                           </li>
                         </ul>
                       </div>
@@ -369,7 +369,7 @@ const removeRolesFromUser = async () => {
                               @change="
                                 setRoleIdsToRemoveFromUser($event, role.id)
                               "
-                            >
+                            />
                           </li>
                         </ul>
                       </div>

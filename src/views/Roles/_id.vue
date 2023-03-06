@@ -10,10 +10,7 @@ getRole(route.params.id).then((r: any) => {
 });
 </script>
 <template>
-  <div
-    class="w-full h-screen bg-white pb-28 overflow-y-auto"
-    style="min-height: 640px"
-  >
+  <div class="w-full bg-white pb-28">
     <div class="pt-3 flex items-center w-full px-4 sm:px-6 lg:px-8">
       <nav
         class="mt-0 flex justify-between items-center w-full"

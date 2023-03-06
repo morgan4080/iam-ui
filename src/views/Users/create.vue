@@ -172,7 +172,7 @@ const currentStep = ref(<number>1);
 
 const errorUserRoles = ref(false);
 
-let arrayFocus: {
+const arrayFocus: {
   id: number;
   name: string;
   permissions: string;
@@ -192,7 +192,7 @@ function setEventVal(event: any) {
     }
   }
 
-  let filtered: any = [];
+  const filtered: any = [];
 
   for (let i = 0; i < arrayFocus.length; i++) {
     if (arrayFocus[i]) {
@@ -211,7 +211,7 @@ const loading = ref(false);
 
 // const responseData = ref(<{ user: { username: string, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }, message: string }>{})
 
-let query = ref(<string>`?`);
+const query = ref(<string>`?`);
 
 interface qrInterface {
   phoneNumber: string;
@@ -219,7 +219,7 @@ interface qrInterface {
   username: string;
 }
 
-let qrObject: qrInterface = {
+const qrObject: qrInterface = {
   phoneNumber: "",
   email: "",
   username: "",
@@ -247,7 +247,7 @@ const saveUser = async (rolesPayload: string[]) => {
       `${formUSSDAccess.value.phoneNumber}`,
       "KE"
     );
-    let payload: any = {
+    const payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -295,7 +295,7 @@ const saveUser = async (rolesPayload: string[]) => {
       `${formUSSDAccess.value.phoneNumber}`,
       "KE"
     );
-    let payload: any = {
+    const payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -340,7 +340,7 @@ const saveUser = async (rolesPayload: string[]) => {
       `${formContacts.value.phoneNumber}`,
       "KE"
     );
-    let payload: any = {
+    const payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -395,7 +395,7 @@ function setUserType(e: any, payload: string) {
     formContacts.value.user_types.push(payload);
   } else {
     // remove when unchecked
-    let index = formContacts.value.user_types.findIndex(
+    const index = formContacts.value.user_types.findIndex(
       (type: string): boolean => type === payload
     );
     formContacts.value.user_types.splice(index, 1);
@@ -429,14 +429,14 @@ const byIdentifier = async () => {
   }
   console.log(query.value);
 
-  let response = await verifyUnique(query.value);
+  const response = await verifyUnique(query.value);
 
   query.value = `?`;
 
   return response === "unique";
 };
 
-const setCountryCode = (e: any, context: string = "contact"): void => {
+const setCountryCode = (e: any, context = "contact"): void => {
   if (context === "contact") {
     if (formContacts.value.phoneNumber !== e.target.value) {
       const phoneNumber = parsePhoneNumber(
@@ -515,7 +515,7 @@ const setQuery = async (e: any) => {
       "KE"
     );
 
-    let response0 = await verifyUnique(
+    const response0 = await verifyUnique(
       `?phoneNumber=${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`
     );
 
@@ -535,7 +535,7 @@ const setQuery = async (e: any) => {
     qrObject.username = formWebAccess.value.username;
   }
 
-  let response = await byIdentifier();
+  const response = await byIdentifier();
 
   if (!response) {
     for (const [key, value] of Object.entries(qrObject)) {
@@ -646,7 +646,7 @@ const setNotificationStatus = (e: any): void => {
 </script>
 
 <template>
-  <div class="w-full max-h-screen overflow-y-scroll">
+  <div class="w-full">
     <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9 pb-40">
       <div class="shadow sm:overflow-hidden">
         <div class="bg-white py-6 px-4 sm:p-6">
@@ -654,9 +654,7 @@ const setNotificationStatus = (e: any): void => {
             <h3 class="text-lg leading-6 font-medium text-gray-900">
               Create User
             </h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">
-              Setup account
-            </p>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Setup account</p>
           </div>
           <!--            step 1-->
           <transition
@@ -669,7 +667,7 @@ const setNotificationStatus = (e: any): void => {
           >
             <form
               v-if="currentStep === 1"
-              class="flex flex-col min-h-screen"
+              class="flex flex-col"
               @submit.prevent="setupFormContacts"
             >
               <div
@@ -698,13 +696,17 @@ const setNotificationStatus = (e: any): void => {
                           class="mt-1 border-gray-400 rounded-md"
                           type="checkbox"
                           @change="setUserType($event, 'WEB')"
-                        >
+                        />
                         <label
                           for="admin"
                           class="text-base text-gray-700 flex flex-col"
                         >
-                          <span class="block text-sm font-medium text-gray-700">Web Access</span>
-                          <span class="font-normal text-sm text-gray-500">Create admin user</span>
+                          <span class="block text-sm font-medium text-gray-700"
+                            >Web Access</span
+                          >
+                          <span class="font-normal text-sm text-gray-500"
+                            >Create admin user</span
+                          >
                         </label>
                       </div>
                     </div>
@@ -719,13 +721,17 @@ const setNotificationStatus = (e: any): void => {
                           class="mt-1 border-gray-400 rounded-md"
                           type="checkbox"
                           @change="setUserType($event, 'USSD')"
-                        >
+                        />
                         <label
                           for="customer"
                           class="text-base text-gray-700 flex flex-col"
                         >
-                          <span class="block text-sm font-medium text-gray-700">USSD Access</span>
-                          <span class="font-normal text-sm text-gray-500">Create customer account</span>
+                          <span class="block text-sm font-medium text-gray-700"
+                            >USSD Access</span
+                          >
+                          <span class="font-normal text-sm text-gray-500"
+                            >Create customer account</span
+                          >
                         </label>
                       </div>
                     </div>
@@ -742,13 +748,17 @@ const setNotificationStatus = (e: any): void => {
                         class="mt-1 border-gray-400 rounded-md"
                         checked
                         @change="setNotificationStatus"
-                      >
+                      />
                       <label
                         for="notifyUser"
                         class="text-base text-gray-700 flex flex-col"
                       >
-                        <span class="block text-sm font-medium text-gray-700">Notify User</span>
-                        <span class="font-normal text-sm text-gray-500">Created User Notified On Create</span>
+                        <span class="block text-sm font-medium text-gray-700"
+                          >Notify User</span
+                        >
+                        <span class="font-normal text-sm text-gray-500"
+                          >Created User Notified On Create</span
+                        >
                       </label>
                     </div>
                   </div>
@@ -780,7 +790,8 @@ const setNotificationStatus = (e: any): void => {
                         <label
                           for="first-name"
                           class="block text-sm font-medium text-gray-700"
-                        >First name</label>
+                          >First name</label
+                        >
                         <div class="mt-1">
                           <input
                             id="first-name"
@@ -790,7 +801,7 @@ const setNotificationStatus = (e: any): void => {
                             type="text"
                             class="py-1 px-4 block w-full shadow-sm focus:ring-black focus:border-black border-gray-300 rounded-md"
                             required
-                          >
+                          />
                           <div
                             v-for="(error, index) of vFormContacts$.firstName
                               .$errors"
@@ -807,7 +818,8 @@ const setNotificationStatus = (e: any): void => {
                         <label
                           for="last-name"
                           class="block text-sm font-medium text-gray-700"
-                        >Last name</label>
+                          >Last name</label
+                        >
                         <div class="mt-1">
                           <input
                             id="last-name"
@@ -817,7 +829,7 @@ const setNotificationStatus = (e: any): void => {
                             type="text"
                             class="py-1 px-4 block w-full shadow-sm focus:ring-black focus:border-black border-gray-300 rounded-md"
                             required
-                          >
+                          />
                           <div
                             v-for="(error, index) of vFormContacts$.lastName
                               .$errors"
@@ -834,7 +846,8 @@ const setNotificationStatus = (e: any): void => {
                         <label
                           for="email"
                           class="block text-sm font-medium text-gray-700"
-                        >Email</label>
+                          >Email</label
+                        >
                         <div class="mt-1">
                           <input
                             id="email"
@@ -844,7 +857,7 @@ const setNotificationStatus = (e: any): void => {
                             type="email"
                             class="py-1 px-4 block w-full shadow-sm focus:ring-black focus:border-black border-gray-300 rounded-md"
                             @change="setQuery($event)"
-                          >
+                          />
                           <div
                             v-for="(error, index) of vFormContacts$.email
                               .$errors"
@@ -861,7 +874,8 @@ const setNotificationStatus = (e: any): void => {
                         <label
                           for="phone-number"
                           class="block text-sm font-medium text-gray-700"
-                        >Phone Number</label>
+                          >Phone Number</label
+                        >
                         <div class="mt-1 relative rounded-md shadow-sm">
                           <div
                             class="absolute inset-y-0 left-0 flex items-center"
@@ -869,15 +883,14 @@ const setNotificationStatus = (e: any): void => {
                             <label
                               for="country"
                               class="sr-only"
-                            >Country</label>
+                              >Country</label
+                            >
                             <select
                               id="country"
                               class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-black focus:border-black rounded-md"
                               @change="setCountryCode($event)"
                             >
-                              <option value="KE">
-                                KE
-                              </option>
+                              <option value="KE">KE</option>
                             </select>
                           </div>
                           <input
@@ -888,7 +901,7 @@ const setNotificationStatus = (e: any): void => {
                             type="number"
                             class="py-1 px-4 block w-full pl-20 focus:ring-black focus:border-black border-gray-300 rounded-md"
                             @change="setQuery($event)"
-                          >
+                          />
                         </div>
                         <div
                           v-for="(error, index) of vFormContacts$.phoneNumber
@@ -945,7 +958,7 @@ const setNotificationStatus = (e: any): void => {
           >
             <form
               v-if="currentStep === 2"
-              class="flex flex-col min-h-screen sm:border-t sm:border-gray-200 mt-3"
+              class="flex flex-col sm:border-t sm:border-gray-200 mt-3"
               @submit.prevent="setupFormWebAccess"
             >
               <div class="flex flex-col pb-2 mt-6">
@@ -997,7 +1010,7 @@ const setNotificationStatus = (e: any): void => {
                           class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
                           required
                           @change="setQuery($event)"
-                        >
+                        />
                       </div>
                       <div
                         v-for="(error, index) of vFormWebAccess$.username
@@ -1042,7 +1055,7 @@ const setNotificationStatus = (e: any): void => {
                         name="password"
                         class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                     <div
                       v-for="(error, index) of vFormWebAccess$.password.$errors"
@@ -1074,7 +1087,7 @@ const setNotificationStatus = (e: any): void => {
                         name="password-c"
                         class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                     <div
                       v-for="(error, index) of vFormWebAccess$
@@ -1177,15 +1190,14 @@ const setNotificationStatus = (e: any): void => {
                           <label
                             for="country"
                             class="sr-only"
-                          >Country</label>
+                            >Country</label
+                          >
                           <select
                             id="phone"
                             class="h-full py-0 pl-4 pr-8 border-transparent bg-transparent text-gray-500 focus:ring-black focus:border-black rounded-md"
                             @change="setCountryCode($event, 'ussd')"
                           >
-                            <option value="KE">
-                              KE
-                            </option>
+                            <option value="KE">KE</option>
                           </select>
                         </div>
                         <input
@@ -1196,7 +1208,7 @@ const setNotificationStatus = (e: any): void => {
                           class="py-1 px-4 block w-full pl-20 focus:ring-black focus:border-black border-gray-300 rounded-md"
                           required
                           @change="setQuery($event)"
-                        >
+                        />
                       </div>
                       <div
                         v-for="(error, index) of vFormUSSDAccess$.phoneNumber
@@ -1232,9 +1244,7 @@ const setNotificationStatus = (e: any): void => {
                     >
                       Pin Status
                     </label>
-                    <p class="mt-2 text-xs text-gray-500">
-                      Default is SET.
-                    </p>
+                    <p class="mt-2 text-xs text-gray-500">Default is SET.</p>
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
                     <div
@@ -1248,7 +1258,7 @@ const setNotificationStatus = (e: any): void => {
                           name="pinStatus"
                           class="flex-none block w-4 focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
                           @change="setPinStatus"
-                        >
+                        />
                         <p class="text-xs text-gray-500 ml-2">
                           Set as temporary
                         </p>
@@ -1281,7 +1291,7 @@ const setNotificationStatus = (e: any): void => {
                         name="pin"
                         class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                     <div
                       v-for="(error, index) of vFormUSSDAccess$.pin.$errors"
@@ -1319,7 +1329,7 @@ const setNotificationStatus = (e: any): void => {
                         name="pin-c"
                         class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                     <div
                       v-for="(error, index) of vFormUSSDAccess$.pinConfirmation
@@ -1368,7 +1378,7 @@ const setNotificationStatus = (e: any): void => {
           >
             <div
               v-if="currentStep === 4"
-              class="flex flex-col min-h-screen pb-16"
+              class="flex flex-col pb-16"
             >
               <div>
                 <h3
@@ -1449,7 +1459,7 @@ const setNotificationStatus = (e: any): void => {
                                   class="border-gray-400 rounded-md"
                                   type="checkbox"
                                   @change="setEventVal"
-                                >
+                                />
                               </td>
                               <td
                                 class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"

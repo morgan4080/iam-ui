@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Pagination from "@/components/ui/Pagination.vue";
-import type { Pageables } from "@/Users/types";
+import { Pageables } from "@/types";
 
-const props = defineProps<{
+defineProps<{
   headers: string[];
   loading: boolean;
   dataLength: number;

@@ -3,7 +3,7 @@ import { ref, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import ResetCredentialsModal from "@/components/ResetCredentialsModal.vue";
+import ResetCredentialsModal from "@users/components/ResetCredentialsModal.vue";
 import { useRoles } from "@/Roles/composables/useRoles";
 import { useUsers } from "@/Users/composables/useUsers";
 
@@ -632,7 +632,7 @@ onBeforeMount(async () => await fetchUserData());
   </div>
   <Teleport to="body">
     <ResetCredentialsModal
-      v-if="resetCredentialsAction"
+      v-if="resetCredentialsAction && user"
       :open="resetCredentialModalOpen"
       :action="resetCredentialsAction"
       :user="user"
