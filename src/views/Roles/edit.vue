@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import {ArrowLeftCircleIcon, ArrowRightCircleIcon,} from "@heroicons/vue/24/solid";
-import {useRoute, useRouter} from "vue-router";
-import {computed, ComputedRef, onMounted, reactive, ref} from "vue";
-import {getRole} from "@/modules/all";
-import {useStore} from "vuex";
-import {mapActions} from "@/modules/mapStore";
-import {RoleUsers} from "@/types/roleTypes";
+import {
+  ArrowLeftCircleIcon,
+  ArrowRightCircleIcon,
+} from "@heroicons/vue/24/solid";
+import { useRoute, useRouter } from "vue-router";
+import { computed, ComputedRef, onMounted, reactive, ref } from "vue";
+import { getRole } from "@/modules/all";
+import { useStore } from "vuex";
+import { mapActions } from "@/modules/mapStore";
+import { RoleUsers } from "@/types/roleTypes";
 import PermissionsExchange from "@/components/PermissionsExchange.vue";
 
 const route = useRoute();
@@ -45,7 +48,7 @@ const filterForm = reactive({
   recordsPerPage: 10,
   searchTerm: "",
   order: "ASC",
-  page: currentPage.value
+  page: currentPage.value,
 });
 
 const urlParams = new URLSearchParams();
@@ -70,7 +73,7 @@ const initialKeycloakIds = new Set<string>();
 const form = ref(<formInterface>{
   keycloakRoleId: role.value.keycloakRoleId,
   name: "",
-  description: ""
+  description: "",
 });
 
 const selectedService = ref<number | null>(null);
@@ -194,7 +197,7 @@ const setUserIdsToAddToRole = (e: any, refId: string) => {
   if (e.target.checked) {
     idsToAddToRole.value.push(refId);
   } else {
-    let index = idsToAddToRole.value.findIndex(
+    const index = idsToAddToRole.value.findIndex(
       (id: string): boolean => id === refId
     );
     idsToAddToRole.value.splice(index, 1);
@@ -207,7 +210,7 @@ const setUserIdsToRemoveFromRole = (e: any, refId: string) => {
   if (e.target.checked) {
     idsToRemoveFromRole.value.push(refId);
   } else {
-    let index = idsToRemoveFromRole.value.findIndex(
+    const index = idsToRemoveFromRole.value.findIndex(
       (id: string): boolean => id === refId
     );
     idsToRemoveFromRole.value.splice(index, 1);
@@ -228,9 +231,7 @@ const removeUsersFromRole = async () => {
     ) {
       try {
         // call action to update role users
-        const roleUsersIds = roleUsers.value.map(
-          user => user.id
-        );
+        const roleUsersIds = roleUsers.value.map(user => user.id);
         const newIds = roleUsersIds.filter(
           refId => idsToRemoveFromRole.value.indexOf(refId) === -1
         );
@@ -238,6 +239,7 @@ const removeUsersFromRole = async () => {
           role_id: route.params.id,
           userRefIds: newIds,
         });
+        console.log(response);
         await store.dispatch("defineNotification", {
           message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.value.name} successfully`,
           success: true,
@@ -274,10 +276,8 @@ const addUsersToRole = async () => {
         // call action to update role users
         // map role users to return keycloak id only
         // spread role users keycloak ids and keycloak idsToAddToRole
-        const roleUsersIds = roleUsers.value.map(
-          user => user.id
-        );
-        console.log([...roleUsersIds, ...idsToAddToRole.value])
+        const roleUsersIds = roleUsers.value.map(user => user.id);
+        console.log([...roleUsersIds, ...idsToAddToRole.value]);
         const response = await store.dispatch("updateUsersInRole", {
           role_id: route.params.id,
           userRefIds: [...roleUsersIds, ...idsToAddToRole.value],
@@ -306,8 +306,8 @@ const addUsersToRole = async () => {
 const filteredUsers = computed(() => {
   // remove from allUsers, users present in roleUsers
   const roleUsersIds = roleUsers.value.map(user => user.id);
-  console.log(roleUsersIds)
-  console.log(allUsers.value)
+  console.log(roleUsersIds);
+  console.log(allUsers.value);
   return allUsers.value.reduce((acc: typeof allUsers.value, user) => {
     if (roleUsersIds.indexOf(user.id) === -1) {
       acc.push(user);
@@ -368,9 +368,7 @@ const filteredUsers = computed(() => {
             </nav>
             <div class="py-2 px-4 sm:p-6">
               <div>
-                <h3 class="text-xl font-semibold text-gray-900">
-                  Edit Role
-                </h3>
+                <h3 class="text-xl font-semibold text-gray-900">Edit Role</h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">
                   Add new permissions
                 </p>
@@ -394,12 +392,12 @@ const filteredUsers = computed(() => {
                         name="role_name"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
 
                       <div
                         v-show="
                           form.name.toLowerCase() === 'sales_person' ||
-                            form.name.toLowerCase() === 'relationship_manager'
+                          form.name.toLowerCase() === 'relationship_manager'
                         "
                         class="flex max-w-lg rounded-sm border p-2"
                         style="background-color: #ffeeb3; border-color: #fb6b27"
@@ -486,9 +484,7 @@ const filteredUsers = computed(() => {
                       v-model="selectedService"
                       class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
                     >
-                      <option :value="null">
-                        Select Service
-                      </option>
+                      <option :value="null">Select Service</option>
                       <option
                         v-for="(service, i) in services"
                         :key="i"
@@ -557,7 +553,7 @@ const filteredUsers = computed(() => {
                               type="checkbox"
                               class="text-xs text-gray-500"
                               @change="setUserIdsToAddToRole($event, user.id)"
-                            >
+                            />
                           </li>
                         </ul>
                       </div>
@@ -606,7 +602,7 @@ const filteredUsers = computed(() => {
                               @change="
                                 setUserIdsToRemoveFromRole($event, user.id)
                               "
-                            >
+                            />
                           </li>
                         </ul>
                       </div>
