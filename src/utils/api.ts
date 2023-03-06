@@ -2,17 +2,20 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 const api = axios.create();
 
-api.interceptors.response.use((response: AxiosResponse) => {
-  if (response.status === 302) {
-    const currentUrl = window.location.href;
-    window.location.href = `${
-      import.meta.env.VITE_APP_ROOT_AUTH
-    }?redirect_url=${currentUrl}`;
-    return;
-  }
+api.interceptors.response.use(
+  (
+    response: AxiosResponse
+  ): AxiosResponse<any, any> | Promise<AxiosResponse<any, any>> => {
+    if (response.status === 302) {
+      const currentUrl = window.location.href;
+      window.location.href = `${
+        import.meta.env.VITE_APP_ROOT_AUTH
+      }?redirect_url=${currentUrl}`;
+    }
 
-  return response;
-});
+    return response;
+  }
+);
 
 interface Params {
   url: string;
@@ -23,7 +26,7 @@ interface Params {
 
 const apiCall = (
   { url, data, method, headers }: Params,
-  configuration?: AxiosRequestConfig<{}>
+  configuration?: AxiosRequestConfig<object>
 ) =>
   new Promise((resolve, reject) => {
     setTimeout(() => {

@@ -57,7 +57,7 @@
               aria-describedby="all-service-permissions"
               type="checkbox"
               @change="setPermissionToService($event, permission)"
-            >
+            />
           </li>
         </ul>
       </div>
@@ -149,7 +149,7 @@
               aria-describedby="existing-service-permissions"
               type="checkbox"
               @change="setPermissionToService($event, permission)"
-            >
+            />
           </li>
         </ul>
       </div>
@@ -172,16 +172,12 @@ const props = defineProps<{
   services: serviceInterface[];
 }>();
 
-const {
-  existing,
-  role_name,
-  services,
-  selectedService,
-} = toRefs(props);
+const { existing, role_name, services, selectedService } = toRefs(props);
 
 const existingServicePermissions = computed(() => {
   if (selectedService.value) {
-    return services.value[selectedService.value].permissions.filter( permission =>
+    return services.value[selectedService.value].permissions.filter(
+      permission =>
         existing.value.findIndex(
           index => index === permission.keycloakRoleId
         ) !== -1
@@ -192,16 +188,20 @@ const existingServicePermissions = computed(() => {
 
 const nonAssociatedServicePermissions = computed(() => {
   if (selectedService.value) {
-    return services.value[selectedService.value].permissions.filter(permission => {
-      return existing.value.findIndex(
-          index => index === permission.keycloakRoleId
-      ) === -1;
-    })
+    return services.value[selectedService.value].permissions.filter(
+      permission => {
+        return (
+          existing.value.findIndex(
+            index => index === permission.keycloakRoleId
+          ) === -1
+        );
+      }
+    );
   }
-  return []
+  return [];
 });
 
-const setPermissionToService = (e: any, permission: any) => {
-
+const setPermissionToService = (e: Event, permission: permissionInterface) => {
+  console.log(e, permission);
 };
 </script>

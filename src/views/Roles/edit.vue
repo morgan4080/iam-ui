@@ -45,7 +45,7 @@ const filterForm = reactive({
   recordsPerPage: 10,
   searchTerm: "",
   order: "ASC",
-  page: currentPage.value,
+  page: currentPage.value
 });
 
 const urlParams = new URLSearchParams();
@@ -228,24 +228,22 @@ const removeUsersFromRole = async () => {
     ) {
       try {
         // call action to update role users
-        //filter role users to remove idsToRemoveFromRole
         const roleUsersIds = roleUsers.value.map(
           user => user.id
         );
         const newIds = roleUsersIds.filter(
-          refId => idsToRemoveFromRole.value.indexOf(refId) !== -1
+          refId => idsToRemoveFromRole.value.indexOf(refId) === -1
         );
         const response = await store.dispatch("updateUsersInRole", {
           role_id: route.params.id,
           userRefIds: newIds,
         });
-        console.log("response removing users from role", response);
         await store.dispatch("defineNotification", {
           message: `Removed ${idsToRemoveFromRole.value.length} users from role ${role.value.name} successfully`,
           success: true,
         });
         // reload onMounted
-        await loadPage();
+        // await loadPage();
       } catch (e: any) {
         if (e.message) {
           await store.dispatch("defineNotification", {
@@ -468,7 +466,6 @@ const filteredUsers = computed(() => {
                       v-model="form.description"
                       rows="2"
                       class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
-                      required
                     />
                     <p class="mt-2 text-sm text-gray-500">
                       Write a short description about the role.
