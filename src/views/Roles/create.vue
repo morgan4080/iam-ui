@@ -4,6 +4,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { createRole, getServices } from "@/modules/all";
 import PermissionsList from "@/components/PermissionsList.vue";
+import PermissionsExchange from "@/components/PermissionsExchange.vue";
 const store = useStore();
 const router = useRouter();
 
@@ -34,7 +35,8 @@ interface formInterface {
 
 const services = ref(<serviceInterface[]>[]);
 
-store.dispatch("getServices")
+store
+  .dispatch("getServices")
   .then((response: serviceInterface[]) => {
     services.value = response.map((service: serviceInterface) => {
       return {
@@ -54,17 +56,6 @@ const form = ref(<formInterface>{
 });
 
 const reviewed = ref(<boolean>false);
-
-function setPermissionToService(e: any, permission: permissionInterface) {
-  if (e.target.checked) {
-    form.value.keycloakIds.push(permission.keycloakRoleId);
-  } else {
-    let index = form.value.keycloakIds.findIndex(
-      (item): boolean => item === permission.keycloakRoleId
-    );
-    form.value.keycloakIds.splice(index, 1);
-  }
-}
 const loading = ref(<boolean>false);
 
 async function saveToState() {
@@ -92,6 +83,20 @@ async function saveToState() {
     loading.value = false;
   }
 }
+
+const selectedService = ref<number | null>(null);
+
+const addKeycloakIdsToAdd = (ids: string[]) => {
+  form.value.keycloakIds = ids;
+};
+const addKeycloakIdsToRemove = (ids: string[]) => {
+  ids.forEach(id => {
+    const index = form.value.keycloakIds.findIndex(
+      (item): boolean => item === id
+    );
+    form.value.keycloakIds.splice(index, 1);
+  });
+};
 </script>
 
 <template>
@@ -131,12 +136,12 @@ async function saveToState() {
                         name="username"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300 shadow-sm"
                         required
-                      >
+                      />
 
                       <div
                         v-show="
                           form.name.toLowerCase() === 'sales_person' ||
-                            form.name.toLowerCase() === 'relationship_manager'
+                          form.name.toLowerCase() === 'relationship_manager'
                         "
                         class="flex max-w-lg rounded-sm border p-2"
                         style="background-color: #ffeeb3; border-color: #fb6b27"
@@ -210,43 +215,54 @@ async function saveToState() {
                     </p>
                   </div>
                 </div>
-              </div>
-              <div class="mt-10 divide-y divide-gray-200">
-                <div>
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Services
-                  </h3>
-                  <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                    Assign service permissions to role.
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-3">
                 <div
-                  v-for="(service, i) in services"
-                  :key="i"
-                  class="col-span-1 sm:border-t sm:border-gray-200"
+                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
                 >
-                  <div
-                    class="p-1 bg-blue-50 flex items-center sm:mt-px sm:pt-2 space-x-2"
+                  <label
+                    for="description"
+                    class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                   >
-                    <div class="block text-base font-medium text-gray-700">
-                      {{ i + 1 }}.&nbsp;{{ service.clientId }}
-                    </div>
-                    <div class="text-xs text-gray-500">
-                      {{ service.description }}
-                    </div>
+                    Services
+                  </label>
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <select
+                      v-model="selectedService"
+                      class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
+                    >
+                      <option :value="null">Select Service</option>
+                      <option
+                        v-for="(service, i) in services"
+                        :key="i"
+                        :value="i"
+                      >
+                        {{ service.clientId }}
+                        <!--{{service.name ? `: ${service.name}` : ``}}-->
+                      </option>
+                    </select>
+                    <p class="mt-2 text-sm text-gray-500">
+                      Select a service to start assigning permissions to this
+                      role.
+                    </p>
                   </div>
-                  <div class="sm:grid sm:grid-cols-3 sm:gap-4">
-                    <PermissionsList
-                      v-for="(permission, index) in services[i].permissions"
-                      :key="`${i}${index}`"
-                      :permission="permission"
-                      :existing="[]"
-                      @change="setPermissionToService"
-                    />
-                  </div>
+                </div>
+                <div
+                  v-if="typeof selectedService === 'number'"
+                  class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
+                >
+                  <label
+                    for="description"
+                    class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                  >
+                    Service Permissions
+                  </label>
+
+                  <PermissionsExchange
+                    :existing="form.keycloakIds"
+                    :selected-service="selectedService"
+                    :services="services"
+                    @add-keycloak-ids-to-add="addKeycloakIdsToAdd"
+                    @add-keycloak-ids-to-remove="addKeycloakIdsToRemove"
+                  />
                 </div>
               </div>
             </div>

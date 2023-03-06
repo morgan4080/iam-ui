@@ -48,11 +48,11 @@
             :key="`${index}`"
             class="flex items-center justify-between"
           >
-            <label :for="`allPermission${permission.id}`">{{
+            <label :for="`allPermission${permission.keycloakRoleId}`">{{
               permission.name
             }}</label>
             <input
-              :id="`allPermission${permission.id}`"
+              :id="`allPermission${permission.keycloakRoleId}`"
               v-model="permission.checked"
               aria-describedby="all-service-permissions"
               type="checkbox"
@@ -142,11 +142,11 @@
             :key="`${index}`"
             class="flex items-center justify-between"
           >
-            <label :for="`existingPermission${permission.id}`">{{
+            <label :for="`existingPermission${permission.keycloakRoleId}`">{{
               permission.name
             }}</label>
             <input
-              :id="`existingPermission${permission.id}`"
+              :id="`existingPermission${permission.keycloakRoleId}`"
               v-model="permission.checked"
               aria-describedby="existing-service-permissions"
               type="checkbox"
@@ -170,11 +170,10 @@ const emit = defineEmits(["addKeycloakIdsToAdd", "addKeycloakIdsToRemove"]);
 const props = defineProps<{
   existing: string[];
   selectedService: number | null;
-  role: any;
   services: serviceInterface[];
 }>();
 
-const { existing, role, services, selectedService } = toRefs(props);
+const { existing, services, selectedService } = toRefs(props);
 
 const existingServicePermissions = computed(() => {
   if (selectedService.value) {
@@ -211,14 +210,32 @@ const removeTargets = ref<HTMLInputElement[]>([]);
 
 const addTargets = ref<HTMLInputElement[]>([]);
 const associatePermissionToService = () => {
-  addTargets.value.forEach(target => (target.checked = false));
-  console.log("add", keycloakIdsToAdd.value);
   emit("addKeycloakIdsToAdd", Array.from(keycloakIdsToAdd.value));
+  console.log("add", keycloakIdsToAdd.value);
+  setTimeout(() => {
+    const keyArray = Array.from(keycloakIdsToAdd.value);
+    addTargets.value.forEach((target, i) => {
+      console.log(
+        "existingPermission",
+        document.getElementById(`existingPermission${keyArray[i]}`)
+      );
+      target.checked = false;
+    });
+  }, 2000);
 };
 const dissociatePermissionFromService = () => {
-  removeTargets.value.forEach(target => (target.checked = false));
-  console.log("remove", keycloakIdsToRemove.value);
   emit("addKeycloakIdsToRemove", Array.from(keycloakIdsToRemove.value));
+  console.log("remove", keycloakIdsToRemove.value);
+  setTimeout(() => {
+    const keyArray = Array.from(keycloakIdsToRemove.value);
+    removeTargets.value.forEach((target, i) => {
+      console.log(
+        "allPermission",
+        document.getElementById(`allPermission${keyArray[i]}`)
+      );
+      target.checked = false;
+    });
+  }, 2000);
 };
 
 const addPermissionToService = (e: Event, permission: permissionInterface) => {
