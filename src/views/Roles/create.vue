@@ -60,7 +60,7 @@ function setPermissionToService(e: any, permission: permissionInterface) {
   if (e.target.checked) {
     form.value.keycloakIds.push(permission.keycloakRoleId);
   } else {
-    let index = form.value.keycloakIds.findIndex(
+    const index = form.value.keycloakIds.findIndex(
       (item): boolean => item === permission.keycloakRoleId
     );
     form.value.keycloakIds.splice(index, 1);

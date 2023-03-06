@@ -29,7 +29,7 @@ export function syncServices() {
 }
 
 //moved
-export async function getRoles(query: string = ""): Promise<any> {
+export async function getRoles(query = ""): Promise<any> {
   const url = `${
     import.meta.env.VITE_DOMAIN_URL
   }/users-admin/api/roles${query}`;

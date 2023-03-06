@@ -64,7 +64,7 @@ const setRoleIds = (e: any, id: any) => {
     form.value.roleIds.push(id);
     console.log(form.value.roleIds);
   } else {
-    let index = form.value.roleIds.findIndex(
+    const index = form.value.roleIds.findIndex(
       (roleId: any): boolean => roleId === id
     );
     form.value.roleIds.splice(index, 1);
@@ -97,7 +97,7 @@ const setRoleIdsToAddToUser = (e: any, roleId: string) => {
   if (e.target.checked) {
     idsToAddToUser.value.push(roleId);
   } else {
-    let index = idsToAddToUser.value.findIndex(
+    const index = idsToAddToUser.value.findIndex(
       (id: string): boolean => id === roleId
     );
     idsToAddToUser.value.splice(index, 1);
@@ -110,7 +110,7 @@ const setRoleIdsToRemoveFromUser = (e: any, roleId: string) => {
   if (e.target.checked) {
     idsToRemoveFromUser.value.push(roleId);
   } else {
-    let index = idsToRemoveFromUser.value.findIndex(
+    const index = idsToRemoveFromUser.value.findIndex(
       (id: string): boolean => id === roleId
     );
     idsToRemoveFromUser.value.splice(index, 1);

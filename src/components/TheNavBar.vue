@@ -35,7 +35,7 @@ async function doLogout() {
   }
 }
 
-let theUrl: any = import.meta.env.VITE_DOMAIN_URL;
+const theUrl: any = import.meta.env.VITE_DOMAIN_URL;
 </script>
 <template>
   <nav class="bg-gray-800">

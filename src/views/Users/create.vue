@@ -172,7 +172,7 @@ const currentStep = ref(<number>1);
 
 const errorUserRoles = ref(false);
 
-let arrayFocus: {
+const arrayFocus: {
   id: number;
   name: string;
   permissions: string;
@@ -192,7 +192,7 @@ function setEventVal(event: any) {
     }
   }
 
-  let filtered: any = [];
+  const filtered: any = [];
 
   for (let i = 0; i < arrayFocus.length; i++) {
     if (arrayFocus[i]) {
@@ -211,7 +211,7 @@ const loading = ref(false);
 
 // const responseData = ref(<{ user: { username: string, userType: string, email: string, firstName: string, lastName: string, phoneNumber: string, id: string }, message: string }>{})
 
-let query = ref(<string>`?`);
+const query = ref(<string>`?`);
 
 interface qrInterface {
   phoneNumber: string;
@@ -219,7 +219,7 @@ interface qrInterface {
   username: string;
 }
 
-let qrObject: qrInterface = {
+const qrObject: qrInterface = {
   phoneNumber: "",
   email: "",
   username: "",
@@ -247,7 +247,7 @@ const saveUser = async (rolesPayload: string[]) => {
       `${formUSSDAccess.value.phoneNumber}`,
       "KE"
     );
-    let payload: any = {
+    const payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -295,7 +295,7 @@ const saveUser = async (rolesPayload: string[]) => {
       `${formUSSDAccess.value.phoneNumber}`,
       "KE"
     );
-    let payload: any = {
+    const payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -340,7 +340,7 @@ const saveUser = async (rolesPayload: string[]) => {
       `${formContacts.value.phoneNumber}`,
       "KE"
     );
-    let payload: any = {
+    const payload: any = {
       firstName: formContacts.value.firstName,
       lastName: formContacts.value.lastName,
       contact: {
@@ -395,7 +395,7 @@ function setUserType(e: any, payload: string) {
     formContacts.value.user_types.push(payload);
   } else {
     // remove when unchecked
-    let index = formContacts.value.user_types.findIndex(
+    const index = formContacts.value.user_types.findIndex(
       (type: string): boolean => type === payload
     );
     formContacts.value.user_types.splice(index, 1);
@@ -429,14 +429,14 @@ const byIdentifier = async () => {
   }
   console.log(query.value);
 
-  let response = await verifyUnique(query.value);
+  const response = await verifyUnique(query.value);
 
   query.value = `?`;
 
   return response === "unique";
 };
 
-const setCountryCode = (e: any, context: string = "contact"): void => {
+const setCountryCode = (e: any, context = "contact"): void => {
   if (context === "contact") {
     if (formContacts.value.phoneNumber !== e.target.value) {
       const phoneNumber = parsePhoneNumber(
@@ -515,7 +515,7 @@ const setQuery = async (e: any) => {
       "KE"
     );
 
-    let response0 = await verifyUnique(
+    const response0 = await verifyUnique(
       `?phoneNumber=${phoneNumber?.countryCallingCode}${phoneNumber?.nationalNumber}`
     );
 
@@ -535,7 +535,7 @@ const setQuery = async (e: any) => {
     qrObject.username = formWebAccess.value.username;
   }
 
-  let response = await byIdentifier();
+  const response = await byIdentifier();
 
   if (!response) {
     for (const [key, value] of Object.entries(qrObject)) {
@@ -666,9 +666,9 @@ const setNotificationStatus = (e: any): void => {
             leave-to-class="transform opacity-0 translate-x-full"
           >
             <form
-              @submit.prevent="setupFormContacts"
               v-if="currentStep === 1"
               class="flex flex-col"
+              @submit.prevent="setupFormContacts"
             >
               <div
                 class="grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-8 pb-8 sm:border-t sm:border-gray-200 mt-6"
@@ -958,8 +958,8 @@ const setNotificationStatus = (e: any): void => {
           >
             <form
               v-if="currentStep === 2"
-              @submit.prevent="setupFormWebAccess"
               class="flex flex-col sm:border-t sm:border-gray-200 mt-3"
+              @submit.prevent="setupFormWebAccess"
             >
               <div class="flex flex-col pb-2 mt-6">
                 <div>
