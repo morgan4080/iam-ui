@@ -10,7 +10,9 @@
         >
           Available
           {{
-            services[selectedService] ? services[selectedService].clientId : ""
+            selectedService && services[selectedService]
+              ? services[selectedService].clientId
+              : ""
           }}
           Permissions
         </p>
@@ -35,7 +37,9 @@
           <p>
             Permissions not available for service
             <span class="font-bold">{{
-              services[selectedService].clientId
+              selectedService && services[selectedService]
+                ? services[selectedService].clientId
+                : ""
             }}</span>
           </p>
         </div>
@@ -63,6 +67,8 @@
       </div>
       <p class="mt-2 text-sm text-gray-500">
         {{
+          selectedService &&
+          services[selectedService] &&
           services[selectedService].description
             ? services[selectedService].description
             : ""
@@ -72,9 +78,13 @@
 
     <div class="flex flex-col items-center space-y-3 my-2">
       <button
-        :disabled="services[selectedService].permissions.length === 0"
+        :disabled="
+          selectedService !== null &&
+          services[selectedService].permissions.length === 0
+        "
         :class="{
           'cursor-not-allowed':
+            selectedService !== null &&
             services[selectedService].permissions.length === 0,
         }"
         type="button"
@@ -85,9 +95,13 @@
       </button>
 
       <button
-        :disabled="services[selectedService].permissions.length === 0"
+        :disabled="
+          selectedService !== null &&
+          services[selectedService].permissions.length === 0
+        "
         :class="{
           'cursor-not-allowed':
+            selectedService !== null &&
             services[selectedService].permissions.length === 0,
         }"
         type="button"
@@ -106,7 +120,12 @@
           v-if="existingServicePermissions.length > 0"
           class="-mt-1 mb-2 text-sm font-medium text-gray-700 bg-gray-100"
         >
-          Associated To {{ services[selectedService].clientId }}
+          Associated To
+          {{
+            selectedService !== null && services[selectedService]
+              ? services[selectedService].clientId
+              : ""
+          }}
         </p>
         <div
           v-if="existingServicePermissions.length === 0"
@@ -129,7 +148,9 @@
           <p>
             Permissions not associated to service
             <span class="font-bold">{{
-              services[selectedService].clientId
+              selectedService !== null && services[selectedService]
+                ? services[selectedService].clientId
+                : ""
             }}</span>
           </p>
         </div>
@@ -231,7 +252,9 @@ const dissociatePermissionFromService = () => {
   setTimeout(() => {
     const keyArray = Array.from(keycloakIdsToRemove.value);
     removeTargets.value.forEach((target, i) => {
-      const elem: HTMLInputElement | null = document.getElementById(`allPermission${keyArray[i]}`) as HTMLInputElement;
+      const elem: HTMLInputElement | null = document.getElementById(
+        `allPermission${keyArray[i]}`
+      ) as HTMLInputElement;
       if (elem && elem.checked) {
         elem.checked = false;
       }

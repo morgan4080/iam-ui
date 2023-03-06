@@ -54,11 +54,11 @@
             :key="index"
             class="flex items-center justify-between"
           >
-            <label :for="index">
+            <label :for="`${index}${user.id}`">
               {{ user.firstName }} {{ user.lastName }}
             </label>
             <input
-              :id="index"
+              :id="`${index}${user.id}`"
               type="checkbox"
               class="text-xs text-gray-500"
               @change="setUserIdsToAddToRole($event, user.id)"
@@ -109,11 +109,11 @@
             :key="index"
             class="flex items-center justify-between"
           >
-            <label :for="index">
+            <label :for="`${index}${user.id}`">
               {{ user.firstName }} {{ user.lastName }}
             </label>
             <input
-              :id="index"
+              :id="`${index}${user.id}`"
               type="checkbox"
               class="text-xs text-gray-500"
               @change="setUserIdsToRemoveFromRole($event, user.keycloakId)"

@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import TheLogo from "./TheLogo.vue";
 import { computed, ref } from "vue";
+import { useStore } from "vuex";
 const servicesMenu = ref(false);
 const accountMenu = ref(false);
 const mobileMenu = ref(false);
-import { useStore } from "vuex";
-
-import { logout } from "@/modules/all";
 
 const store = useStore();
 // defineProps<{ user: object }>()

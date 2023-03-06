@@ -312,11 +312,11 @@ const removeRolesFromUser = async () => {
                             :key="index"
                             class="flex items-center justify-between"
                           >
-                            <label :for="index">
+                            <label :for="`${index}${role.id}`">
                               {{ role.name }}
                             </label>
                             <input
-                              :id="index"
+                              :id="`${index}${role.id}`"
                               type="checkbox"
                               class="text-xs text-gray-500"
                               @change="setRoleIdsToAddToUser($event, role.id)"
@@ -359,11 +359,11 @@ const removeRolesFromUser = async () => {
                             :key="index"
                             class="flex items-center justify-between"
                           >
-                            <label :for="index">
+                            <label :for="`${index}${role.id}`">
                               {{ role.name }}
                             </label>
                             <input
-                              :id="index"
+                              :id="`${index}${role.id}`"
                               type="checkbox"
                               class="text-xs text-gray-500"
                               @change="
