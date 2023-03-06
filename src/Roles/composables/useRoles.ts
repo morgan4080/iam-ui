@@ -1,8 +1,13 @@
 import { reactive, ref } from "vue";
 import type { Role } from "@/Roles/types";
 import { Pageables } from "@/types";
+import { useQueryParams } from "@/composables/useQueryParams";
+import { mapActions } from "@/modules/mapStore";
 
 export const useRoles = () => {
+  // TODO refactor this to composable
+  const { defineNotification } = mapActions();
+
   const roles = ref<Role[] | null>(null);
   const userRoles = ref();
   const isLoading = ref(false);
@@ -15,73 +20,81 @@ export const useRoles = () => {
     sort: "ASC",
     searchTerm: null,
   }) as Pageables;
-  async function fetchRoles(params?: string) {
+  const { params, generateParams } = useQueryParams(pageables);
+
+  async function fetchRoles() {
     isLoading.value = true;
     error.value = null;
-    const query = generateQueryParams();
-    try {
-      let response = await fetch(
-        `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles?${query}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch roles");
-      }
 
-      const data = await response.json();
-      roles.value = data.records;
-      pageables.totalRecords = data.totalRecords;
-      pageables.totalPages = data.totalPages;
-      pageables.currentPage = data.currentPage + 1;
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
+    await generateParams();
+
+    return await fetch(
+      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles?${
+        params.value
+      }`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then(async response => {
+        if (response.ok) {
+          const data = await response.json();
+          roles.value = data.records;
+          pageables.totalRecords = data.totalRecords;
+          pageables.totalPages = data.totalPages;
+          pageables.currentPage = data.currentPage + 1;
+          return;
+        }
+        await defineNotification({
+          message: await response.statusText,
+          error: true,
+        });
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   async function fetchUserRoles(userRefId: string) {
     isLoading.value = true;
     error.value = null;
-    try {
-      let response = await fetch(
-        `${
-          import.meta.env.VITE_DOMAIN_URL
-        }/users-admin/api/roles/user/${userRefId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to sync users");
+    return await fetch(
+      `${
+        import.meta.env.VITE_DOMAIN_URL
+      }/users-admin/api/roles/user/${userRefId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-
-      const data = await response.json();
-      userRoles.value = data;
-    } catch (err) {
-      error.value = err;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  function generateQueryParams() {
-    const params = new URLSearchParams();
-    params.set("pageIndex", pageables.currentPage.toString());
-    params.set("pageSize", pageables.recordsPerPage.toString());
-    if (pageables.searchTerm) params.set("searchTerm", pageables.searchTerm);
-    params.set("sort", pageables.sort);
-    params.set("order", pageables.sort);
-
-    return params.toString();
+    )
+      .then(async response => {
+        if (response.ok) {
+          return await response.json();
+        }
+        await defineNotification({
+          message: await response.text(),
+          error: true,
+        });
+      })
+      .then(async data => {
+        userRoles.value = data;
+      })
+      .catch(async err => {
+        await defineNotification({
+          message: err,
+          error: true,
+        });
+      })
+      .finally(() => (isLoading.value = false));
   }
 
   return {
