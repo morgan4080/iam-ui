@@ -434,11 +434,8 @@ const addKeycloakIdsToRemove = async (ids: string[]) => {
 
                   <PermissionsExchange
                     :existing="keycloakIds"
-                    :role="role"
                     :selected-service="selectedService"
                     :services="services"
-                    :add-keycloak-ids-to-add="addKeycloakIdsToAdd"
-                    :add-keycloak-ids-to-remove="addKeycloakIdsToRemove"
                     @add-keycloak-ids-to-add="addKeycloakIdsToAdd"
                     @add-keycloak-ids-to-remove="addKeycloakIdsToRemove"
                   />
