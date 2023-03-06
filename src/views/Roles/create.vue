@@ -34,7 +34,8 @@ interface formInterface {
 
 const services = ref(<serviceInterface[]>[]);
 
-store.dispatch("getServices")
+store
+  .dispatch("getServices")
   .then((response: serviceInterface[]) => {
     services.value = response.map((service: serviceInterface) => {
       return {
@@ -131,12 +132,12 @@ async function saveToState() {
                         name="username"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300 shadow-sm"
                         required
-                      >
+                      />
 
                       <div
                         v-show="
                           form.name.toLowerCase() === 'sales_person' ||
-                            form.name.toLowerCase() === 'relationship_manager'
+                          form.name.toLowerCase() === 'relationship_manager'
                         "
                         class="flex max-w-lg rounded-sm border p-2"
                         style="background-color: #ffeeb3; border-color: #fb6b27"

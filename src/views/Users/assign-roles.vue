@@ -284,7 +284,7 @@ const removeRolesFromUser = async () => {
                         :value="userData.email"
                         class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ const removeRolesFromUser = async () => {
                               type="checkbox"
                               class="text-xs text-gray-500"
                               @change="setRoleIdsToAddToUser($event, role.id)"
-                            >
+                            />
                           </li>
                         </ul>
                       </div>
@@ -369,7 +369,7 @@ const removeRolesFromUser = async () => {
                               @change="
                                 setRoleIdsToRemoveFromUser($event, role.id)
                               "
-                            >
+                            />
                           </li>
                         </ul>
                       </div>

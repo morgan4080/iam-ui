@@ -176,10 +176,8 @@ async function changePassword() {
                           class="flex-none block w-4 focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                           checked
                           @change="setNotificationStatus"
-                        >
-                        <p class="text-xs text-gray-500 ml-2">
-                          Notify User
-                        </p>
+                        />
+                        <p class="text-xs text-gray-500 ml-2">Notify User</p>
                       </div>
                     </div>
                   </div>
@@ -203,7 +201,7 @@ async function changePassword() {
                         :value="userData.email"
                         class="flex-1 bg-gray-50 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                   </div>
                 </div>
@@ -225,7 +223,7 @@ async function changePassword() {
                         name="password"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                   </div>
                 </div>
@@ -247,7 +245,7 @@ async function changePassword() {
                         name="password-confirmation"
                         class="flex-1 block w-full focus:ring-blue-500 focus:border-blue-500 min-w-0 rounded-md sm:text-sm border-gray-300"
                         required
-                      >
+                      />
                     </div>
                   </div>
                 </div>
