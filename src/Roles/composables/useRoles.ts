@@ -97,6 +97,18 @@ export const useRoles = () => {
       .finally(() => (isLoading.value = false));
   }
 
+  async function resetWebPassword(payload: {
+    username: string;
+    userRefId: string;
+    tenantId: string;
+  }) {
+    const url = `${
+      import.meta.env.VITE_DOMAIN_URL
+    }/users-admin/api/users/reset-password`;
+
+    return fetch(url, {});
+  }
+
   return {
     roles,
     isLoading,
@@ -105,5 +117,6 @@ export const useRoles = () => {
     userRoles,
     fetchRoles,
     fetchUserRoles,
+    resetWebPassword,
   };
 };
