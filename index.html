@@ -1,49 +1,88 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-100 js-focus-visible">
+<html
+  lang="en"
+  class="bg-gray-100 js-focus-visible"
+>
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="/favicon.ico"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>IAM | Presta Capital</title>
     <style>
       html {
-          scroll-behavior: smooth;
-      }
-      html {
-          scroll-behavior: smooth;
+        scroll-behavior: smooth;
       }
       /* width */
       ::-webkit-scrollbar {
-          width: 10px;
+        width: 10px;
       }
       /* Track */
       ::-webkit-scrollbar-track {
-          background: #cccccc;
+        background: #cccccc;
       }
       /* Handle */
       ::-webkit-scrollbar-thumb {
-          background: #52596d;
-          border: 2px #fcf9ed solid;
-          border-radius: 25px;
+        background: #52596d;
+        border: 2px #fcf9ed solid;
+        border-radius: 25px;
       }
       /* Handle on hover */
       ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #27627e, #3b86a4, #4799aa, #819ca8);
+        background: linear-gradient(
+          to bottom,
+          #27627e,
+          #3b86a4,
+          #4799aa,
+          #819ca8
+        );
       }
     </style>
   </head>
-  <body class="h-full">
-    <div id="app" class="font-sans antialiased text-gray-600 flex flex-col min-h-full flex flex-col relative"></div>
-    <div id="loader" class="min-h-screen flex items-center justify-center bg-blue-600">
-        <svg id="spinner" class="animate-spin -ml-1 mr-3 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span class="text-white">
-            Loading
-            <span id="percent"></span>
-        </span>
+  <body>
+    <div
+      id="app"
+      class="font-sans antialiased text-gray-600 flex flex-col h-full flex flex-col relative"
+    ></div>
+    <div
+      id="loader"
+      class="min-h-screen flex items-center justify-center bg-blue-600"
+    >
+      <svg
+        id="spinner"
+        class="animate-spin -ml-1 mr-3 h-12 w-12 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        style="display: none"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <span class="text-white">
+        Loading
+        <span id="percent"></span>
+      </span>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script
+      type="module"
+      src="/src/main.ts"
+    ></script>
   </body>
 </html>

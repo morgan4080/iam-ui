@@ -95,7 +95,7 @@ async function saveToState() {
 </script>
 
 <template>
-  <div class="w-full max-h-screen overflow-y-scroll">
+  <div class="w-full">
     <form @submit.prevent="saveToState">
       <div
         v-if="!reviewed"

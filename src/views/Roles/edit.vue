@@ -317,7 +317,7 @@ const filteredUsers = computed(() => {
 });
 </script>
 <template>
-  <div class="w-full max-h-screen overflow-y-scroll pb-24">
+  <div class="w-full pb-24">
     <form @submit.prevent="actionUpdateRole">
       <div class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
         <section>

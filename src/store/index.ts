@@ -87,27 +87,6 @@ const store = createStore<State>({
   },
   actions: {
     //from all.ts
-    syncUsers({ commit }, payload) {
-      return new Promise(async (resolve, reject) => {
-        let response = await fetch(
-          import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/users/sync-users",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          }
-        );
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
-      });
-    },
     defineNotification({ commit }, payload) {
       commit("set_notification", payload);
     },
@@ -130,6 +109,8 @@ const store = createStore<State>({
         }
       });
     },
+
+    // refactored to fetchUserRoles in useRoles composables
     getUsersRoles({}, payload: any) {
       const url =
         import.meta.env.VITE_DOMAIN_URL +
@@ -152,6 +133,8 @@ const store = createStore<State>({
         }
       });
     },
+
+    // TODO remove this
     passChange({}, payload: any) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
@@ -175,6 +158,8 @@ const store = createStore<State>({
         }
       });
     },
+
+    // TODO remove this
     pinChange({}, payload: any) {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
@@ -210,7 +195,7 @@ const store = createStore<State>({
       })
         .then(response => {
           if (response.ok) {
-            return response.json();
+            return true;
           }
           throw new Error(response.statusText);
         })

@@ -5,7 +5,7 @@ import {
   MagnifyingGlassIcon,
   ArrowPathIcon,
 } from "@heroicons/vue/20/solid";
-import type { Pageables } from "@/Users/types";
+import { Pageables } from "@/types";
 
 const props = defineProps<{
   title: string;

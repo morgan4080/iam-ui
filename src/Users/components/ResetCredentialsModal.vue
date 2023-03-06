@@ -12,7 +12,7 @@ import {
   CheckCircleIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/vue/24/outline";
-import type { User } from "@/Users/types";
+import type { User } from "@users/types";
 import { useStore } from "vuex";
 import { mapActions } from "@/modules/mapStore";
 
@@ -48,10 +48,8 @@ async function resetWebPassword() {
   };
 
   await passReset(payload)
-    .then((response: any) => {
-      if (
-        response.messages.some((message: any) => message.type === "SUCCESS")
-      ) {
+    .then((response: boolean) => {
+      if (response) {
         loading.value = false;
         resetSuccessful.value = true;
       } else {

@@ -195,10 +195,7 @@ onBeforeMount(async () => {
 
 <template>
   <div class="w-full bg-white">
-    <div
-      class="flex-col h-screen w-full overflow-y-auto pb-28"
-      style="min-height: 640px"
-    >
+    <div class="flex-col w-full pb-28">
       <div class="px-4 pb-6 sm:px-6 lg:mx-auto lg:px-8">
         <div class="pt-3 flex items-center">
           <nav
