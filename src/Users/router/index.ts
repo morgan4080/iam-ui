@@ -26,11 +26,11 @@ const userRoutes = [
     name: "UsersChangePassword",
     component: () => import("@/views/Users/change-password.vue"),
   },
-  {
+  /*{
     path: "/users/:id/change-pin",
     name: "UsersChangePin",
     component: () => import("@/views/Users/change-pin.vue"),
-  },
+  },*/
   {
     path: "/users/:id/assign-roles",
     name: "UsersAssignRoles",

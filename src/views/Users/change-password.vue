@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ref, computed } from "vue";
-import { getUsersRoles, passChange, passReset } from "@/modules/all";
+import { ref } from "vue";
+// import { getUsersRoles, passChange, passReset } from "@/modules/all";
 import { useStore } from "vuex";
 import router from "@/router";
 
@@ -75,7 +75,7 @@ async function changePassword() {
       });
       return;
     }
-    const response = await passChange(payload);
+    // const response = await passChange(payload);
     await defineNotification({
       message: "Password Change Successful",
       success: true,
