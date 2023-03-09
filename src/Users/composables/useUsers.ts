@@ -1,8 +1,9 @@
-import { reactive, ref } from "vue";
+import { reactive, Ref, ref } from "vue";
 import { EditUserPayload, EnableUserPayload, User } from "@/Users/types";
 import { Pageables } from "@/types";
 import { mapActions } from "@/modules/mapStore";
 import { useQueryParams } from "@/composables/useQueryParams";
+import { useFetch } from "@vueuse/core";
 
 export const useUsers = () => {
   const { defineNotification } = mapActions();
@@ -267,6 +268,32 @@ export const useUsers = () => {
       });
   }
 
+  async function resetWebPassword(payload: {
+    username: string;
+    userRefId: string;
+    tenantId: string;
+  }) {
+    isLoading.value = true;
+
+    const url = `${
+      import.meta.env.VITE_DOMAIN_URL
+    }/users-admin/api/users/reset-password`;
+
+    const { isFetching, error, data } = await useFetch(url)
+      .post(payload)
+      .json();
+    isFetching.value = isLoading.value;
+    if (data.value) {
+      return data.value;
+    }
+    if (error.value) {
+      await defineNotification({
+        message: error.value,
+        error: true,
+      });
+    }
+  }
+
   async function verifyUnique(params: string) {
     isLoading.value = true;
     error.value = null;
@@ -308,5 +335,6 @@ export const useUsers = () => {
     fetchUsers,
     deleteUser,
     verifyUnique,
+    resetWebPassword,
   };
 };

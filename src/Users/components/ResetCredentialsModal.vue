@@ -15,8 +15,10 @@ import {
 import type { User } from "@users/types";
 import { useStore } from "vuex";
 import { mapActions } from "@/modules/mapStore";
+import { useUsers } from "@users/composables/useUsers";
 
-const { passReset, pinChange, defineNotification } = mapActions();
+const { pinChange, defineNotification } = mapActions();
+const { resetWebPassword } = useUsers();
 
 const props = defineProps<{
   open: boolean;
@@ -27,6 +29,7 @@ const emit = defineEmits(["close"]);
 const store = useStore();
 const resetSuccessful = ref(false);
 const loading = ref(false);
+const password = ref<string | null>(null);
 
 const message = computed(() => {
   if (props.action === "USSD") {
@@ -40,28 +43,28 @@ const tenantId = computed(() =>
   store.state.user ? store.state.user.tenantId : null
 );
 
-async function resetWebPassword() {
+function closeModal() {
+  if (confirm("Are you sure you want to close modal?")) {
+    emit("close");
+  }
+}
+
+async function resetWebPass() {
   const payload = {
     username: props.user.username,
     userRefId: props.user.keycloakId,
     tenantId: tenantId.value,
   };
 
-  await passReset(payload)
-    .then((response: boolean) => {
-      if (response) {
-        loading.value = false;
-        resetSuccessful.value = true;
-      } else {
-        loading.value = false;
-        defineNotification({ message: "Something went wrong", error: true });
-      }
-    })
-    .catch((error: string) => {
+  await resetWebPassword(payload).then(response => {
+    if (response) {
+      password.value = response.temporaryPassword;
       loading.value = false;
-      console.log(error);
-      defineNotification({ message: error, error: true });
-    });
+      resetSuccessful.value = true;
+    } else {
+      loading.value = false;
+    }
+  });
 }
 
 async function resetUSSDPin() {
@@ -90,7 +93,7 @@ async function resetUSSDPin() {
   }
 }
 
-async function copyToClipboard(type: "EMAIL" | "NAME") {
+async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
   if (type === "EMAIL") {
     await navigator.clipboard
       .writeText(props.user.email)
@@ -112,6 +115,16 @@ async function copyToClipboard(type: "EMAIL" | "NAME") {
         defineNotification({ message: "Could not copy", error: true });
       });
   }
+  if (type === "PASSWORD" && password.value) {
+    await navigator.clipboard
+      .writeText(password.value)
+      .then(() => {
+        defineNotification({ message: "copied" });
+      })
+      .catch(() => {
+        defineNotification({ message: "Could not copy", error: true });
+      });
+  }
 }
 
 async function reset() {
@@ -120,7 +133,7 @@ async function reset() {
     resetUSSDPin();
   } else if (props.action === "WEB") {
     loading.value = true;
-    resetWebPassword();
+    resetWebPass();
   }
 }
 </script>
@@ -133,7 +146,7 @@ async function reset() {
     <Dialog
       as="div"
       class="relative z-10"
-      @close="emit('close')"
+      @close="closeModal"
     >
       <TransitionChild
         as="template"
@@ -272,6 +285,19 @@ async function reset() {
                     </p>
                   </div>
                 </div>
+                <div
+                  v-if="action === 'WEB'"
+                  class="space-y-1"
+                >
+                  <p class="text-gray-600">Temporary Password</p>
+                  <div class="ml-1 flex space-x-2">
+                    <DocumentDuplicateIcon
+                      class="h-5 w-5 hover:cursor-pointer"
+                      @click.prevent="copyToClipboard('PASSWORD')"
+                    />
+                    <p>{{ password }}</p>
+                  </div>
+                </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
                 <button
@@ -306,7 +332,7 @@ async function reset() {
                 <button
                   type="button"
                   class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-1.5 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-0 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click="emit('close')"
+                  @click="closeModal"
                 >
                   Close
                 </button>

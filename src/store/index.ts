@@ -182,27 +182,6 @@ const store = createStore<State>({
           throw new Error(error);
         });
     },
-    passReset({}, payload: any) {
-      const url = `${
-        import.meta.env.VITE_DOMAIN_URL
-      }/users-admin/api/users/reset-password`;
-      return fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
-        .then(response => {
-          if (response.ok) {
-            return true;
-          }
-          throw new Error(response.statusText);
-        })
-        .catch(error => {
-          throw new Error(error);
-        });
-    },
     /* getUserAdminRoles({ }, roleIds: []): Promise<any> {
 
              const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
