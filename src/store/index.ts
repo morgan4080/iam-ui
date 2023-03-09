@@ -490,6 +490,9 @@ const store = createStore<State>({
         })
           .then(response => response.json())
           .then(data => {
+            if (data.error) {
+              reject(data);
+            }
             resolve(data);
           })
           .catch(error => {
@@ -500,7 +503,7 @@ const store = createStore<State>({
     fetchRoleUsers({ commit }, role_id: string): Promise<any> {
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
-      }/users-admin/api/v1/roles/${role_id}/users`;
+      }/users-admin/api/v2/roles/${role_id}/users`;
       const method = "GET";
       return new Promise((resolve, reject) => {
         fetch(url, {
@@ -511,6 +514,9 @@ const store = createStore<State>({
         })
           .then(response => response.json())
           .then(data => {
+            if (data.error) {
+              reject(data);
+            }
             if (data.data) commit("set_role_users", data.data);
             resolve(data);
           })
@@ -529,7 +535,7 @@ const store = createStore<State>({
 
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
-      }/users-admin/api/v1/roles/${role_id}/users`;
+      }/users-admin/api/v2/roles/${role_id}/users`;
 
       return new Promise((resolve, reject) => {
         fetch(url, {
@@ -541,6 +547,9 @@ const store = createStore<State>({
         })
           .then(response => response.json())
           .then(data => {
+            if (data.error) {
+              reject(data);
+            }
             resolve(data);
           })
           .catch(error => {
@@ -561,7 +570,7 @@ const store = createStore<State>({
 
       const url = `${
         import.meta.env.VITE_DOMAIN_URL
-      }/users-admin/api/v1/roles/${role_id}/users`;
+      }/users-admin/api/v2/roles/${role_id}/users`;
 
       return new Promise((resolve, reject) => {
         fetch(url, {
@@ -573,6 +582,9 @@ const store = createStore<State>({
         })
           .then(response => response.json())
           .then(data => {
+            if (data.error) {
+              reject(data);
+            }
             resolve(data);
           })
           .catch(error => {

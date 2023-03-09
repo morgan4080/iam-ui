@@ -246,7 +246,7 @@ const roleSync = async () => {
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Edit
+                  View
                 </th>
               </tr>
             </thead>
@@ -259,7 +259,7 @@ const roleSync = async () => {
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
                 >
-                  <router-link :to="`/roles/${role.keycloakRoleId}`">
+                  <router-link :to="`/roles/${role.keycloakRoleId}/edit`">
                     <span
                       v-if="role.name === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
@@ -268,7 +268,7 @@ const roleSync = async () => {
                   </router-link>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <router-link :to="`/roles/${role.keycloakRoleId}`">
+                  <router-link :to="`/roles/${role.keycloakRoleId}/edit`">
                     <span
                       v-if="role.roleType === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
@@ -277,7 +277,7 @@ const roleSync = async () => {
                   </router-link>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <router-link :to="`/roles/${role.keycloakRoleId}`">
+                  <router-link :to="`/roles/${role.keycloakRoleId}/edit`">
                     <span
                       v-if="role.description === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
@@ -287,14 +287,14 @@ const roleSync = async () => {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <router-link
-                    :to="`/roles/${role.keycloakRoleId}/edit`"
+                    :to="`/roles/${role.keycloakRoleId}`"
                     class="text-blue-600 hover:text-blue-900"
                   >
                     <span
                       v-if="role.description === ''"
                       class="h-4 w-12 bg-gray-400 block rounded animate-pulse"
                     />
-                    <span v-else>Edit</span>
+                    <span v-else>View</span>
                   </router-link>
                 </td>
               </tr>

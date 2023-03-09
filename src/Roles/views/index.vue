@@ -68,7 +68,7 @@ onBeforeMount(async () => await fetchRoles());
                 v-for="role in roles"
                 :key="role.id"
                 class="hover:bg-gray-200 hover:cursor-pointer"
-                @click="router.push(`/roles/${role.keycloakRoleId}`)"
+                @click="router.push(`/roles/${role.keycloakRoleId}/edit`)"
               >
                 <td
                   class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
@@ -82,9 +82,15 @@ onBeforeMount(async () => await fetchRoles());
                   {{ role.description }}
                 </td>
                 <td
-                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                  class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium space-x-16 sm:pr-6"
                   @click="e => e.stopPropagation()"
                 >
+                  <router-link
+                    :to="`/roles/${role.keycloakRoleId}`"
+                    class="text-green-400 hover:text-green-600"
+                    >View
+                    <span class="sr-only">, {{ role.description }}</span>
+                  </router-link>
                   <router-link
                     :to="`/roles/${role.keycloakRoleId}/edit`"
                     class="text-indigo-600 hover:text-indigo-900"
