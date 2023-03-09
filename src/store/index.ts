@@ -494,6 +494,7 @@ const store = createStore<State>({
           .then(response => response.json())
           .then(data => {
             if (data.error) {
+              commit("set_role_users", []);
               reject(data);
             }
             if (data.data) commit("set_role_users", data.data);
