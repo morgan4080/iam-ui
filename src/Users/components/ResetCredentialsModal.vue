@@ -11,6 +11,8 @@ import {
   ExclamationTriangleIcon,
   CheckCircleIcon,
   DocumentDuplicateIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@heroicons/vue/24/outline";
 import type { User } from "@users/types";
 import { useStore } from "vuex";
@@ -30,6 +32,8 @@ const store = useStore();
 const resetSuccessful = ref(false);
 const loading = ref(false);
 const password = ref<string | null>(null);
+const formattedPassword = ref<string | null>(null);
+const passwordType = ref<"password" | "text">("password");
 
 const message = computed(() => {
   if (props.action === "USSD") {
@@ -134,6 +138,17 @@ async function reset() {
   } else if (props.action === "WEB") {
     loading.value = true;
     resetWebPass();
+  }
+}
+
+function formatPassword(value: "password" | "text") {
+  if (password.value) {
+    passwordType.value = value;
+    if (value === "password") {
+      formattedPassword.value = "*".repeat(password.value.length);
+    } else {
+      formattedPassword.value = password.value;
+    }
   }
 }
 </script>
@@ -290,12 +305,22 @@ async function reset() {
                   class="space-y-1"
                 >
                   <p class="text-gray-600">Temporary Password</p>
-                  <div class="ml-1 flex space-x-2">
+                  <div class="ml-1 flex space-x-4">
                     <DocumentDuplicateIcon
                       class="h-5 w-5 hover:cursor-pointer"
                       @click.prevent="copyToClipboard('PASSWORD')"
                     />
-                    <p>{{ password }}</p>
+                    <p>{{ formattedPassword }}</p>
+                    <EyeIcon
+                      v-if="passwordType === 'password'"
+                      class="h-5 w-5 hover:cursor-pointer"
+                      @click.prevent="formatPassword('text')"
+                    />
+                    <EyeSlashIcon
+                      v-else
+                      class="h-5 w-5 hover:cursor-pointer"
+                      @click.prevent="formatPassword('password')"
+                    />
                   </div>
                 </div>
               </div>
