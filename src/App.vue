@@ -14,7 +14,7 @@ const notification = computed(() => store.getters.getNotification);
   <TheNavBar
     v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'"
   />
-  <div class="flex flex-1">
+  <div class="flex h-full">
     <TheSideBar
       v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'"
     />
@@ -27,7 +27,7 @@ const notification = computed(() => store.getters.getNotification);
       >
         <p>{{ notification.message }}</p>
       </Notification>
-      <router-view />
+      <router-view class="pb-20" />
     </div>
   </div>
   <TheFooter />
