@@ -2,6 +2,9 @@
   "name": "prestaui",
   "version": "0.0.0",
   "scripts": {
+    "clean": "rm -rf node_modules",
+    "reinstall": "npm run clean && npm install",
+    "rebuild": "npm run clean && npm install && npm run build",
     "dev-build": "vue-tsc --noEmit && vite build --base=/admin/ --mode local",
     "dev": "vite --base=/admin/ --port 9099",
     "build": "vue-tsc --noEmit && vite build --base=/admin/",

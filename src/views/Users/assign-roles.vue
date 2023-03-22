@@ -458,7 +458,7 @@ const removeRolesFromUser = async () => {
           </div>
         </section>
       </div>
-      <!--      <div class="flex pb-20 bg-gray-100">
+      <!--      <div class="flex pb-20">
         <div class="ml-auto pt-5 pb-8 px-4">
           <div class="space-x-3">
             <button

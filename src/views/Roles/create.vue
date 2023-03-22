@@ -107,7 +107,7 @@ const addKeycloakIdsToRemove = (ids: string[]) => {
         class="space-y-6 sm:px-6 lg:px-0 lg:col-span-9"
       >
         <section>
-          <div class="shadow sm:overflow-hidden">
+          <div class="sm:overflow-hidden">
             <div class="bg-white py-6 px-4 sm:p-6">
               <div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -270,7 +270,7 @@ const addKeycloakIdsToRemove = (ids: string[]) => {
         </section>
       </div>
 
-      <div class="flex pb-20 bg-gray-100">
+      <div class="flex pb-20">
         <div class="ml-auto pt-5 pb-8 px-4">
           <div class="space-x-3">
             <button
