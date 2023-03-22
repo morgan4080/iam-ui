@@ -535,9 +535,9 @@ onBeforeMount(async () => await fetchUserData());
                               {{
                                 user.isEnabled
                                   ? user.email
-                                    ? "Yes"
-                                    : "No"
-                                  : "No"
+                                    ? "Enabled"
+                                    : "Disabled"
+                                  : "Disabled"
                               }}
                             </span>
                           </div>
