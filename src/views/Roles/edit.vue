@@ -321,15 +321,7 @@ function setPermissionToService(e: any, permission: permissionInterface) {
           class="flex items-center py-2 px-0.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
           @click="setViewMode('description')"
         >
-          <span class="flex-1">Role Description</span>
-        </button>
-        <button
-          type="button"
-          :class="{ 'bg-slate-50': viewMode === 'permissions' }"
-          class="items-center py-2 px-0.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
-          @click="setViewMode('permissions')"
-        >
-          Role Permissions
+          1. Role Description
         </button>
         <button
           type="button"
@@ -337,7 +329,7 @@ function setPermissionToService(e: any, permission: permissionInterface) {
           class="items-center py-2 px-0.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
           @click="setViewMode('users')"
         >
-          Role Users
+          2. Role Users
         </button>
       </div>
     </div>
@@ -354,11 +346,6 @@ function setPermissionToService(e: any, permission: permissionInterface) {
                   <div v-if="viewMode === 'description'">
                     <h3 class="text-xl font-semibold text-gray-900">
                       Set role name and description
-                    </h3>
-                  </div>
-                  <div v-if="viewMode === 'permissions'">
-                    <h3 class="text-xl font-semibold text-gray-900">
-                      Set role service permissions
                     </h3>
                   </div>
                   <div v-if="viewMode === 'users'">
@@ -476,64 +463,12 @@ function setPermissionToService(e: any, permission: permissionInterface) {
                         </div>
                       </div>
                     </div>
-                    <!-- Pleasae dont remove in case eng manager changes mind again -->
-                    <!--                    <div
-                      v-if="viewMode === 'permissions'"
-                      class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
-                    >
-                      <label
-                        for="description"
-                        class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                      >
-                        Services
-                      </label>
-                      <div class="col-span-5">
-                        <div class="mt-1 sm:mt-0">
-                          <select
-                            v-model="selectedService"
-                            class="max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
-                          >
-                            <option :value="null">Select Service</option>
-                            <option
-                              v-for="(service, i) in services"
-                              :key="i"
-                              :value="i"
-                            >
-                              {{ service.clientId }}
-                              &lt;!&ndash;{{service.name ? `: ${service.name}` : ``}}&ndash;&gt;
-                            </option>
-                          </select>
-                          <p class="mt-2 text-sm text-gray-500">
-                            Select a service to start assigning permissions to
-                            this role.
-                          </p>
-                        </div>
-                      </div>
-                    </div>-->
-
-                    <!-- <div
-                      v-if="
-                        typeof selectedService === 'number' &&
-                        viewMode === 'permissions'
-                      "
-                      class="sm:grid sm:grid-cols-6 sm:gap-12 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"
-                    >
-                      <label
-                        for="description"
-                        class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                      >
-                        Service Permissions
-                      </label>
-
-                                           <PermissionsExchange
-                        :existing="keycloakIds"
-                        :selected-service="selectedService"
-                        :services="services"
-                        @add-keycloak-ids-to-add="addKeycloakIdsToAdd"
-                        @add-keycloak-ids-to-remove="addKeycloakIdsToRemove"
-                      />
-                    </div>-->
-                    <div v-if="viewMode === 'permissions'">
+                    <div v-if="viewMode === 'description'">
+                      <h3 class="text-xl font-semibold text-gray-900">
+                        Set role service permissions
+                      </h3>
+                    </div>
+                    <div v-if="viewMode === 'description'">
                       <div
                         v-for="(service, i) in services"
                         :key="i"
@@ -591,12 +526,6 @@ function setPermissionToService(e: any, permission: permissionInterface) {
                       v-if="viewMode === 'users'"
                       class="border-t border-gray-200 pt-5"
                     >
-                      <!--                      <label
-                        for="description"
-                        class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sr-only"
-                      >
-                        Role Users
-                      </label>-->
                       <RolesExchange
                         :role="role"
                         :role-users="roleUsers"
@@ -615,7 +544,7 @@ function setPermissionToService(e: any, permission: permissionInterface) {
           <!-- Secondary column (hidden on smaller screens) -->
           <div class="py-2 px-4 sm:p-6">
             <p class="mt-1 max-w-2xl text-sm text-gray-500">
-              Review role description, users and permissions.
+              Review description, permissions and role users.
             </p>
             <div class="block space-y-1 mt-4">
               <button
@@ -624,15 +553,7 @@ function setPermissionToService(e: any, permission: permissionInterface) {
                 class="flex items-center py-2 px-0.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
                 @click="setViewMode('description')"
               >
-                <span class="flex-1">Role Description</span>
-              </button>
-              <button
-                type="button"
-                :class="{ 'bg-slate-50': viewMode === 'permissions' }"
-                class="items-center py-2 px-0.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
-                @click="setViewMode('permissions')"
-              >
-                Role Permissions
+                1. Role Description
               </button>
               <button
                 type="button"
@@ -640,7 +561,7 @@ function setPermissionToService(e: any, permission: permissionInterface) {
                 class="items-center py-2 px-0.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
                 @click="setViewMode('users')"
               >
-                Role Users
+                2. Role Users
               </button>
             </div>
           </div>
