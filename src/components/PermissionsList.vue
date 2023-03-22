@@ -25,7 +25,7 @@ const doReturn = (i: string): boolean => {
 };
 </script>
 <template>
-  <li class="flex items-center justify-between">
+  <li class="flex items-center justify-between my-4 p-2 border rounded">
     <label :for="`permission${permission.id}`">{{ permission.name }}</label>
     <input
       :id="`permission${permission.id}`"

@@ -1,15 +1,15 @@
 <template>
-  <div class="flex items-start col-span-4">
-    <div class="mt-1 sm:mt-0 flex-1">
+  <div class="flex flex-col sm:flex-row items-start overflow-hidden">
+    <div class="w-full sm:w-5/12 mt-1 sm:mt-0">
       <div
-        class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
+        class="p-4 shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
       >
         <div
           class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 space-y-2"
         >
           <div class="bg-gray-100">Available Users</div>
-          <div class="flex rounded-md shadow-sm">
-            <div class="relative flex focus-within:z-10">
+          <div class="flex rounded-md relative">
+            <div class="relative flex focus-within:z-10 w-full">
               <div
                 class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
               >
@@ -23,14 +23,14 @@
                 v-model="pageables.searchTerm"
                 type="search"
                 name="search"
-                class="block rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+                class="w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 rounded-r-md text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
                 placeholder="Search term"
                 @change="searchUsers"
               />
             </div>
             <button
               type="button"
-              class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              class="absolute right-0 w-20 -ml-px flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
               @click="sortUsers"
             >
               <BarsArrowUpIcon
@@ -48,11 +48,11 @@
             </button>
           </div>
         </div>
-        <ul class="list-decimal list-inside space-y-2">
+        <ul class="list-decimal list-inside space-y-2 w-full sm:w-auto">
           <li
             v-for="(user, index) in filteredUsers"
             :key="index"
-            class="flex items-center justify-between"
+            class="flex items-center justify-between px-0.5"
           >
             <label :for="`${index}${user.id}`">
               {{ user.firstName }} {{ user.lastName }}
@@ -68,7 +68,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col items-center space-y-3 my-2">
+    <div class="w-full sm:w-1/12 flex flex-col items-center space-y-3 my-2">
       <button
         :disabled="filteredUsers.length === 0"
         type="button"
@@ -94,9 +94,9 @@
       </button>
     </div>
 
-    <div class="mt-1 sm:mt-0 flex-1">
+    <div class="w-full sm:w-5/12 mt-1 sm:mt-0">
       <div
-        class="p-4 max-w-lg shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
+        class="p-4 col-span-5 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"
       >
         <p
           class="-mt-1 capitalize mb-2 text-sm font-medium text-gray-700 bg-gray-100"
