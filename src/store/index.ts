@@ -238,10 +238,13 @@ const store = createStore<State>({
           body: JSON.stringify(payload),
         });
         const data = await response.json();
-        if (response.status === 200) {
+        if (response.status === 200 || response.status === 201) {
           return Promise.resolve(data);
-        } else if (response.status === 201) {
-          return Promise.resolve(data);
+        }
+        if (data) {
+          throw JSON.stringify(data);
+        } else {
+          throw "Error Information Unavailable";
         }
       } catch (e: any) {
         return Promise.reject(e);

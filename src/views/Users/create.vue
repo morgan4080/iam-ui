@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { getPermissions, getRoles } from "@/modules/all";
 import { useStore } from "vuex";
-import { mapActions } from "@/modules/mapStore";
 import { useRouter } from "vue-router";
 import { isValidNumberForRegion, parsePhoneNumber } from "libphonenumber-js";
 import useVuelidate from "@vuelidate/core";
@@ -15,9 +14,10 @@ import {
   required,
   sameAs,
 } from "@vuelidate/validators";
+import { useUsers } from "@users/composables/useUsers";
 const router = useRouter();
 
-const { postUser, defineNotification, verifyUnique } = mapActions();
+const { verifyUnique } = useUsers();
 
 const store = useStore();
 
@@ -369,22 +369,28 @@ const saveUser = async (rolesPayload: string[]) => {
 
   try {
     loading.value = true;
-    const response = await postUser({
+    const response = await store.dispatch("postUser", {
       ...payloadOut,
       notifyUser: formNotificationStatus.value,
     });
-    await defineNotification({
-      message: response.messages[0].message,
+    await store.dispatch("defineNotification", {
+      message: "User Created Successfully",
       success: true,
     });
     await router.push("/users");
   } catch (e: any) {
-    console.log("API error", e);
-    if (e.messages[0].message) {
-      await defineNotification({ message: e.messages[0].message, error: true });
+    if (e) {
+      await store.dispatch("defineNotification", {
+        message: JSON.stringify(e),
+        error: true,
+      });
       return;
     }
-    await defineNotification({ message: e.message, error: true });
+    await store.dispatch("defineNotification", {
+      message: "Error Creating User",
+      error: true,
+    });
+    await router.push("/users");
   } finally {
     loading.value = false;
   }
@@ -409,7 +415,9 @@ function saveRoles() {
       formRoles.value.user_roles.map((role: any): any => role.keycloakRoleId)
     );
   } else {
-    defineNotification({ message: `Kindly select at least one role` });
+    store.dispatch("defineNotification", {
+      message: `Kindly select at least one role`,
+    });
   }
 }
 
@@ -482,7 +490,7 @@ const setQuery = async (e: any) => {
         e.target.classList.remove("focus:border-red-400");
       };
       e.target.value = e.target.value.slice(0, 4);
-      await defineNotification({
+      await store.dispatch("defineNotification", {
         message: "No more than 12 characters",
         error: true,
       });
@@ -504,7 +512,7 @@ const setQuery = async (e: any) => {
         e.target.classList.remove("focus:border-red-400");
       };
       e.target.value = e.target.value.slice(0, 4);
-      await defineNotification({
+      await store.dispatch("defineNotification", {
         message: "No more than 12 characters",
         error: true,
       });
@@ -521,7 +529,7 @@ const setQuery = async (e: any) => {
 
     if (response0 !== "unique") {
       formUSSDAccess.value.phoneNumber = "";
-      await defineNotification({
+      await store.dispatch("defineNotification", {
         message: `User with that phone number already exists`,
         error: true,
       });
@@ -549,7 +557,7 @@ const setQuery = async (e: any) => {
         if (key === "username") {
           formWebAccess.value.username = "";
         }
-        await defineNotification({
+        await store.dispatch("defineNotification", {
           message: `User with that ${key} already exists`,
           error: true,
         });
@@ -576,7 +584,7 @@ async function setupFormContacts() {
         currentStep.value = currentStep.value + 2;
       }
     } else {
-      await defineNotification({
+      await store.dispatch("defineNotification", {
         message: "Kindly Select a user type",
         error: true,
       });
@@ -598,7 +606,7 @@ async function setupFormWebAccess() {
       ) {
         nextStep();
       } else {
-        await defineNotification({
+        await store.dispatch("defineNotification", {
           message: `Passwords don't match`,
           error: true,
         });
@@ -610,7 +618,7 @@ async function setupFormWebAccess() {
       ) {
         currentStep.value = 4;
       } else {
-        await defineNotification({
+        await store.dispatch("defineNotification", {
           message: `Passwords don't match`,
           error: true,
         });
@@ -625,7 +633,10 @@ async function setupFormUSSDAccess() {
     if (formUSSDAccess.value.pin === formUSSDAccess.value.pinConfirmation) {
       currentStep.value = 4;
     } else {
-      await defineNotification({ message: `Pins don't match`, error: true });
+      await store.dispatch("defineNotification", {
+        message: `Pins don't match`,
+        error: true,
+      });
     }
   }
 }
@@ -691,7 +702,7 @@ const setNotificationStatus = (e: any): void => {
                       <div class="flex flex-row items-start space-x-3">
                         <input
                           id="admin"
-                          autocomplete="false"
+                          autocomplete="off"
                           name="user_types"
                           class="mt-1 border-gray-400 rounded-md"
                           type="checkbox"
@@ -716,7 +727,7 @@ const setNotificationStatus = (e: any): void => {
                       <div class="flex flex-row items-start space-x-3">
                         <input
                           id="customer"
-                          autocomplete="false"
+                          autocomplete="off"
                           name="user_types"
                           class="mt-1 border-gray-400 rounded-md"
                           type="checkbox"
@@ -742,7 +753,7 @@ const setNotificationStatus = (e: any): void => {
                     <div class="flex flex-row items-start space-x-3">
                       <input
                         id="notifyUser"
-                        autocomplete="false"
+                        autocomplete="off"
                         type="checkbox"
                         name="notifyUser"
                         class="mt-1 border-gray-400 rounded-md"
@@ -796,7 +807,7 @@ const setNotificationStatus = (e: any): void => {
                           <input
                             id="first-name"
                             v-model="formContacts.firstName"
-                            autocomplete="false"
+                            autocomplete="off"
                             :disabled="formContacts.user_types.length === 0"
                             type="text"
                             class="py-1 px-4 block w-full shadow-sm focus:ring-black focus:border-black border-gray-300 rounded-md"
@@ -824,7 +835,7 @@ const setNotificationStatus = (e: any): void => {
                           <input
                             id="last-name"
                             v-model="formContacts.lastName"
-                            autocomplete="false"
+                            autocomplete="off"
                             :disabled="formContacts.user_types.length === 0"
                             type="text"
                             class="py-1 px-4 block w-full shadow-sm focus:ring-black focus:border-black border-gray-300 rounded-md"
@@ -852,7 +863,7 @@ const setNotificationStatus = (e: any): void => {
                           <input
                             id="email"
                             v-model.lazy="formContacts.email"
-                            autocomplete="false"
+                            autocomplete="off"
                             :disabled="formContacts.user_types.length === 0"
                             type="email"
                             class="py-1 px-4 block w-full shadow-sm focus:ring-black focus:border-black border-gray-300 rounded-md"
@@ -896,7 +907,7 @@ const setNotificationStatus = (e: any): void => {
                           <input
                             id="phone-number"
                             v-model.lazy="formContacts.phoneNumber"
-                            autocomplete="false"
+                            autocomplete="off"
                             :disabled="formContacts.user_types.length === 0"
                             type="number"
                             class="py-1 px-4 block w-full pl-20 focus:ring-black focus:border-black border-gray-300 rounded-md"
@@ -1004,7 +1015,7 @@ const setNotificationStatus = (e: any): void => {
                         <input
                           id="username"
                           v-model.lazy="formWebAccess.username"
-                          autocomplete="false"
+                          autocomplete="off"
                           type="text"
                           name="username"
                           class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
@@ -1050,7 +1061,7 @@ const setNotificationStatus = (e: any): void => {
                       <input
                         id="password"
                         v-model="formWebAccess.password"
-                        autocomplete="false"
+                        autocomplete="off"
                         type="password"
                         name="password"
                         class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
@@ -1082,7 +1093,7 @@ const setNotificationStatus = (e: any): void => {
                       <input
                         id="password-c"
                         v-model="formWebAccess.passwordConfirmation"
-                        autocomplete="false"
+                        autocomplete="off"
                         type="password"
                         name="password-c"
                         class="flex-1 block w-full focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
@@ -1203,7 +1214,7 @@ const setNotificationStatus = (e: any): void => {
                         <input
                           id="phonex"
                           v-model="formUSSDAccess.phoneNumber"
-                          autocomplete="false"
+                          autocomplete="off"
                           type="number"
                           class="py-1 px-4 block w-full pl-20 focus:ring-black focus:border-black border-gray-300 rounded-md"
                           required
@@ -1247,13 +1258,11 @@ const setNotificationStatus = (e: any): void => {
                     <p class="mt-2 text-xs text-gray-500">Default is SET.</p>
                   </div>
                   <div class="mt-1 sm:mt-0 sm:col-span-2">
-                    <div
-                      class="max-w-lg flex items-center rounded-md shadow-sm"
-                    >
+                    <div class="max-w-lg flex items-center">
                       <div class="flex-1 flex items-center h-12">
                         <input
                           id="pinStatus"
-                          autocomplete="false"
+                          autocomplete="off"
                           type="checkbox"
                           name="pinStatus"
                           class="flex-none block w-4 focus:ring-black focus:border-black min-w-0 rounded-md sm:text-sm border-gray-300"
@@ -1285,7 +1294,7 @@ const setNotificationStatus = (e: any): void => {
                       <input
                         id="pin"
                         v-model="formUSSDAccess.pin"
-                        autocomplete="false"
+                        autocomplete="off"
                         pattern="[0-9]{4,4}"
                         type="password"
                         name="pin"
@@ -1323,7 +1332,7 @@ const setNotificationStatus = (e: any): void => {
                       <input
                         id="pin-c"
                         v-model="formUSSDAccess.pinConfirmation"
-                        autocomplete="false"
+                        autocomplete="off"
                         pattern="[0-9]{4,4}"
                         type="password"
                         name="pin-c"
@@ -1458,6 +1467,7 @@ const setNotificationStatus = (e: any): void => {
                                   :name="'role' + i"
                                   class="border-gray-400 rounded-md"
                                   type="checkbox"
+                                  autocomplete="off"
                                   @change="setEventVal"
                                 />
                               </td>
