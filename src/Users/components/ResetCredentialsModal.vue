@@ -34,6 +34,9 @@ const loading = ref(false);
 const password = ref<string | null>(null);
 const formattedPassword = ref<string | null>(null);
 const passwordType = ref<"password" | "text">("password");
+const showEmailCopied = ref(false);
+const showPasswordCopied = ref(false);
+const showNameCopied = ref(false);
 
 const message = computed(() => {
   if (props.action === "USSD") {
@@ -48,9 +51,7 @@ const tenantId = computed(() =>
 );
 
 function closeModal() {
-  if (confirm("Are you sure you want to close modal?")) {
-    emit("close");
-  }
+  emit("close");
 }
 
 async function resetWebPass() {
@@ -63,6 +64,7 @@ async function resetWebPass() {
   await resetWebPassword(payload).then(response => {
     if (response) {
       password.value = response.temporaryPassword;
+      formatPassword("password");
       loading.value = false;
       resetSuccessful.value = true;
     } else {
@@ -102,7 +104,8 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
     await navigator.clipboard
       .writeText(props.user.email)
       .then(() => {
-        defineNotification({ message: "copied" });
+        showEmailCopied.value = true;
+        setTimeout(() => (showEmailCopied.value = false), 2000);
       })
       .catch(() => {
         defineNotification({ message: "Could not copy", error: true });
@@ -113,7 +116,8 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
     await navigator.clipboard
       .writeText(name)
       .then(() => {
-        defineNotification({ message: "copied" });
+        showNameCopied.value = true;
+        setTimeout(() => (showNameCopied.value = false), 2000);
       })
       .catch(() => {
         defineNotification({ message: "Could not copy", error: true });
@@ -123,7 +127,8 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
     await navigator.clipboard
       .writeText(password.value)
       .then(() => {
-        defineNotification({ message: "copied" });
+        showPasswordCopied.value = true;
+        setTimeout(() => (showPasswordCopied.value = false), 2000);
       })
       .catch(() => {
         defineNotification({ message: "Could not copy", error: true });
@@ -134,10 +139,10 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
 async function reset() {
   if (props.action === "USSD") {
     loading.value = true;
-    resetUSSDPin();
+    await resetUSSDPin();
   } else if (props.action === "WEB") {
     loading.value = true;
-    resetWebPass();
+    await resetWebPass();
   }
 }
 
@@ -272,10 +277,18 @@ function formatPassword(value: "password" | "text") {
               </div>
               <div
                 v-if="resetSuccessful"
-                class="mt-2 px-4 text-sm space-y-4"
+                class="my-2 px-4 text-sm space-y-4"
               >
                 <div class="space-y-1">
-                  <p class="text-gray-600">Name</p>
+                  <div class="flex space-x-4">
+                    <p class="text-gray-600">Name</p>
+                    <div
+                      v-if="showNameCopied"
+                      class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
+                    >
+                      Copied
+                    </div>
+                  </div>
                   <div class="ml-1 flex space-x-2">
                     <DocumentDuplicateIcon
                       class="h-5 w-5 hover:cursor-pointer"
@@ -285,9 +298,17 @@ function formatPassword(value: "password" | "text") {
                   </div>
                 </div>
                 <div class="space-y-1">
-                  <p class="text-gray-600">
-                    {{ action === "USSD" ? "Phone number" : "Email" }}
-                  </p>
+                  <div class="flex space-x-4">
+                    <p class="text-gray-600">
+                      {{ action === "USSD" ? "Phone number" : "Email" }}
+                    </p>
+                    <div
+                      v-if="showEmailCopied"
+                      class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
+                    >
+                      Copied
+                    </div>
+                  </div>
                   <div class="ml-1 flex space-x-2">
                     <DocumentDuplicateIcon
                       class="h-5 w-5 hover:cursor-pointer"
@@ -304,8 +325,19 @@ function formatPassword(value: "password" | "text") {
                   v-if="action === 'WEB'"
                   class="space-y-1"
                 >
-                  <p class="text-gray-600">Temporary Password</p>
-                  <div class="ml-1 flex space-x-4">
+                  <div class="flex space-x-4">
+                    <p class="text-gray-600">Temporary Password</p>
+                    <div
+                      v-if="showPasswordCopied"
+                      class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
+                    >
+                      Copied
+                    </div>
+                  </div>
+                  <div
+                    class="ml-1 flex space-x-4"
+                    v-if="password"
+                  >
                     <DocumentDuplicateIcon
                       class="h-5 w-5 hover:cursor-pointer"
                       @click.prevent="copyToClipboard('PASSWORD')"
