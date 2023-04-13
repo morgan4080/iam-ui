@@ -44,8 +44,16 @@ export const useUsers = () => {
         });
       })
       .then(async data => {
-        user.value = data.user;
-        return data.user;
+        user.value = {
+          ...data.user,
+          accessTypes: data.accessTypes,
+          requiredActions: data.requiredActions,
+        };
+        return {
+          ...data.user,
+          accessTypes: data.accessTypes,
+          requiredActions: data.requiredActions,
+        };
       })
       .catch(async err => {
         await defineNotification({

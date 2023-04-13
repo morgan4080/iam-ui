@@ -215,13 +215,13 @@ onBeforeMount(async () => await fetchUserData());
         class="px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:px-8"
       >
         <div class="flex items-center space-x-5">
-          <div class="flex-shrink-0">
+          <!--          <div class="flex-shrink-0">
             <div class="relative">
               <span class="h-24 w-24 rounded-full border-2 p-2 border-black/50">
                 {{ getInitials(user.firstName + " " + user.lastName) }}
               </span>
             </div>
-          </div>
+          </div>-->
           <div class="space-y-2">
             <div class="flex space-x-4">
               <h1 class="text-2xl font-bold text-gray-900">
@@ -433,6 +433,36 @@ onBeforeMount(async () => await fetchUserData());
                     </dt>
                     <dd class="mt-1 text-sm text-gray-900">
                       {{ user.ussdPhoneNumber }}
+                    </dd>
+                  </div>
+                  <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500">
+                      Access Types
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                      <div class="flex flex-wrap space-x-2">
+                        <div
+                          v-for="(type, i) in user.accessTypes"
+                          :key="i"
+                        >
+                          · {{ type }}
+                        </div>
+                      </div>
+                    </dd>
+                  </div>
+                  <div class="sm:col-span-1">
+                    <dt class="text-sm font-medium text-gray-500">
+                      Required Actions
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                      <div class="flex flex-wrap space-x-2">
+                        <div
+                          v-for="(action, i) in user.requiredActions"
+                          :key="i"
+                        >
+                          · {{ action }}
+                        </div>
+                      </div>
                     </dd>
                   </div>
                   <div class="sm:col-span-1">

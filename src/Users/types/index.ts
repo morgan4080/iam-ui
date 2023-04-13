@@ -14,6 +14,8 @@ export interface User {
   username: string;
   pinAttempts: number;
   passwordStatus: string;
+  requiredActions: string[];
+  accessTypes: string[];
 }
 
 export interface KeycloakUser {

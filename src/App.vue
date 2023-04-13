@@ -27,7 +27,9 @@ const notification = computed(() => store.getters.getNotification);
       >
         <p>{{ notification.message }}</p>
       </Notification>
-      <router-view class="pb-20" />
+      <div class="pb-20">
+        <router-view />
+      </div>
     </div>
   </div>
   <TheFooter />
