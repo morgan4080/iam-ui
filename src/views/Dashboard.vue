@@ -4,7 +4,7 @@ import { ref, computed, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import { useUsers } from "@/Users/composables/useUsers";
 
-const { fetchUsers, users } = useUsers();
+const { fetchUsers, users, pageables } = useUsers();
 const store = useStore();
 
 const roleCount = ref(0);
@@ -43,7 +43,7 @@ onBeforeMount(async () => await fetchUsers());
                 class="flex text-blue-600"
               >
                 <span class="pr-3">Users:</span>
-                {{ users && users.length }}
+                {{ users && pageables && pageables.totalRecords }}
               </router-link>
               <router-link
                 to="/roles"
