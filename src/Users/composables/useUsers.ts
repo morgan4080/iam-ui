@@ -142,8 +142,9 @@ export const useUsers = () => {
     const payload = {
       syncAllUsers: true,
     };
-
-    return await fetch(
+    
+    if (confirm("You are about to synchronize users. This operation might take a while. Proceed?")) {
+      return await fetch(
       `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`,
       {
         method: "POST",
@@ -174,6 +175,9 @@ export const useUsers = () => {
         throw new Error(err);
       })
       .finally(() => (isLoading.value = false));
+    } else {
+      return Promise.reject("Sync Process Cancelled");
+    }
   }
 
   async function enableOrDisableUser(payload: EnableUserPayload) {
