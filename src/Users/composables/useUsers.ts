@@ -176,7 +176,8 @@ export const useUsers = () => {
       })
       .finally(() => (isLoading.value = false));
     } else {
-      return Promise.reject("Sync Process Cancelled");
+      pageables.currentPage = 0;
+      return fetchUsers().finally(() => (isLoading.value = false));
     }
   }
 
