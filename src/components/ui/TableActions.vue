@@ -37,7 +37,7 @@ const emit = defineEmits(["sort", "search", "sync"]);
           :class="loading && 'animate-spin'"
         />
       </div>
-      <div class="flex rounded-md relative">
+      <div class="flex rounded-md relative" style="min-width: 250px;">
         <div class="relative flex focus-within:z-10 w-full">
           <div
             class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
