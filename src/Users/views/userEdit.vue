@@ -101,9 +101,9 @@ async function setQuery(e: Event) {
         error: true,
       });
     }
-    const response0 = await verifyUnique(`?phoneNumber=${form.phoneNumber}`);
+    const response0 = await verifyUnique(`?ussdPhoneNumber=${form.ussdPhoneNumber}`);
     if (response0 !== "unique") {
-      form.phoneNumber = "";
+      form.ussdPhoneNumber = "";
       await defineNotification({
         message: `User with that phone number already exists`,
         error: true,
