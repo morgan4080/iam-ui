@@ -26,7 +26,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     return await fetch(
-      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/${userRefId}`,
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/users/${userRefId}`,
       {
         method: "GET",
         headers: {
@@ -69,7 +69,7 @@ export const useUsers = () => {
     error.value = null;
     await generateParams();
     return await fetch(
-      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users?${
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/users?${
         params.value
       }`,
       {
@@ -108,7 +108,7 @@ export const useUsers = () => {
     error.value = null;
     return await fetch(
       `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v1/roles/users/${userRefId}/sync`,
       {
         method: "POST",
@@ -145,7 +145,7 @@ export const useUsers = () => {
     
     if (confirm("You are about to synchronize users. This operation might take a while. Proceed?")) {
       return await fetch(
-      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/users/sync-users`,
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/users/sync-users`,
       {
         method: "POST",
         headers: {
@@ -185,7 +185,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     return await fetch(
-      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/v1/users`,
       {
         method: "PUT",
         headers: {
@@ -200,7 +200,7 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     return await fetch(
-      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users`,
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/v1/users`,
       {
         method: "PUT",
         headers: {
@@ -250,7 +250,7 @@ export const useUsers = () => {
     error.value = null;
 
     await fetch(
-      `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/v1/users?keycloakId=${
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/v1/users?keycloakId=${
         user.keycloakId
       }&force=false`,
       {
@@ -289,7 +289,7 @@ export const useUsers = () => {
     isLoading.value = true;
 
     const url = `${
-      import.meta.env.VITE_DOMAIN_URL
+      import.meta.env.VITE_APP_ROOT_AUTH
     }/users-admin/api/users/reset-password`;
 
     const { isFetching, error, data } = await useFetch(url)
@@ -312,7 +312,7 @@ export const useUsers = () => {
     error.value = null;
     return await fetch(
       `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v1/users/by-identifier/${params}`,
       {
         method: "GET",

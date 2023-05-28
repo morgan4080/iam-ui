@@ -4,7 +4,7 @@ import apiCall from "@/utils/api";
 //moved
 export function syncRoles() {
   const url = `${
-    import.meta.env.VITE_DOMAIN_URL
+    import.meta.env.VITE_APP_ROOT_AUTH
   }/users-admin/api/roles/sync-roles`;
   const method = `POST`;
   const myHeaders = new Headers();
@@ -18,7 +18,7 @@ export function syncRoles() {
 // moved
 export function syncServices() {
   const url = `${
-    import.meta.env.VITE_DOMAIN_URL
+    import.meta.env.VITE_APP_ROOT_AUTH
   }/users-admin/api/organizations/services/sync`;
   const method = `POST`;
   const myHeaders = new Headers();
@@ -31,7 +31,7 @@ export function syncServices() {
 //moved
 export async function getRoles(query = ""): Promise<any> {
   const url = `${
-    import.meta.env.VITE_DOMAIN_URL
+    import.meta.env.VITE_APP_ROOT_AUTH
   }/users-admin/api/roles${query}`;
 
   const method = "GET";
@@ -41,7 +41,7 @@ export async function getRoles(query = ""): Promise<any> {
 //moved
 export async function getServices(): Promise<any> {
   const url = `${
-    import.meta.env.VITE_DOMAIN_URL
+    import.meta.env.VITE_APP_ROOT_AUTH
   }/users-admin/api/organizations/services`;
 
   const myHeaders = new Headers();
@@ -58,7 +58,7 @@ export async function getServices(): Promise<any> {
 export async function createRole(payload: any): Promise<any> {
   return new Promise(async (resolve, reject) => {
     const response = await fetch(
-      import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles",
+      import.meta.env.VITE_APP_ROOT_AUTH + "/users-admin/api/roles",
       {
         method: "POST",
         headers: {
@@ -80,7 +80,7 @@ export async function createRole(payload: any): Promise<any> {
 //moved
 export function getPermissions(): Promise<any> {
   const url: string =
-    import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/permissions";
+    import.meta.env.VITE_APP_ROOT_AUTH + "/users-admin/api/permissions";
 
   const myHeaders = new Headers();
 
@@ -95,7 +95,7 @@ export function getPermissions(): Promise<any> {
 //moved
 export async function getRole(keyCloakId: any): Promise<any> {
   const url: string =
-    import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/" + keyCloakId;
+    import.meta.env.VITE_APP_ROOT_AUTH + "/users-admin/api/roles/" + keyCloakId;
 
   const headers = new Headers();
 
@@ -106,7 +106,7 @@ export async function getRole(keyCloakId: any): Promise<any> {
 /*
 export function getUserAdminRoles(roleIds: [], ): Promise<any> {
 
-    const url: string = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/roles/all"
+    const url: string = import.meta.env.VITE_APP_ROOT_AUTH + "/users-admin/api/roles/all"
 
     const myHeaders = new Headers()
 
@@ -126,7 +126,7 @@ export function getUserAdminRoles(roleIds: [], ): Promise<any> {
 }*/
 
 export function logout() {
-  const url = import.meta.env.VITE_DOMAIN_URL + "/";
+  const url = import.meta.env.VITE_APP_ROOT_AUTH + "/";
   const method = "GET";
   return apiCall({ url, method }, { withCredentials: true });
 }
@@ -138,7 +138,7 @@ export function getUsersRoles(payload: any) {
       withCredentials: false,
     },
     url:
-      import.meta.env.VITE_DOMAIN_URL +
+      import.meta.env.VITE_APP_ROOT_AUTH +
       "/users-admin/api/roles/user/" +
       payload,
   };

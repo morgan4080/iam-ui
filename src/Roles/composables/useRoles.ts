@@ -28,7 +28,7 @@ export const useRoles = () => {
     isLoading.value = true;
 
     await generateParams();
-    const url = `${import.meta.env.VITE_DOMAIN_URL}/users-admin/api/roles?${
+    const url = `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/roles?${
       params.value
     }`;
 
@@ -52,7 +52,7 @@ export const useRoles = () => {
     error.value = null;
     return await fetch(
       `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/roles/user/${userRefId}`,
       {
         method: "GET",

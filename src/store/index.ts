@@ -91,7 +91,7 @@ const store = createStore<State>({
       commit("set_notification", payload);
     },
     logout({ commit }, payload) {
-      const url = import.meta.env.VITE_DOMAIN_URL + "/";
+      const url = import.meta.env.VITE_APP_ROOT_AUTH + "/";
       const method = "GET";
       return new Promise(async (resolve, reject) => {
         const response = await fetch(url, {
@@ -113,7 +113,7 @@ const store = createStore<State>({
     // refactored to fetchUserRoles in useRoles composables
     getUsersRoles({}, payload: any) {
       const url =
-        import.meta.env.VITE_DOMAIN_URL +
+        import.meta.env.VITE_APP_ROOT_AUTH +
         "/users-admin/api/roles/user/" +
         payload;
       const method = "GET";
@@ -137,7 +137,7 @@ const store = createStore<State>({
     // TODO remove this
     passChange({}, payload: any) {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/users/update-password?notifyUser=${payload.notifyUser}`;
       delete payload.notifyUser;
       const method = "POST";
@@ -162,7 +162,7 @@ const store = createStore<State>({
     // TODO remove this
     pinChange({}, payload: any) {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v1/auth/ussd/pin?notifyUser=${payload.notifyUser}`;
       delete payload.notifyUser;
       return fetch(url, {
@@ -184,7 +184,7 @@ const store = createStore<State>({
     },
     /* getUserAdminRoles({ }, roleIds: []): Promise<any> {
 
-             const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/roles/all"
+             const url: string = import.meta.env.VITE_APP_ROOT_AUTH + "/api/roles/all"
 
              const myHeaders = new Headers()
 
@@ -204,7 +204,7 @@ const store = createStore<State>({
          },*/
     getRole({}, keyCloakId: any): Promise<any> {
       const url: string =
-        import.meta.env.VITE_DOMAIN_URL + "/api/roles/" + keyCloakId;
+        import.meta.env.VITE_APP_ROOT_AUTH + "/api/roles/" + keyCloakId;
 
       const method = "GET";
       return new Promise(async (resolve, reject) => {
@@ -226,7 +226,7 @@ const store = createStore<State>({
     async postUser({}, payload: any): Promise<any> {
       try {
         const url = `${
-          import.meta.env.VITE_DOMAIN_URL
+          import.meta.env.VITE_APP_ROOT_AUTH
         }/users-admin/api/v1/users?notifyUser=${payload.notifyUser}`;
         delete payload.notifyUser;
         const method = "POST";
@@ -252,7 +252,7 @@ const store = createStore<State>({
     },
     getUser({}, route: any): Promise<any> {
       const url: string =
-        import.meta.env.VITE_DOMAIN_URL +
+        import.meta.env.VITE_APP_ROOT_AUTH +
         "/users-admin/api/users/" +
         route.params.id;
       const method = "GET";
@@ -274,7 +274,7 @@ const store = createStore<State>({
     },
     async deleteUser({}, keycloakId): Promise<any> {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v1/users?keycloakId=${keycloakId}&force=false`;
       const requestOptions = {
         method: "DELETE",
@@ -294,7 +294,7 @@ const store = createStore<State>({
       }
     },
     getPermissions({}): Promise<any> {
-      const url: string = import.meta.env.VITE_DOMAIN_URL + "/api/permissions";
+      const url: string = import.meta.env.VITE_APP_ROOT_AUTH + "/api/permissions";
       const method = "GET";
       return new Promise(async (resolve, reject) => {
         const response = await fetch(url, {
@@ -313,7 +313,7 @@ const store = createStore<State>({
       });
     },
     async createRole({}, payload: any): Promise<any> {
-      const url = import.meta.env.VITE_DOMAIN_URL + "/api/roles";
+      const url = import.meta.env.VITE_APP_ROOT_AUTH + "/api/roles";
       const method = "POST";
       return new Promise(async (resolve, reject) => {
         const response = await fetch(url, {
@@ -333,7 +333,7 @@ const store = createStore<State>({
       });
     },
     async updateRole({}, payload: any): Promise<any> {
-      const url = import.meta.env.VITE_DOMAIN_URL + "/users-admin/api/v1/roles";
+      const url = import.meta.env.VITE_APP_ROOT_AUTH + "/users-admin/api/v1/roles";
       const method = "PUT";
       return new Promise(async (resolve, reject) => {
         const response = await fetch(url, {
@@ -354,7 +354,7 @@ const store = createStore<State>({
     },
     getServices({}): Promise<any> {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/organizations/services`;
       const method = "GET";
       return new Promise(async (resolve, reject) => {
@@ -375,7 +375,7 @@ const store = createStore<State>({
     },
     getRoles({}, query = ""): Promise<any> {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/roles${query}`;
       const method = "GET";
       return new Promise(async (resolve, reject) => {
@@ -396,7 +396,7 @@ const store = createStore<State>({
     },
     getUsers({ commit }, query = ""): Promise<any> {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/users${query}`;
       return new Promise((resolve, reject) => {
         fetch(url, {
@@ -417,7 +417,7 @@ const store = createStore<State>({
     },
     syncServices({ commit }) {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/organizations/services/sync`;
       const method = `POST`;
       return new Promise((resolve, reject) => {
@@ -438,7 +438,7 @@ const store = createStore<State>({
     },
     syncRoles({ commit }, payload) {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/roles/sync-roles`;
       const method = `POST`;
       return new Promise((resolve, reject) => {
@@ -459,7 +459,7 @@ const store = createStore<State>({
     },
     assignRoles({ commit }, { userRefId, payload }) {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v1/roles/users/${userRefId}/assign`;
       const method = `POST`;
       return new Promise((resolve, reject) => {
@@ -484,7 +484,7 @@ const store = createStore<State>({
     },
     fetchRoleUsers({ commit }, role_id: string): Promise<any> {
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v2/roles/${role_id}/users`;
       const method = "GET";
       return new Promise((resolve, reject) => {
@@ -517,7 +517,7 @@ const store = createStore<State>({
       };
 
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v2/roles/${role_id}/users`;
 
       return new Promise((resolve, reject) => {
@@ -552,7 +552,7 @@ const store = createStore<State>({
       };
 
       const url = `${
-        import.meta.env.VITE_DOMAIN_URL
+        import.meta.env.VITE_APP_ROOT_AUTH
       }/users-admin/api/v2/roles/${role_id}/users`;
 
       return new Promise((resolve, reject) => {

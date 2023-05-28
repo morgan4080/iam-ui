@@ -7,7 +7,7 @@ import nProgress from "nprogress";
 import "../node_modules/nprogress/nprogress.css";
 import "./index.css";
 
-const url = `${import.meta.env.VITE_DOMAIN_URL}/authentication`;
+const url = `${import.meta.env.VITE_APP_ROOT_AUTH}/authentication`;
 
 const myHeaders = new Headers();
 

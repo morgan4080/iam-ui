@@ -20,7 +20,7 @@ const organisation = computed(() =>
 
 async function doLogout() {
   try {
-    await fetch(`${import.meta.env.VITE_DOMAIN_URL}/logout`, {
+    await fetch(`${import.meta.env.VITE_APP_ROOT_AUTH}/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
@@ -33,7 +33,7 @@ async function doLogout() {
   }
 }
 
-const theUrl: any = import.meta.env.VITE_DOMAIN_URL;
+const theUrl: any = import.meta.env.VITE_APP_ROOT_AUTH;
 </script>
 <template>
   <nav class="bg-gray-800">
