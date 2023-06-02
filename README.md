@@ -1,11 +1,10 @@
 # Vue 3 + Typescript + Vite + TailwindCSS
 
-## Deployment Docker
-
-## Production Deployment
+## Production Build
 - docker build -t presta-iam-ui/admin .
-- docker run -it -p 9099:80 --rm --name dockerize-presta-iam-ui presta-iam-ui/admin
 
-## Local Deployment
-- docker build -t presta-iam-ui/admin -f Dockerfile.dev .
-- docker run -it -p 9099:80 --rm --name dockerize-presta-iam-ui presta-iam-ui/admin
+## Staging Build
+- docker build --build-arg environment=staging -t presta-iam-ui/admin .
+
+## Local Build
+- docker build --build-arg environment=local -t presta-iam-ui/admin .

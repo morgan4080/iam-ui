@@ -1,10 +1,12 @@
+ARG environment=deploy
+
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /presta-iam-ui
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run deploy
+RUN npm run $environment
 
 # production stage
 FROM nginx:stable-alpine as production-stage
