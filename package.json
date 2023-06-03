@@ -7,7 +7,7 @@
     "dev": "vite --base=/admin/ --port 9099",
     "build": "vue-tsc --noEmit && vite build --base=/admin/",
     "rebuild": "npm run clean && npm install && npm run build",
-    "local": "vue-tsc --noEmit && vite build --base=/admin/ --mode local",
+    "local": "vue-tsc --noEmit && vite build --base=/admin/ --mode development",
     "staging": "vue-tsc --noEmit && vite build --base=/admin/ --mode staging",
     "serve": "vite preview",
     "clean": "rm -rf node_modules",

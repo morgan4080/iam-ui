@@ -6,9 +6,9 @@ docker build -t presta-iam-ui/admin .
 ```
 ## Staging Build
 ```
-docker build --build-arg environment=staging -t presta-iam-ui/admin .
+docker build --build-arg env=staging -t presta-iam-ui/admin .
 ```
 ## Local Build
 ```
-docker build --build-arg environment=local -t presta-iam-ui/admin .
+docker build --build-arg env=local -t presta-iam-ui/admin .
 ```

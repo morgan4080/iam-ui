@@ -396,7 +396,6 @@ const roleSync = async () => {
                     </div>
 
                     <transition
-                      ref="tooltip"
                       enter-active-class=""
                       leave-active-class="transition ease-in duration-100"
                       enter-class=""
@@ -406,6 +405,7 @@ const roleSync = async () => {
                     >
                       <ul
                         v-show="pageCountOpen"
+                        ref="tooltip"
                         class="origin-top-right absolute z-10 right-0 w-12 rounded-md shadow-lg overflow-hidden bg-white divide-y divide-gray-200 ring-1 ring-black ring-opacity-5 focus:outline-none"
                         tabindex="-1"
                         role="listbox"
