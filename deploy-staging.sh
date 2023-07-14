@@ -7,8 +7,8 @@ if [ "$CONTAINER_ID" ] && [ "$IMAGE_ID" ]; then
     docker stop "$CONTAINER_ID" &&
      docker rmi "$IMAGE_ID" -f && git pull && git checkout main &&
       docker build --build-arg env=staging -t prestaadminui/latest . &&
-       docker run -d -p 4081:80 prestaadminui/latest
+       docker run -d -p 9099:80 prestaadminui/latest
 else
   git pull && git checkout main && docker build --build-arg env=staging -t prestaadminui/latest . &&
-         docker run -d -p 4081:80 prestaadminui/latest
+         docker run -d -p 9099:80 prestaadminui/latest
 fi
