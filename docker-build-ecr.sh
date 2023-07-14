@@ -1,6 +1,6 @@
+#!/bin/bash
+
 echo '===> Compiling & Packaging prestaapps/presta-iam-ui ...'
-npm install
-npm run deploy
 
 GIT_BRANCH=$(git name-rev --name-only HEAD | sed "s/~.*//")
 GIT_COMMIT=$(git rev-parse HEAD)
@@ -13,7 +13,7 @@ if [[ $(git status -s) ]]; then
     GIT_DIRTY='true'
 fi
 
-echo "APP VERSION = "$APP_VERSION
+echo "APP VERSION = $APP_VERSION"
 
 echo '===> Building prestaapps/prestaadminui docker image...'
 #Oauth service
@@ -28,7 +28,10 @@ docker build \
   --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
   --build-arg env=production \
   .
-echo "Done building prestaapps/prestaadminui:"$APP_VERSION
+echo "Done building prestaapps/prestaadminui: $APP_VERSION"
 
-docker push 665804139994.dkr.ecr.us-west-2.amazonaws.com/prestaapps/prestaadminui:"$APP_VERSION"
-docker push 665804139994.dkr.ecr.us-west-2.amazonaws.com/prestaapps/prestaadminui:latest
+if  [[ $1 = "-a" ]]; then
+  docker push 665804139994.dkr.ecr.us-west-2.amazonaws.com/prestaapps/prestaadminui:"$APP_VERSION"
+  docker push 665804139994.dkr.ecr.us-west-2.amazonaws.com/prestaapps/prestaadminui:latest
+ echo "Done pushing prestaapps/prestaadminui to ECR: $APP_VERSION"
+fi;

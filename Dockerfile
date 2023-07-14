@@ -8,7 +8,6 @@ ARG env=production
 RUN npm run ${env}
 COPY . .
 
-
 # production stage
 FROM nginx:stable-alpine as production-stage
 COPY ./.nginx/default.conf /etc/nginx/conf.d/default.conf
