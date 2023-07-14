@@ -26,6 +26,7 @@ docker build \
   --build-arg GIT_DIRTY="$GIT_DIRTY" \
   --build-arg BUILD_CREATOR="$BUILD_CREATOR" \
   --build-arg BUILD_NUMBER="$BUILD_NUMBER" \
+  --build-arg env=production \
   .
 echo "Done building prestaapps/prestaadminui:"$APP_VERSION
 

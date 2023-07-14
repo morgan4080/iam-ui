@@ -4,7 +4,7 @@ WORKDIR /presta-iam-ui
 COPY package*.json ./
 RUN npm install
 COPY . .
-ARG env=local
+ARG env=production
 RUN npm run ${env}
 COPY . .
 
