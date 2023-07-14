@@ -6,3 +6,4 @@ prestaui
 dist-ssr
 *.local
 .vscode
+package-lock.json
