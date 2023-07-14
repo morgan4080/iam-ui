@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "production": "vue-tsc --noEmit && vite build --base=/admin/ --mode production",
-    "staging": "vite build --base=/admin/ --mode staging",
+    "staging": "vue-tsc && vite build --base=/admin/ --mode staging",
     "development": "vue-tsc --noEmit && vite build --base=/admin/ --mode development",
     "local": "vite --base=/admin/ --port 9099",
     "build": "vue-tsc --noEmit && vite build --base=/admin/",
