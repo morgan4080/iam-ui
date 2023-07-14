@@ -9,6 +9,6 @@ if [ "$CONTAINER_ID" ] && [ "$IMAGE_ID" ]; then
       docker build --build-arg env=staging -t prestaadminui/latest . &&
        docker run -d -p 4081:80 prestaadminui/latest
 else
-  docker build --build-arg env=staging -t prestaadminui/latest . &&
+  git pull && docker build --build-arg env=staging -t prestaadminui/latest . &&
          docker run -d -p 4081:80 prestaadminui/latest
 fi
