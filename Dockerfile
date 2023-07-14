@@ -1,7 +1,8 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:20-alpine3.17 as build-stage
 WORKDIR /presta-iam-ui
 COPY package*.json ./
+RUN npm clean
 RUN npm install
 COPY . .
 ARG env=production
