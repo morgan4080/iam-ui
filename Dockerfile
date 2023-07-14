@@ -2,7 +2,7 @@
 FROM node:20-alpine3.17 as build-stage
 WORKDIR /presta-iam-ui
 COPY package*.json ./
-RUN npm clean
+RUN npm run clean
 RUN npm install
 COPY . .
 ARG env=production

@@ -671,9 +671,9 @@ const setNotificationStatus = (e: any): void => {
           <transition
             enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
             leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-            enter-class="transform opacity-0 translate-x-full"
+            enter-from-class="transform opacity-0 translate-x-full"
             enter-to-class="transform opacity-100 translate-x-0"
-            leave-class="transform opacity-100 translate-x-0"
+            leave-from-class="transform opacity-100 translate-x-0"
             leave-to-class="transform opacity-0 translate-x-full"
           >
             <form
@@ -962,9 +962,9 @@ const setNotificationStatus = (e: any): void => {
           <transition
             enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
             leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-            enter-class="transform opacity-0 translate-x-full"
+            enter-from-class="transform opacity-0 translate-x-full"
             enter-to-class="transform opacity-100 translate-x-0"
-            leave-class="transform opacity-100 translate-x-0"
+            leave-from-class="transform opacity-100 translate-x-0"
             leave-to-class="transform opacity-0 translate-x-full"
           >
             <form
@@ -1145,9 +1145,9 @@ const setNotificationStatus = (e: any): void => {
           <transition
             enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
             leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-            enter-class="transform opacity-0 translate-x-full"
+            enter-from-class="transform opacity-0 translate-x-full"
             enter-to-class="transform opacity-100 translate-x-0"
-            leave-class="transform opacity-100 translate-x-0"
+            leave-from-class="transform opacity-100 translate-x-0"
             leave-to-class="transform opacity-0 translate-x-full"
           >
             <form
@@ -1380,9 +1380,9 @@ const setNotificationStatus = (e: any): void => {
           <transition
             enter-active-class="transform transition ease-in-out duration-500 sm:duration-700"
             leave-active-class="transform transition ease-in-out duration-500 sm:duration-700"
-            enter-class="transform opacity-0 translate-x-full"
+            enter-from-class="transform opacity-0 translate-x-full"
             enter-to-class="transform opacity-100 translate-x-0"
-            leave-class="transform opacity-100 translate-x-0"
+            leave-from-class="transform opacity-100 translate-x-0"
             leave-to-class="transform opacity-0 translate-x-full"
           >
             <div

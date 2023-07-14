@@ -398,9 +398,9 @@ const roleSync = async () => {
                     <transition
                       enter-active-class=""
                       leave-active-class="transition ease-in duration-100"
-                      enter-class=""
+                      enter-from-class=""
                       enter-to-class=""
-                      leave-class="opacity-100"
+                      leave-from-class="opacity-100"
                       leave-to-class="opacity-0"
                     >
                       <ul
