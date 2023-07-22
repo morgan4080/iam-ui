@@ -1,0 +1,13 @@
+replicas: 1
+imagePullPolicy: IfNotPresent
+serviceAccountName: gateway-sa
+
+users_admin_ui:
+  image: 665804139994.dkr.ecr.us-west-2.amazonaws.com/prestaapps/prestaadminui
+  imageTag: 1.0.0-103-ge46f582
+  port: 8000
+  host: accounts.presta.co.ke
+  dep: cloud-users-admin-ui-server
+  con: cloud-users-admin-ui-container
+  app: cloud-users-admin-ui
+  svc: cloud-users-admin-ui

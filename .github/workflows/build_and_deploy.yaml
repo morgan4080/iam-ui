@@ -1,0 +1,62 @@
+name: Presta IAM UI Continuous Delivery
+run-name: Presta IAM UI automatic deployment
+on:
+  push:
+    branches:
+      - cd-project
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Capture build tag
+        id: buildtag
+        run: echo "TAG_NAME=$(git describe --always)" >> $GITHUB_OUTPUT
+
+      - name: Echo build tag
+        run: "echo ${{steps.buildtag.outputs.TAG_NAME}}"
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.GH_ACTION_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.GH_ACTION_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{vars.GH_ACTION_AWS_REGION}}
+
+      - name: Login to ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry}}/prestaapps
+          ECR_REPOSITORY: prestaadminui
+          IMAGE_TAG: ${{ steps.buildtag.outputs.TAG_NAME }}
+        run: |
+          docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" -t "$ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg env=production" .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: ${{vars.GH_ACTION_KUBECTL_VERSION}}
+
+      - name: Install helm
+        uses: azure/setup-helm@v3
+        with:
+          version: ${{vars.GH_ACTION_HELM_VERSION}}
+
+      - name: Setup kubeconfig
+        run: aws eks update-kubeconfig --region ${{vars.GH_ACTION_AWS_REGION}} --name ${{vars.GH_ACTION_K8S_CLUSTER_NAME}}
+
+      - name: Get Cluster Services
+        run: kubectl get svc
+      - name: Helm update/install
+        env:
+          IMAGE_TAG: ${{ steps.buildtag.outputs.TAG_NAME }}
+        run: cd charts && helm upgrade --install  --set users_admin_ui.imageTag=$IMAGE_TAG --dependency-update  -n prod cloud-users-admin-ui ./
+

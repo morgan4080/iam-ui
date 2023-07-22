@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.users_admin_ui.svc}}
+  labels:
+    app: {{.Values.users_admin_ui.app}}
+    version: "0.9"
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{.Values.users_admin_ui.port}}
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: {{.Values.users_admin_ui.app}}

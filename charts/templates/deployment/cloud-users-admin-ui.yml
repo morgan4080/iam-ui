@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.users_admin_ui.dep}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.users_admin_ui.app}}
+  replicas: {{.Values.replicas}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.users_admin_ui.app}}
+        version: "0.9"
+    spec:
+      serviceAccountName: {{.Values.serviceAccountName}}
+      containers:
+        - name: {{.Values.users_admin_ui.con}}
+          image: {{.Values.users_admin_ui.image}}:{{.Values.users_admin_ui.imageTag}}
+          imagePullPolicy: {{.Values.imagePullPolicy}}
+          ports:
+            - containerPort: 80
+{{/*          startupProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /ussddata/actuator/health*/}}
+{{/*              port: {{.Values.ussd_data.port}}*/}}
+{{/*            initialDelaySeconds: 20*/}}
+{{/*            periodSeconds: 15*/}}
+{{/*            failureThreshold: 20*/}}
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /ussddata/actuator/health/liveness*/}}
+{{/*              port: {{.Values.ussd_data.port}}*/}}
+{{/*            initialDelaySeconds: 10*/}}
+{{/*            failureThreshold: 3*/}}
+{{/*            periodSeconds: 3*/}}
