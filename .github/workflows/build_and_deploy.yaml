@@ -58,5 +58,5 @@ jobs:
       - name: Helm update/install
         env:
           IMAGE_TAG: ${{ steps.buildtag.outputs.TAG_NAME }}
-        run: cd charts && helm upgrade --install  --set users_admin_ui.imageTag=$IMAGE_TAG --dependency-update --dry-run  -n prod cloud-users-admin-ui ./
+        run: cd charts && helm upgrade --install  --set users_admin_ui.imageTag=$IMAGE_TAG --dependency-update --dry-run  -n gateway cloud-users-admin-ui ./
 
