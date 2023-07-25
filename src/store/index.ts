@@ -1,21 +1,7 @@
 import { createStore, Store } from "vuex";
-import apiCall from "@/utils/api";
-import axios, { AxiosResponse } from "axios";
 import { KeycloakUser } from "@/Users/types";
 import { RoleUsers } from "@/types/roleTypes";
 import { InjectionKey } from "vue";
-
-/*const api = axios.create()
-
-api.interceptors.response.use((response: AxiosResponse) => {
-    if (response.status === 302) {
-        const currentUrl = window.location.href
-        window.location.href = `${import.meta.env.VITE_APP_ROOT_AUTH}?redirect_url=${currentUrl}`
-        return
-    }
-
-    return response
-})*/
 
 // define your typings for the store state
 export interface State {

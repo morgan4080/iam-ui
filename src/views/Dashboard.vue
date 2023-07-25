@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { getRoles } from "@/modules/all";
-import { ref, computed, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+import { ref, onBeforeMount } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
+import CustomCard from "@/components/common/CustomCard.vue";
+import ActivityLogs from "@/components/tables/ActivityLogs.vue";
+import DropDownMenu from "@/components/common/DropDownMenu.vue";
 
 const { fetchUsers, users, pageables } = useUsers();
-const store = useStore();
 
 const roleCount = ref(0);
 
@@ -16,6 +17,21 @@ getRoles()
   .catch((e: any) => {
     alert(e.message);
   });
+
+const groups = [
+  {
+    name: "All Groups",
+  },
+  {
+    name: "Group 1",
+  },
+];
+
+const selectedGroup = ref(groups[0]);
+
+const setGroup = (group: typeof selectedGroup.value) => {
+  selectedGroup.value = group;
+};
 
 onBeforeMount(async () => await fetchUsers());
 </script>
@@ -29,95 +45,117 @@ onBeforeMount(async () => await fetchUsers());
         class="py-3 md:flex md:justify-between lg:border-t lg:border-gray-200"
       >
         <div class="flex-1 min-w-0">
-          <div class="ml-3 flex items-center border-b border-gray-200">
+          <div class="ml-3 flex flex-col items-start">
             <h1
-              class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
+              class="text-lg font-normal leading-7 text-gray-600 sm:leading-9 sm:truncate"
             >
-              IAM Resources
+              Identity & Access Management (IAM) Dashboard
             </h1>
-          </div>
-          <div class="ml-3 mt-4 text-sm block">
-            <div class="text-xs opacity-75 flex space-x-16">
-              <router-link
-                to="/users"
-                class="flex text-blue-600"
-              >
-                <span class="pr-3">Users:</span>
-                {{ users && pageables && pageables.totalRecords }}
-              </router-link>
-              <router-link
-                to="/roles"
-                class="flex text-blue-600"
-              >
-                <span class="pr-3">Roles:</span>
-                {{ roleCount }}
-              </router-link>
+            <div class="text-caption text-gray-600 font-regular mb-n1">
+              A Summary Of
+              <span class="font-weight-medium text-gray-800"> Users</span> And
+              <span class="font-weight-medium text-gray-800"> Roles</span>
             </div>
           </div>
-          <div class="ml-3 mt-4 text-sm block hidden">
-            <div class="font-normal border-b border-gray-200 py-2">
-              Best practices
-            </div>
-            <div class="text-xs pt-3 opacity-75 flex space-x-16">
-              <ul
-                class="space-y-1 list-disc list-inside"
-                role="list"
-              >
-                <li>Quis elit egestas venenatis mattis dignissim.</li>
-                <li>
-                  Cras cras lobortis vitae vivamus ultricies facilisis tempus.
-                </li>
-                <li>Orci in sit morbi dignissim metus diam arcu pretium.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="flex-1 min-w-0 pt-6 sm:pt-0 max-w-xs md:pl-8">
-          <div class="ml-3 flex items-center border-b border-gray-200">
-            <h1
-              class="text-base font-semibold leading-7 text-gray-900 sm:leading-9 sm:truncate"
+          <div class="mt-4 text-sm flex flex-wrap">
+            <CustomCard
+              title=""
+              sub-title="Total Users"
+              sub-title-classes="text-base"
             >
-              Additional information
-            </h1>
+              <div class="space-y-2">
+                <div class="flex flex-wrap justify-between">
+                  <h1 class="text-primary font-normal text-xl">
+                    {{ users ? users.length : 0 }}
+                  </h1>
+                  <v-btn
+                    variant="tonal"
+                    color="primary"
+                    append-icon="mdi-chevron-right"
+                    class="text-none"
+                    @click="$router.push('/users')"
+                  >
+                    <span class="tracking-normal">View Users</span>
+                  </v-btn>
+                </div>
+                <div class="flex gap-4 md:gap-8">
+                  <h6 class="text-caption text-grey-darken-1">
+                    Web: <span class="font-semibold text-grey-darken-2">0</span>
+                  </h6>
+                  <h6 class="text-caption text-grey-darken-1">
+                    Mobile:
+                    <span class="font-semibold text-grey-darken-2">0</span>
+                  </h6>
+                  <h6 class="text-caption text-grey-darken-1">
+                    Web & Mobile:
+                    <span class="font-semibold text-grey-darken-2">{{
+                      users ? users.length : 0
+                    }}</span>
+                  </h6>
+                </div>
+              </div>
+            </CustomCard>
+            <CustomCard
+              title=""
+              sub-title="Total Roles"
+              sub-title-classes="text-base"
+            >
+              <div class="space-y-2">
+                <div class="flex flex-wrap justify-between">
+                  <h1 class="text-primary font-normal text-xl">
+                    {{ roleCount }}
+                  </h1>
+                  <v-btn
+                    variant="tonal"
+                    color="primary"
+                    append-icon="mdi-chevron-right"
+                    class="text-none"
+                    @click="$router.push('/roles')"
+                  >
+                    <span class="tracking-normal">View Roles</span>
+                  </v-btn>
+                </div>
+                <div class="flex gap-4 md:gap-8">
+                  <h6 class="text-caption text-grey-darken-1">
+                    Owner:
+                    <span class="font-semibold text-grey-darken-2">0</span>
+                  </h6>
+                  <h6 class="text-caption text-grey-darken-1">
+                    Business Manager:
+                    <span class="font-semibold text-grey-darken-2">0</span>
+                  </h6>
+                  <h6 class="text-caption text-grey-darken-1">
+                    Operator:
+                    <span class="font-semibold text-grey-darken-2">0</span>
+                  </h6>
+                  <h6 class="text-caption text-grey-darken-1">
+                    Sales Agent:
+                    <span class="font-semibold text-grey-darken-2">0</span>
+                  </h6>
+                </div>
+              </div>
+            </CustomCard>
           </div>
-          <div class="ml-3 text-sm block">
-            <div class="text-xs pt-3 opacity-75 space-y-2">
-              <a
-                href="https://support.presta.co.ke/portal/en/home"
-                rel="noopener noreferrer"
-                target="_blank"
-                class="flex text-blue-600"
-                >IAM documentation
-              </a>
-              <a
-                href="https://support.presta.co.ke/portal/en/home"
-                rel="noopener noreferrer"
-                target="_blank"
-                class="flex text-blue-600"
-                >Additional resources
-              </a>
-            </div>
-          </div>
-          <div class="ml-3 mt-4 text-sm block">
-            <div class="font-normal border-b border-gray-200 py-2">
-              Quick links
-            </div>
-            <div class="text-xs pt-2 opacity-75 flex flex-col space-y-2">
-              <a
-                href="https://www.presta.co.ke/contact-us"
-                rel="noopener noreferrer"
-                target="_blank"
-                class="flex text-blue-600"
-                >Contact us
-              </a>
-              <a
-                href="https://support.presta.co.ke/portal/en/home"
-                rel="noopener noreferrer"
-                target="_blank"
-                class="flex text-blue-600"
-                >Support
-              </a>
-            </div>
+          <div class="mt-6">
+            <CustomCard
+              title="Activity Log"
+              sub-title="A Summary Of All The Implemented Changes"
+            >
+              <v-col
+                cols="auto"
+                sm="12"
+                class="pt-10 pb-8"
+              >
+                <v-row class="d-flex justify-start">
+                  <DropDownMenu
+                    :selected="selectedGroup"
+                    :groups="groups"
+                    @selected="setGroup($event)"
+                  />
+                </v-row>
+              </v-col>
+              <ActivityLogs />
+            </CustomCard>
           </div>
         </div>
       </div>
