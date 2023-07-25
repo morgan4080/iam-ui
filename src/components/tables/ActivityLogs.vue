@@ -89,7 +89,7 @@ const loadItems = (options: optionsType) => {
     id="activity-logs"
     class="text-md-body-2"
     :items-per-page="itemsPerPage"
-    :headers="headers"
+    :headers="headers as any"
     :items-length="totalItems"
     :items="serverItems"
     :loading="loading"
