@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getRoles } from "@/modules/all";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
 import CustomCard from "@/components/common/CustomCard.vue";
 import ActivityLogs from "@/components/tables/ActivityLogs.vue";
@@ -10,6 +10,8 @@ const { fetchUsers, users, pageables } = useUsers();
 
 const roleCount = ref(0);
 
+const searchActivityLogs = ref("");
+
 getRoles()
   .then(({ totalRecords }) => {
     roleCount.value = totalRecords;
@@ -18,20 +20,82 @@ getRoles()
     alert(e.message);
   });
 
-const groups = [
-  {
-    name: "All Groups",
-  },
-  {
-    name: "Group 1",
-  },
-];
+const groups = computed(() => {
+  return [
+    {
+      name: "Groups",
+    },
+    {
+      name: "Group 1",
+    },
+  ];
+});
 
-const selectedGroup = ref(groups[0]);
+const activityTypes = computed(() => {
+  return [
+    {
+      name: "Activity Types",
+    },
+    {
+      name: "Activity X",
+    },
+  ];
+});
+
+const selectedGroup = ref(groups.value[0]);
+const selectedActivityType = ref(activityTypes.value[0]);
 
 const setGroup = (group: typeof selectedGroup.value) => {
   selectedGroup.value = group;
 };
+
+const setActivityType = (activity: typeof selectedActivityType.value) => {
+  selectedActivityType.value = activity;
+};
+
+const refresh = () => {
+  // re fetch store
+};
+
+const headers = ref([
+  {
+    title: "User",
+    key: "user",
+    align: "start",
+    sortable: false,
+    visible: true,
+  },
+  {
+    title: "Group",
+    key: "group",
+    align: "start",
+    sortable: false,
+    visible: true,
+  },
+  {
+    title: "Description",
+    key: "description",
+    align: "start",
+    sortable: false,
+    visible: true,
+  },
+  {
+    title: "Date & Time",
+    key: "dateTime",
+    align: "start",
+    sortable: false,
+    visible: true,
+  },
+]);
+
+function changeVisibility(key: string) {
+  headers.value.forEach(header => {
+    if (header.key === key) {
+      header.visible = !header.visible;
+      header.align = header.align === " d-none" ? " start" : " d-none";
+    }
+  });
+}
 
 onBeforeMount(async () => await fetchUsers());
 </script>
@@ -141,20 +205,95 @@ onBeforeMount(async () => await fetchUsers());
               title="Activity Log"
               sub-title="A Summary Of All The Implemented Changes"
             >
+              <template #search>
+                <div class="align-center d-flex w-full md:w-1/5">
+                  <v-input
+                    v-model="searchActivityLogs"
+                    hide-details
+                    class="font-weight-light"
+                    density="compact"
+                  >
+                    <template #default>
+                      <v-input
+                        append-icon="mdi-magnify"
+                        class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
+                        hide-details="auto"
+                      >
+                        <input
+                          type="text"
+                          class="bg-transparent focus:ring-0 text-caption"
+                          placeholder="Search"
+                        />
+                      </v-input>
+                    </template>
+                  </v-input>
+                </div>
+              </template>
               <v-col
                 cols="auto"
                 sm="12"
                 class="pt-10 pb-8"
               >
-                <v-row class="d-flex justify-start">
+                <v-row class="d-flex gap-4 justify-start">
                   <DropDownMenu
                     :selected="selectedGroup"
                     :groups="groups"
                     @selected="setGroup($event)"
                   />
+                  <DropDownMenu
+                    :selected="selectedActivityType"
+                    :groups="activityTypes"
+                    @selected="setActivityType($event)"
+                  />
+                  <v-spacer />
+                  <v-btn
+                    class="v-btn--size-default text-caption text-capitalize"
+                    density="default"
+                    :flat="true"
+                    style="border: 1px solid rgba(128, 128, 128, 0.25)"
+                    @click="refresh"
+                  >
+                    Refresh
+                  </v-btn>
+                  <v-menu transition="slide-y-transition">
+                    <template #activator="{ props }">
+                      <v-btn
+                        variant="outlined"
+                        append-icon="mdi:mdi-chevron-down"
+                        v-bind="props"
+                        class="mr-4 text-none text-caption"
+                        style="border: 1px solid rgba(128, 128, 128, 0.25)"
+                      >
+                        Show / Hide
+                      </v-btn>
+                    </template>
+                    <v-sheet
+                      border
+                      rounded
+                    >
+                      <v-list
+                        :nav="true"
+                        density="compact"
+                        role="listbox"
+                      >
+                        <v-list-item
+                          v-for="(item, idx) in headers"
+                          :key="idx"
+                          :value="item"
+                          @click="changeVisibility(item.key)"
+                        >
+                          <v-icon
+                            v-if="item.visible"
+                            icon="mdi:mdi-check"
+                          />
+                          {{ item.title }}</v-list-item
+                        >
+                      </v-list>
+                    </v-sheet>
+                  </v-menu>
                 </v-row>
               </v-col>
-              <ActivityLogs />
+              <ActivityLogs :headers="headers" />
             </CustomCard>
           </div>
         </div>

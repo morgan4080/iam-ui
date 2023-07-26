@@ -2,7 +2,7 @@ const userRoutes = [
   {
     path: "/users",
     name: "Users",
-    component: () => import("@users/views/userIndex.vue"),
+    component: () => import("@users/views/index.vue"),
   },
   {
     path: "/users/create",

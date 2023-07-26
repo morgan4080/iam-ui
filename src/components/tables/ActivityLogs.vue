@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
+defineProps<{
+  headers: {
+    title: string;
+    key: string;
+    align: string;
+    sortable: boolean;
+    visible: boolean;
+  }[];
+}>();
+
 const activities = [
   {
     user: "First Last",
@@ -55,12 +65,6 @@ const activities = [
 
 const itemsPerPage = ref(5);
 const totalItems = ref(activities.length);
-const headers = ref([
-  { title: "User", key: "user", align: "start", sortable: false },
-  { title: "Group", key: "group", align: "start", sortable: false },
-  { title: "Description", key: "description", align: "start", sortable: false },
-  { title: "Date & Time", key: "dateTime", align: "start", sortable: false },
-]);
 const search = ref("");
 const loading = ref(false);
 
@@ -104,8 +108,16 @@ const loadItems = (options: optionsType) => {
     :show-current-page="true"
     :items-per-page-options="[
       {
+        title: '5',
+        value: 5,
+      },
+      {
         title: '10',
         value: 10,
+      },
+      {
+        title: '50',
+        value: 50,
       },
     ]"
     @update:options="loadItems"

@@ -1,4 +1,4 @@
-import { reactive, Ref, ref } from "vue";
+import { reactive, ref } from "vue";
 import { EditUserPayload, EnableUserPayload, User } from "@/Users/types";
 import { Pageables } from "@/types";
 import { mapActions } from "@/modules/mapStore";
@@ -12,7 +12,7 @@ export const useUsers = () => {
   const isLoading = ref(false);
   const error = ref<null | unknown>(null);
   const pageables = reactive({
-    recordsPerPage: 10,
+    recordsPerPage: 5,
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
@@ -26,7 +26,9 @@ export const useUsers = () => {
     isLoading.value = true;
     error.value = null;
     return await fetch(
-      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/users/${userRefId}`,
+      `${
+        import.meta.env.VITE_APP_ROOT_AUTH
+      }/users-admin/api/users/${userRefId}`,
       {
         method: "GET",
         headers: {
@@ -91,7 +93,7 @@ export const useUsers = () => {
         users.value = data.records;
         pageables.totalRecords = data.totalRecords;
         pageables.totalPages = data.totalPages;
-        pageables.currentPage = data.currentPage + 1;
+        pageables.currentPage = data.currentPage;
         return;
       })
       .catch(async err => {
@@ -142,39 +144,45 @@ export const useUsers = () => {
     const payload = {
       syncAllUsers: true,
     };
-    
-    if (confirm("You are about to synchronize users. This operation might take a while. Proceed?")) {
+
+    if (
+      confirm(
+        "You are about to synchronize users. This operation might take a while. Proceed?"
+      )
+    ) {
       return await fetch(
-      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/users/sync-users`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    )
-      .then(async response => {
-        if (!response.ok) {
-          await defineNotification({
-            message: response.text(),
-            error: true,
-          });
-          return;
+        `${
+          import.meta.env.VITE_APP_ROOT_AUTH
+        }/users-admin/api/users/sync-users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         }
-        await defineNotification({
-          message: `Users synced successfully`,
-          success: true,
-        });
-        pageables.currentPage = 0;
-        await fetchUsers();
-        return;
-      })
-      .catch(err => {
-        error.value = err;
-        throw new Error(err);
-      })
-      .finally(() => (isLoading.value = false));
+      )
+        .then(async response => {
+          if (!response.ok) {
+            await defineNotification({
+              message: response.text(),
+              error: true,
+            });
+            return;
+          }
+          await defineNotification({
+            message: `Users synced successfully`,
+            success: true,
+          });
+          pageables.currentPage = 0;
+          await fetchUsers();
+          return;
+        })
+        .catch(err => {
+          error.value = err;
+          throw new Error(err);
+        })
+        .finally(() => (isLoading.value = false));
     } else {
       pageables.currentPage = 0;
       return fetchUsers().finally(() => (isLoading.value = false));
@@ -250,9 +258,9 @@ export const useUsers = () => {
     error.value = null;
 
     await fetch(
-      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/v1/users?keycloakId=${
-        user.keycloakId
-      }&force=false`,
+      `${
+        import.meta.env.VITE_APP_ROOT_AUTH
+      }/users-admin/api/v1/users?keycloakId=${user.keycloakId}&force=false`,
       {
         method: "DELETE",
         headers: {

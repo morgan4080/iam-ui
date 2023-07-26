@@ -11,3 +11,64 @@ a.router-link-active.router-link-exact-active {
 a.navbar.router-link-active.router-link-exact-active {
   background-color: hsla(199, 89%, 48%, 0.5);
 }
+
+.searchField:focus {
+  outline: rgba(128, 128, 128, 0.35) solid 1px;
+  border: none;
+}
+
+.v-text-field .v-input__details {
+  padding-inline-start: 0 !important;
+}
+
+.v-input__details {
+  font-size: 0;
+}
+
+.v-field {
+  border-radius: 0;
+}
+
+.v-theme--light {
+  --v-border-color: 228, 228, 228 !important;
+}
+
+.v-data-table__tr {
+  --v-border-opacity: 1;
+  color: #081419 !important
+}
+
+.v-data-table__thead {
+  --v-border-opacity: 1;
+}
+
+.v-data-table-footer {
+  margin-top: 20px !important;
+}
+
+.appBar {
+  border-bottom: 1px solid #D9DEE4 !important;
+}
+
+.v-field__input {
+  font-size: .85rem;
+}
+
+.action-btn {
+  align-self: center;
+  border: 0.2px solid #E4E4E4 !important;
+  height: 1.5rem !important;
+}
+
+.action-btn-icon {
+  min-width: 0 !important;
+  padding: 0 6px !important;
+}
+
+.v-field.v-field--appended {
+  --v-field-padding-end: 0px;
+}
+
+.v-field--focused {
+  border: none;
+}
