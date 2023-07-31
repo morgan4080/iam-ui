@@ -74,7 +74,10 @@ const assignUserRole = async () => {
 };
 
 onMounted(async () => {
-  await fetchUsers();
+  if (props.selectedUser) {
+    pageables.searchTerm = props.selectedUser.username;
+  }
+  await search();
 });
 </script>
 

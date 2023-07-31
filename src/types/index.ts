@@ -4,7 +4,10 @@ export interface Pageables {
   totalPages: number;
   currentPage: number;
   searchTerm: string | null;
-  sort: "ASC" | "DESC";
+  sort: string;
+  order: "ASC" | "DESC";
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export interface Notification {

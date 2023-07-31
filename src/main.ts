@@ -47,14 +47,6 @@ authStore
     instantiateApp();
     authStore.setAuthState(response);
     store.commit("set_current_user", response);
-    const loader = document.getElementById("loader");
-    const app = document.getElementById("app");
-    if (loader) {
-      loader.style.display = "none";
-    }
-    if (app) {
-      app.style.display = "flex";
-    }
   })
   .catch(() => {
     const currentUrl = window.location.href;

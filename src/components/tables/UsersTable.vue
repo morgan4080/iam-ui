@@ -52,7 +52,7 @@ const serverItems = computed(() => {
         ...user,
         user: user.firstName + " " + user.lastName,
         status: user.isEnabled,
-        access: user.isUSSDDisabled ? "Web & Mobile" : "Web",
+        access: !user.isUSSDDisabled ? "Web & Mobile" : "Web",
         group: "_",
         actions: [
           {

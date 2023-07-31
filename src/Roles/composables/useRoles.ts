@@ -1,5 +1,5 @@
 import { reactive, ref } from "vue";
-import type { Role } from "@/Roles/types";
+import type { Role, RoleV2 } from "@/Roles/types";
 import { Pageables } from "@/types";
 import { useQueryParams } from "@/composables/useQueryParams";
 import { mapActions } from "@/modules/mapStore";
@@ -10,6 +10,7 @@ export const useRoles = () => {
   const { defineNotification } = mapActions();
 
   const roles = ref<Role[] | null>(null);
+  const rolesV2 = ref<RoleV2[] | null>(null);
   const userRoles = ref();
   const isLoading = ref(false);
   const error = ref<null | unknown>(null);
@@ -21,8 +22,32 @@ export const useRoles = () => {
     currentPage: 0,
     sort: "ASC",
     searchTerm: null,
+    order: "DESC",
   }) as Pageables;
   const { params, generateParams } = useQueryParams(pageables);
+
+  async function fetchRolesV2() {
+    isLoading.value = true;
+
+    await generateParams();
+    const url = `${
+      import.meta.env.VITE_APP_ROOT_AUTH
+    }/users-admin/api/v1/permissions/roles?showPermissions=true${params.value}`;
+
+    const { isFetching, error, data } = await useFetch(url).get().json();
+    isLoading.value = isFetching.value;
+    if (error.value) {
+      errors.value = error.value;
+      await defineNotification({
+        message: error.value,
+        error: true,
+      });
+    }
+    rolesV2.value = data.value.records;
+    pageables.totalRecords = data.value.totalRecords;
+    pageables.totalPages = data.value.totalPages;
+    pageables.currentPage = data.value.currentPage + 1;
+  }
 
   async function fetchRoles() {
     isLoading.value = true;
@@ -84,11 +109,13 @@ export const useRoles = () => {
 
   return {
     roles,
+    rolesV2,
     isLoading,
     error,
     pageables,
     userRoles,
     fetchRoles,
+    fetchRolesV2,
     fetchUserRoles,
   };
 };

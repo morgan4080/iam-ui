@@ -17,10 +17,11 @@ const getIcon = (type: any) => {
   <div>
     <v-snackbar
       v-model="snackbarStore.isShow"
-      timeout="2000"
+      timeout="3000"
       :color="snackbarStore.type"
-      class="elevation-10"
-      location="top"
+      location="bottom"
+      variant="outlined"
+      size="x-small"
     >
       <div class="d-flex align-center">
         <v-icon class="mr-2">{{ getIcon(snackbarStore.type) }}</v-icon>

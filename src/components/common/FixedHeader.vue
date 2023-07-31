@@ -1,43 +1,44 @@
 <script setup lang="ts">
-import {toRef} from "vue";
+import { toRef } from "vue";
 
 const props = defineProps<{
   title: string;
   subTitle: string;
-}>()
+  highlighted?: string;
+}>();
 
-const title = toRef(props, "title")
-const subTitle = toRef(props, "subTitle")
+const title = toRef(props, "title");
+const subTitle = toRef(props, "subTitle");
+const highlighted = toRef(props, "highlighted");
 </script>
 
 <template>
-  <v-responsive>
-    <div class="bg-white border-none position-sticky">
-      <v-container fluid>
-        <v-row class="d-flex pb-4">
-          <v-col>
+  <div class="bg-white border-none">
+    <v-container :fluid="true">
+      <v-row class="d-flex pb-4 items-center space-y-2 md:space-y-0">
+        <v-col class="space-y-2">
+          <div class="flex items-center">
             <h1 class="text-h6 font-weight-regular">{{ title }}</h1>
-            <h2 class="text-caption text-grey-darken-1 font-weight-regular">
-              {{ subTitle }}
-            </h2>
-          </v-col>
-          <v-col
-              cols="auto"
-              class="d-flex align-center"
+            <slot name="refreshContent" />
+          </div>
+          <h2
+            class="text-xs text-grey-darken-1 font-weight-regular text-no-wrap"
           >
-            <v-row class="d-flex px-4 justify-end">
-              <slot name="buttons"></slot>
-            </v-row>
-          </v-col>
+            {{ subTitle }}
+            <span class="text-gray-800 font-weight-medium text-caption">{{
+              highlighted
+            }}</span>
+          </h2>
+        </v-col>
+        <v-row class="flex px-4 justify-self-start md:justify-end">
+          <slot name="buttons" />
         </v-row>
-        <v-row class="d-flex">
-          <slot name="tabs"></slot>
-        </v-row>
-      </v-container>
-    </div>
-  </v-responsive>
+      </v-row>
+      <v-row class="d-flex">
+        <slot name="tabs" />
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

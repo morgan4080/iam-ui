@@ -1,9 +1,28 @@
 <script setup lang="ts">
+defineProps({
+  defaultText: {
+    type: String,
+    default: "",
+  },
+  groups: {
+    type: Array,
+    default: () => [],
+  },
+  variant: {
+    type: String,
+    default: "flat",
+  },
+  color: {
+    type: String,
+    default: "primary",
+  },
+  extraClasses: {
+    type: String,
+    default: "",
+  },
+});
+
 defineEmits(["selected"]);
-defineProps<{
-  selected: { name: string };
-  groups: { name: string }[];
-}>();
 </script>
 
 <template>
@@ -11,13 +30,15 @@ defineProps<{
     <template #activator="{ props }">
       <v-btn
         class="v-btn--size-default text-caption text-capitalize"
-        density="compact"
+        :class="extraClasses"
         append-icon="mdi:mdi-chevron-down"
         v-bind="props"
         :flat="true"
         style="border: 1px solid rgba(128, 128, 128, 0.25)"
+        :variant="variant"
+        :color="color"
       >
-        {{ selected.name }}
+        {{ defaultText }}
       </v-btn>
     </template>
     <v-sheet
@@ -45,5 +66,3 @@ defineProps<{
     </v-sheet>
   </v-menu>
 </template>
-
-<style scoped></style>

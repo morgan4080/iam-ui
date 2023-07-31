@@ -1,12 +1,12 @@
 import { reactive, ref } from "vue";
 import { EditUserPayload, EnableUserPayload, User } from "@/Users/types";
 import { Pageables } from "@/types";
-import { mapActions } from "@/modules/mapStore";
 import { useQueryParams } from "@/composables/useQueryParams";
 import { useFetch } from "@vueuse/core";
+import { useAuthStore } from "@/store/auth-store";
 
 export const useUsers = () => {
-  const { defineNotification } = mapActions();
+  const authStore = useAuthStore();
   const user = ref<User | null>(null);
   const users = ref<User[] | null>(null);
   const isLoading = ref(false);
@@ -16,8 +16,11 @@ export const useUsers = () => {
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
-    sort: "ASC",
+    sort: "firstName",
+    order: "DESC",
     searchTerm: null,
+    startDate: null,
+    endDate: null,
   }) as Pageables;
 
   const { params, generateParams } = useQueryParams(pageables);
@@ -40,10 +43,8 @@ export const useUsers = () => {
         if (response.ok) {
           return await response.json();
         }
-        await defineNotification({
-          message: await response.text(),
-          error: true,
-        });
+        const txt = await response.text();
+        authStore.addAlerts("error", txt);
       })
       .then(async data => {
         user.value = {
@@ -58,10 +59,7 @@ export const useUsers = () => {
         };
       })
       .catch(async err => {
-        await defineNotification({
-          message: err,
-          error: true,
-        });
+        authStore.addAlerts("error", err);
       })
       .finally(() => (isLoading.value = false));
   }
@@ -71,7 +69,7 @@ export const useUsers = () => {
     error.value = null;
     await generateParams();
     return await fetch(
-      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/users?${
+      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/v1/users/list?${
         params.value
       }`,
       {
@@ -83,10 +81,8 @@ export const useUsers = () => {
     )
       .then(async response => {
         if (!response.ok) {
-          await defineNotification({
-            message: response.text(),
-            error: true,
-          });
+          const txt = await response.text();
+          authStore.addAlerts("error", txt);
           return;
         }
         const data = await response.json();
@@ -97,10 +93,7 @@ export const useUsers = () => {
         return;
       })
       .catch(async err => {
-        await defineNotification({
-          message: err,
-          error: true,
-        });
+        authStore.addAlerts("error", err);
       })
       .finally(() => (isLoading.value = false));
   }
@@ -123,16 +116,11 @@ export const useUsers = () => {
         if (response.ok) {
           return await response.json();
         }
-        await defineNotification({
-          message: await response.text(),
-          error: true,
-        });
+        const txt = await response.text();
+        authStore.addAlerts("error", txt);
       })
       .catch(async err => {
-        await defineNotification({
-          message: err,
-          error: true,
-        });
+        authStore.addAlerts("error", err);
       })
       .finally(() => (isLoading.value = false));
   }
@@ -164,16 +152,11 @@ export const useUsers = () => {
       )
         .then(async response => {
           if (!response.ok) {
-            await defineNotification({
-              message: response.text(),
-              error: true,
-            });
+            const txt = await response.text();
+            authStore.addAlerts("error", txt);
             return;
           }
-          await defineNotification({
-            message: `Users synced successfully`,
-            success: true,
-          });
+          authStore.addAlerts("success", `Users synced successfully`);
           pageables.currentPage = 0;
           await fetchUsers();
           return;
@@ -232,16 +215,11 @@ export const useUsers = () => {
         if (response.ok) {
           return await response.json();
         }
-        await defineNotification({
-          message: await response.text(),
-          error: true,
-        });
+        const txt = await response.text();
+        authStore.addAlerts("error", txt);
       })
       .catch(async err => {
-        await defineNotification({
-          message: err,
-          error: true,
-        });
+        authStore.addAlerts("error", err);
       })
       .finally(() => (isLoading.value = false));
   }
@@ -270,14 +248,11 @@ export const useUsers = () => {
     )
       .then(async response => {
         if (response.ok) {
-          defineNotification({
-            message: "User deleted successfully",
-            success: true,
-          });
+          authStore.addAlerts("error", "User deleted successfully");
           await fetchUsers();
         } else {
           const data = await response.text();
-          defineNotification({ message: data, error: true });
+          authStore.addAlerts("error", data);
         }
       })
       .catch(error => {
@@ -308,10 +283,7 @@ export const useUsers = () => {
       return data.value;
     }
     if (error.value) {
-      await defineNotification({
-        message: error.value,
-        error: true,
-      });
+      authStore.addAlerts("error", error.value);
     }
   }
 
@@ -334,10 +306,7 @@ export const useUsers = () => {
         if (response.status === 204) return "unique";
       })
       .catch(async err => {
-        await defineNotification({
-          message: err,
-          error: true,
-        });
+        authStore.addAlerts("error", err);
       })
       .finally(() => (isLoading.value = false));
   }

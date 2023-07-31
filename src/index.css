@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
-@tailwind base;
+/*@tailwind base;*/
 @tailwind components;
 @tailwind utilities;
 
@@ -71,4 +71,40 @@ a.navbar.router-link-active.router-link-exact-active {
 
 .v-field--focused {
   border: none;
+}
+
+.v-expansion-panel-title__overlay {
+  background: none !important;
+  border-bottom: 1px solid #9d9d9d;
+  border-top: 1px solid #9d9d9d;
+}
+
+.expansion-panel-container {
+  border: 1px solid #e4e4e4;
+}
+
+.v-expansion-panel-text__wrapper {
+  padding: 0 !important;
+}
+
+.expansion-panel {
+  border: 1px solid #9d9d9d;
+  border-top: none;
+}
+.v-data-table-header__content {
+  font-weight: bold !important;
+  color: #081419 !important;
+}
+
+.v-input--disabled {
+  background: #E4E4E4;
+  color: #081419;
+}
+
+.v-field--disabled {
+  opacity: 1 !important;
+}
+
+.c{
+color: rgba(242, 242, 242, 0.14);
 }

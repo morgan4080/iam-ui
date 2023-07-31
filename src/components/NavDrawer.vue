@@ -302,7 +302,6 @@
       </v-sheet>
     </v-menu>
   </v-app-bar>
-
   <v-overlay
     v-model="authStore.getAuthPrompt"
     :contained="true"

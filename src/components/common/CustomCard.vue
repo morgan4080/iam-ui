@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 defineProps({
   title: {
     type: String,
@@ -13,31 +12,48 @@ defineProps({
     type: String,
     default: "text-caption",
   },
+  requireSpace: {
+    type: Boolean,
+    default: true,
+  },
 });
 </script>
 
 <template>
   <v-col class="h-100">
     <v-col class="bg-white border-none rounded-sm h-100">
-      <v-col>
+      <v-col v-if="requireSpace">
         <div class="flex flex-wrap items-center justify-between">
-          <v-col>
+          <div class="pb-3">
             <h1 class="text-h6 font-weight-regular">{{ title }}</h1>
             <h2
               class="text-grey-darken-1 font-weight-regular"
               :class="subTitleClasses ? subTitleClasses : ''"
             >
               {{ subTitle }}
+              <slot name="information" />
             </h2>
-          </v-col>
+          </div>
           <slot name="search"></slot>
         </div>
         <slot></slot>
       </v-col>
+      <div v-else>
+        <div class="flex flex-wrap items-center justify-between">
+          <div class="pb-3">
+            <h1 class="text-h6 font-weight-regular">{{ title }}</h1>
+            <h2
+              class="text-grey-darken-1 font-weight-regular"
+              :class="subTitleClasses ? subTitleClasses : ''"
+            >
+              {{ subTitle }}
+              <slot name="information" />
+            </h2>
+          </div>
+          <slot name="search"></slot>
+        </div>
+        <slot></slot>
+      </div>
     </v-col>
   </v-col>
 </template>
-
-<style scoped>
-
-</style>

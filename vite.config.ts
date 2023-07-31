@@ -1,24 +1,22 @@
-import {defineConfig} from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import path from "path";
 
 // https://vitejs.dev/config/
 
 export default defineConfig({
-    plugins: [
-        vue(),
+  plugins: [vue()],
+  resolve: {
+    alias: [
+      { find: "@", replacement: "/src" },
+      { find: "@ui", replacement: "/src/components/ui" },
+      { find: "@users", replacement: "/src/Users" },
+      { find: "@roles", replacement: "/src/Roles" },
     ],
-    resolve: {
-        alias: [
-            {find: '@', replacement: '/src'},
-            {find: '@ui', replacement: '/src/components/ui'},
-            {find: '@users', replacement: '/src/Users'},
-            {find: '@roles', replacement: '/src/Roles'},
-        ],
-    },
-    envDir: path.resolve(__dirname, './'),
-    server: {
-        /*proxy: {
+  },
+  envDir: path.resolve(__dirname, "./"),
+  server: {
+    /*proxy: {
           '/users-admin/api/users': {
             target: 'https://accounts.presta.co.ke',
             changeOrigin: true,
@@ -62,5 +60,5 @@ export default defineConfig({
             secure: true
           }
         }*/
-    }
-})
+  },
+});

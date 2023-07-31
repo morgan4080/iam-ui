@@ -21,7 +21,7 @@ const props = defineProps<{
   showOverlay: boolean;
   selectedUser: User | null;
 }>();
-const emit = defineEmits(["assignRole"]);
+const emit = defineEmits(["assignRole", "hideRolesOverlay"]);
 const show = toRef(props, "showOverlay");
 </script>
 
@@ -43,7 +43,7 @@ const show = toRef(props, "showOverlay");
           size="small"
           variant="flat"
           icon="mdi-close-circle-outline"
-          @click="show = false"
+          @click="emit('hideRolesOverlay')"
         />
       </template>
 
