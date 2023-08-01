@@ -33,9 +33,10 @@ const Lighttheme: ThemeDefinition = {
     accent: "#705CF6",
     error: "#ef476f",
     info: "#2196F3",
-    success: "#06d6a0",
+    success: "#43A047",
     "on-success": "#ffffff",
     warning: "#ffd166",
+    "dark-blue": "#28637F",
   },
 };
 

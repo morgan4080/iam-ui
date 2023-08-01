@@ -105,6 +105,6 @@ a.navbar.router-link-active.router-link-exact-active {
   opacity: 1 !important;
 }
 
-.c{
-color: rgba(242, 242, 242, 0.14);
+.bg-presta-dark-blue {
+  background-color: #28637F;
 }

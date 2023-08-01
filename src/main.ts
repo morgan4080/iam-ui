@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import router from "./router/";
 import store from "./store/";
 import App from "./App.vue";
-import nProgress from "nprogress";
 import "../node_modules/nprogress/nprogress.css";
 import "./index.css";
 import axios from "axios";
@@ -23,7 +22,7 @@ axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
     console.log("Intercepted", config);
-    nProgress.start();
+    // nProgress.start();
     return config;
   },
   function (error) {

@@ -215,14 +215,14 @@ const editIAMUser = (group: { name: string; value: string }) => {
         v-model="tab"
         color="primary"
         align-tabs="start"
-        density="comfortable"
+        density="compact"
         class="text-none px-3 -mb-1"
       >
         <v-tab
           v-for="(t, ind) in tabs"
           :key="ind"
           :value="t"
-          class="text-none text-caption"
+          class="text-none text-caption font-weight-regular"
           >{{ t }}</v-tab
         >
       </v-tabs>
@@ -246,7 +246,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
           >
             <CustomCard
               title=""
-              sub-title="Assigned Role & Group"
+              sub-title="Assigned Roles"
               sub-title-classes="text-base"
             >
               <template #information>
@@ -265,7 +265,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                     density="compact"
                     :label="true"
                     variant="outlined"
-                    color="primary"
+                    color="dark-blue"
                     class="text-caption mr-2 mb-2"
                   >
                     {{ role.name }}
@@ -300,7 +300,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                     density="compact"
                     :label="true"
                     variant="tonal"
-                    color="primary"
+                    color="dark-blue"
                     class="text-caption"
                   >
                     Web & Mobile
@@ -310,7 +310,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                     density="compact"
                     :label="true"
                     variant="tonal"
-                    color="primary"
+                    color="dark-blue"
                     class="text-caption"
                   >
                     Web
@@ -386,7 +386,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                     elevation="0"
                   >
                     <div class="expansion-panel-container">
-                      <div class="bg-primary py-3 px-4">
+                      <div class="bg-presta-dark-blue py-3 px-4">
                         <h5 class="text-white">User Information</h5>
                       </div>
                       <v-expansion-panels
@@ -520,7 +520,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                     elevation="0"
                   >
                     <div class="expansion-panel-container">
-                      <div class="bg-primary py-3 px-4">
+                      <div class="bg-presta-dark-blue py-3 px-4">
                         <h5 class="text-white">Access Details</h5>
                       </div>
 
@@ -584,7 +584,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                                         density="compact"
                                         :label="true"
                                         variant="tonal"
-                                        color="primary"
+                                        color="dark-blue"
                                         class="text-caption"
                                       >
                                         NOT SET
@@ -688,7 +688,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                                         density="compact"
                                         :label="true"
                                         variant="tonal"
-                                        color="primary"
+                                        color="dark-blue"
                                         class="text-caption"
                                       >
                                         {{ user?.pinStatus }}
@@ -708,7 +708,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                                         density="compact"
                                         :label="true"
                                         variant="tonal"
-                                        color="primary"
+                                        color="dark-blue"
                                         class="text-caption"
                                       >
                                         {{

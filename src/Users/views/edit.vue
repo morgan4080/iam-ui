@@ -11,6 +11,7 @@ import FixedHeader from "@/components/common/FixedHeader.vue";
 import MobileCredentialsForm from "@/components/forms/MobileCredentialsForm.vue";
 import WebCredentialsForm from "@/components/forms/WebCredentialsForm.vue";
 import PersonalDetailsForm from "@/components/forms/PersonalDetailsForm.vue";
+import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 
 const kopeshaURL = ref(import.meta.env.VITE_KOPESHA_URL);
 
@@ -266,26 +267,10 @@ watch(user, () => {
 });
 
 const roleGroups = computed(() => {
-  return [
-    {
-      id: 1,
-      name: "x Group",
-    },
-  ];
+  return [];
 });
 
-const selectedGroup = ref(roleGroups.value[0]);
-
-const rolesComputed = computed(() => {
-  return [
-    {
-      id: 1,
-      name: "Role X",
-    },
-  ];
-});
-
-const selectedRole = ref(rolesComputed.value[0]);
+const selectedGroup = ref(null);
 
 const openKopesha = () => {
   window.open(`${kopeshaURL.value}#/customers/customer_listing`, "_blank");
@@ -380,15 +365,9 @@ const openKopesha = () => {
                   class="opacity-50 ml-1"
                 />
               </template>
-              <v-autocomplete
-                v-model="selectedRole"
-                :items="rolesComputed"
-                item-title="name"
-                variant="outlined"
-                :density="'compact'"
-                :hide-details="true"
-                :flat="true"
-                bg-color="#F2F2F223"
+              <AddRemoveRoles
+                v-if="user"
+                :user="user"
               />
             </CustomCard>
           </v-col>
@@ -514,7 +493,7 @@ const openKopesha = () => {
             md="6"
             sm="12"
           >
-            <v-col>
+            <v-col v-if="user && !user.isUSSDDisabled">
               <v-card
                 color="surface"
                 variant="flat"
@@ -540,7 +519,7 @@ const openKopesha = () => {
                         EDIT
                       </v-btn>
                     </div>
-                    <MobileCredentialsForm v-if="user && !user.isUSSDDisabled" :user="user" />
+                    <MobileCredentialsForm :user="user" />
                   </v-col>
                 </v-col>
               </v-card>
@@ -563,7 +542,10 @@ const openKopesha = () => {
                       </div>
                     </div>
 
-                    <WebCredentialsForm v-if="user" :user="user" />
+                    <WebCredentialsForm
+                      v-if="user"
+                      :user="user"
+                    />
                   </v-col>
                 </v-col>
               </v-card>
