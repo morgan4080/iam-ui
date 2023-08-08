@@ -29,13 +29,13 @@ const show = toRef(props, "showOverlay");
   <v-overlay
     v-model="show"
     :contained="true"
-    class="pt-16 align-start justify-center"
+    class="pt-10 align-start justify-center"
     scroll-strategy="block"
-    :min-width="mobile ? '95%' : '25%'"
+    :width="mobile ? '95%' : '25%'"
   >
     <CustomCard
       title=""
-      sub-title="Assign Role"
+      sub-title="Assign Roles"
       sub-title-classes="text-lg -mx-2"
     >
       <template #search>

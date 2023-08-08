@@ -332,29 +332,6 @@
       </v-card-actions>
     </v-card>
   </v-overlay>
-
-  <div
-    v-if="authStore.showAlerts"
-    class="pa-4"
-    style="position: fixed; top: 70px; right: 10px; z-index: 1"
-  >
-    <v-alert
-      v-for="(alert, i) in authStore.getAlerts"
-      :key="i"
-      variant="outlined"
-      :type="alert.alertType"
-      :prominent="true"
-      border="top"
-      width="auto"
-      max-width="550"
-      min-width="350"
-      :closable="true"
-      close-label="Close Alert"
-      class="bg-white mb-4"
-    >
-      {{ alert.alertMessage }}
-    </v-alert>
-  </div>
 </template>
 
 <script lang="ts" setup>

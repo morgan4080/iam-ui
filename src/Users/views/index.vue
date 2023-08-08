@@ -349,10 +349,12 @@ const searchDateRange = () => {
     </v-row>
   </v-container>
 
-  <AssignRoleOverlay
-    :is-loading="isLoading"
-    :show-overlay="showOverlay"
-    :selected-user="selectedUser"
-    @hide-roles-overlay="showOverlay = false"
-  />
+  <Teleport to="body">
+    <AssignRoleOverlay
+      :is-loading="isLoading"
+      :show-overlay="showOverlay"
+      :selected-user="selectedUser"
+      @hide-roles-overlay="showOverlay = false"
+    />
+  </Teleport>
 </template>

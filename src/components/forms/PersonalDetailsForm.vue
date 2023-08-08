@@ -1,61 +1,98 @@
 <script setup lang="ts">
-import { reactive, toRef, watch } from "vue";
+import { reactive, toRef, watch, computed, onMounted } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { email, required } from "@vuelidate/validators";
-import { User } from "@users/types";
+import { email, helpers, required, numeric } from "@vuelidate/validators";
+import { isValidNumberForRegion, parsePhoneNumber } from "libphonenumber-js";
 
-const emit = defineEmits(["clear"]);
+const emit = defineEmits(["setQuery", "updated", "isError"]);
+
+const validPhone = (value: number) => isValidNumberForRegion(`${value}`, "KE");
 
 const props = defineProps<{
-  loading: boolean;
-  user: User | null;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  emailAddress?: string;
+  requestData: number;
 }>();
 
-const user = toRef(props, "user");
+const firstName = toRef(props, "firstName");
+const lastName = toRef(props, "lastName");
+const phoneNumber = toRef(props, "phoneNumber");
+const emailAddress = toRef(props, "emailAddress");
+const requestData = toRef(props, "requestData");
 
-const loading = toRef(props, "loading");
-
-const initialState = {
-  firstName: user.value ? user.value.firstName : "",
-  lastName: user.value ? user.value.lastName : "",
-  email: user.value ? user.value.email : "",
-  phoneNumber: user.value ? user.value.phoneNumber : "",
-};
+const initialState = computed(() => {
+  return {
+    firstName: firstName.value ? firstName.value : "",
+    lastName: lastName.value ? lastName.value : "",
+    email: emailAddress.value ? emailAddress.value : "",
+    phoneNumber: phoneNumber.value ? phoneNumber.value : "",
+  };
+});
 
 const state = reactive({
-  ...initialState,
+  ...initialState.value,
 });
 
 const rules = {
   firstName: { required },
   lastName: { required },
   email: { required, email },
-  phoneNumber: { required },
+  phoneNumber: {
+    required,
+    numeric,
+    validPhone: helpers.withMessage(
+      "Please provide a valid number",
+      validPhone
+    ),
+  },
 };
 
 const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
 
-const clear = () => {
-  v$.value.$reset();
+const parseNumber = (phoneNo: string) => {
+  return parsePhoneNumber(phoneNo, "KE");
+};
 
-  for (const [key, value] of Object.entries(initialState)) {
-    state[key as keyof typeof initialState] = value;
+const phoneChanged = async () => {
+  if (v$.value.phoneNumber.$errors.length == 0) {
+    const phone = parseNumber(state.phoneNumber);
+    emit("setQuery", {
+      value: `${phone?.countryCallingCode}${phone?.nationalNumber}`,
+      context: "phone-number",
+    });
+    emit("updated", {
+      ...state,
+    });
   }
 };
 
-watch(loading, async () => {
-  if (loading.value) {
-    v$.value.$touch();
-    const result = await v$.value.$validate();
-    if (result) {
-      console.log("submit state", state);
-      clear();
-    } else {
-      setTimeout(() => {
-        emit("clear");
-      }, 1000);
-    }
+watch(state, async () => {
+  const result = await v$.value.$validate();
+  if (result) {
+    emit("isError", false);
+  } else {
+    emit("isError", true);
   }
+});
+
+watch(requestData, async () => {
+  const result = await v$.value.$validate();
+  if (result) {
+    const phone = parseNumber(`${state.phoneNumber}`);
+    emit("updated", {
+      ...state,
+      phoneNumber: `${phone?.countryCallingCode}${phone?.nationalNumber}`,
+    });
+    emit("isError", false);
+  } else {
+    emit("isError", true);
+  }
+});
+
+onMounted(() => {
+  v$.value.$validate();
 });
 </script>
 
@@ -82,6 +119,11 @@ watch(loading, async () => {
           hide-details="auto"
           @input="v$.firstName.$touch"
           @blur="v$.firstName.$touch"
+          @change="
+            emit('updated', {
+              ...state,
+            })
+          "
         ></v-text-field>
       </div>
       <div class="flex-col w-full">
@@ -104,6 +146,11 @@ watch(loading, async () => {
           hide-details="auto"
           @input="v$.lastName.$touch"
           @blur="v$.lastName.$touch"
+          @change="
+            emit('updated', {
+              ...state,
+            })
+          "
         ></v-text-field>
       </div>
     </div>
@@ -120,17 +167,18 @@ watch(loading, async () => {
       v-model="state.phoneNumber"
       color="primary"
       :error-messages="v$.phoneNumber.$errors.map(e => e.$message) as any"
-      placeholder="+254*********"
+      placeholder="254*********"
       required
       variant="outlined"
       density="compact"
       hide-details="auto"
       @input="v$.phoneNumber.$touch"
       @blur="v$.phoneNumber.$touch"
+      @change="phoneChanged"
     ></v-text-field>
 
     <div class="text-subtitle-1 text-sm-caption font-weight-bold py-2">
-      Email phoneNumber
+      Email
       <span
         v-if="v$.email.required"
         class="text-red"
@@ -148,6 +196,12 @@ watch(loading, async () => {
       hide-details="auto"
       @input="v$.email.$touch"
       @blur="v$.email.$touch"
+      @change="
+        emit('setQuery', { value: state.email, context: 'email' });
+        emit('updated', {
+          ...state,
+        });
+      "
     ></v-text-field>
   </form>
 </template>

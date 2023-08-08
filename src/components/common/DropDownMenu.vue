@@ -1,7 +1,8 @@
 <script setup lang="ts">
 defineEmits(["selected"]);
 defineProps<{
-  selected: { name: string };
+  placeholder?: string;
+  selected: { name: string } | null;
   groups: { name: string }[];
 }>();
 </script>
@@ -17,7 +18,7 @@ defineProps<{
         :flat="true"
         style="border: 1px solid rgba(128, 128, 128, 0.25)"
       >
-        {{ selected.name }}
+        {{ selected ? selected.name : placeholder ? placeholder : "" }}
       </v-btn>
     </template>
     <v-sheet

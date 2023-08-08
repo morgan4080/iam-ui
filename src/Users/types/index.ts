@@ -3,7 +3,7 @@ export interface User {
   lastName: string;
   email: string;
   id: string;
-  isEnabled: string;
+  isEnabled: boolean;
   keycloakId: string;
   phoneNumber: string;
   ussdPhoneNumber: string;

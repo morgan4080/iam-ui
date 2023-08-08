@@ -1,5 +1,13 @@
 import { defineStore } from "pinia";
+
 const AUTH_URL = import.meta.env.VITE_AUTH_URL;
+
+function generateRandomNumber(): number {
+  const min = 1000000000; // Minimum 10-digit number
+  const max = 9999999999; // Maximum 10-digit number
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export interface User {
   keycloakId: string;
   username: string;
@@ -11,9 +19,11 @@ export interface User {
   roles: object;
 }
 
-type AlertTypes = "warning" | "error" | "success";
+export type AlertTypes = "warning" | "error" | "success" | "info";
 
 type Alert = {
+  id: number;
+  show: boolean;
   alertType: AlertTypes;
   alertMessage: string;
 }[];
@@ -57,13 +67,15 @@ export const useAuthStore = defineStore("auth-store", {
     setLoading(payload: boolean): void {
       this.loading = payload;
     },
+    removeAlert(id: number): void {
+      this.alerts = this.alerts.filter(alert => (alert.id = id));
+    },
     setAuthPrompt(payload: boolean): void {
       this.authPrompt = payload;
     },
     async initialize(): Promise<any> {
-      const url = AUTH_URL;
       try {
-        const response = await fetch(url, {
+        const response = await fetch(AUTH_URL, {
           method: "GET",
           credentials: "include",
         });
@@ -77,26 +89,25 @@ export const useAuthStore = defineStore("auth-store", {
         return Promise.reject(e.message);
       }
     },
-    setAuthState(data: any): void {
+    setAuthState(data: User): void {
       this.user = data;
       this.isLoggedIn = true;
     },
     addAlerts(type: AlertTypes, message: string) {
       const withoutDuplicates: Set<{
+        id: number;
+        show: boolean;
         alertType: AlertTypes;
         alertMessage: string;
       }> = new Set();
       withoutDuplicates.add({
+        id: generateRandomNumber(),
+        show: true,
         alertType: type,
         alertMessage: message,
       });
 
       this.alerts = [...withoutDuplicates];
-
-      // .shift()
-      setInterval(() => {
-        // this.alerts.shift();
-      }, 2000);
     },
   },
 });

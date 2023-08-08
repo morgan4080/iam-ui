@@ -1,49 +1,50 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { useStore } from "vuex";
 import { useUsers } from "@/Users/composables/useUsers";
 import { QrInterface, EditUserPayload } from "@/Users/types";
-import { mapActions } from "@/modules/mapStore";
 import CustomCard from "@/components/common/CustomCard.vue";
-import ButtonDropDown from "@/components/ButtonDropDown.vue";
 import FixedHeader from "@/components/common/FixedHeader.vue";
 import MobileCredentialsForm from "@/components/forms/MobileCredentialsForm.vue";
 import WebCredentialsForm from "@/components/forms/WebCredentialsForm.vue";
 import PersonalDetailsForm from "@/components/forms/PersonalDetailsForm.vue";
 import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
+import ResetCredentialsDropDown from "@/components/ButtonDropDown.vue";
+import ResetCredentialsModal from "@users/components/ResetCredentialsModal.vue";
+import { useAuthStore } from "@/store/auth-store";
+
+const authStore = useAuthStore();
 
 const kopeshaURL = ref(import.meta.env.VITE_KOPESHA_URL);
+
+const { user, isLoading, fetchUser, verifyUnique, editUser, syncUser } =
+  useUsers();
 
 const props = defineProps<{
   refId: string;
 }>();
-const { defineNotification } = mapActions();
+
 const router = useRouter();
-const store = useStore();
-const { user, isLoading, fetchUser, verifyUnique, editUser, syncUser } =
-  useUsers();
 
 const query = ref("?");
+
+const isError = ref(true);
+
+const setError = (err: boolean) => {
+  isError.value = err;
+};
+
+const requestData = ref(0);
 
 const form = reactive({
   username: "",
   firstName: "",
   lastName: "",
   emailAddress: "",
-  company: "",
   phoneNumber: "",
   ussdPhoneNumber: "",
-  password: "",
-  passwordConfirmation: "",
-  pinSecret: "",
-  pinSecretConfirmation: "",
-  user_roles: [],
+  isEnabled: false,
 });
-
-const organisation = computed(() =>
-  store.state.user ? store.state.user.companyName : null
-);
 
 const qrObject: QrInterface = {
   phoneNumber: "",
@@ -67,66 +68,22 @@ async function byIdentifier() {
   return response === "unique";
 }
 
-async function setQuery(e: Event) {
-  const el = e.target as HTMLInputElement;
-  if (el.id === "email") {
+async function setQuery(obj: { value: string; context: string }) {
+  const { value, context } = obj;
+  if (context === "email") {
     qrObject.phoneNumber = "";
-    qrObject.email = form.emailAddress;
+    qrObject.email = value;
     qrObject.username = "";
   }
-  if (el.id === "phone-number") {
-    qrObject.phoneNumber = form.phoneNumber;
+  if (context === "phone-number") {
+    qrObject.phoneNumber = value;
     qrObject.email = "";
     qrObject.username = "";
   }
-  if (el.id === "phone-number") {
-    if (el.value.length > 12) {
-      el.classList.add("focus:ring-red-400");
-      el.classList.add("focus:border-red-400");
-      el.onblur = () => {
-        el.classList.remove("focus:ring-red-400");
-        el.classList.remove("focus:border-red-400");
-      };
-      el.value = el.value.slice(0, 4);
-      await defineNotification({
-        message: "No more than 12 characters",
-        error: true,
-      });
-    }
-    qrObject.phoneNumber = form.phoneNumber;
-    qrObject.email = "";
-    qrObject.username = "";
-  }
-  if (el.id === "ussd-phone-number") {
-    if (el.value.length > 12) {
-      el.classList.add("focus:ring-red-400");
-      el.classList.add("focus:border-red-400");
-      el.onblur = () => {
-        el.classList.remove("focus:ring-red-400");
-        el.classList.remove("focus:border-red-400");
-      };
-      el.value = el.value.slice(0, 4);
-      await defineNotification({
-        message: "No more than 12 characters",
-        error: true,
-      });
-    }
-    const response0 = await verifyUnique(
-      `?ussdPhoneNumber=${form.ussdPhoneNumber}`
-    );
-    if (response0 !== "unique") {
-      form.ussdPhoneNumber = "";
-      await defineNotification({
-        message: `User with that phone number already exists`,
-        error: true,
-      });
-    }
-    return;
-  }
-  if (el.id === "username") {
+  if (context === "username") {
     qrObject.phoneNumber = "";
     qrObject.email = "";
-    qrObject.username = form.username;
+    qrObject.username = value;
   }
 
   const response = await byIdentifier();
@@ -134,77 +91,51 @@ async function setQuery(e: Event) {
   if (!response) {
     for (const [key, value] of Object.entries(qrObject)) {
       if (value) {
-        if (key === "email") {
-          form.emailAddress = "";
-        }
-        if (key === "phoneNumber") {
-          form.phoneNumber = "";
-        }
-        if (key === "username") {
-          form.username = "";
-        }
-        await defineNotification({
-          message: `User with that ${key} already exists`,
-          error: true,
-        });
+        authStore.addAlerts("warning", `User with that ${key} already exists`);
       }
     }
   }
 }
 
-async function edit() {
+const edit = async () => {
   if (!user.value) return;
-  const payload: EditUserPayload = {
-    userRefId: user.value.id,
-    userName: form.username,
-    firstName: form.firstName,
-    lastName: form.lastName,
-    email: form.emailAddress,
-    phoneNumber: form.phoneNumber,
-    ussdPhoneNumber: form.ussdPhoneNumber,
-    isEnabled: true,
-  };
+  console.log(form, isError.value);
+  if (!isError.value) {
+    const payload: EditUserPayload = {
+      userRefId: user.value.id,
+      userName: form.username,
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.emailAddress,
+      phoneNumber: form.phoneNumber,
+      ussdPhoneNumber: form.ussdPhoneNumber,
+      isEnabled: form.isEnabled,
+    };
 
-  if (form.emailAddress === "") {
-    delete payload.email;
-  }
-  if (form.phoneNumber === "") {
-    delete payload.phoneNumber;
-  }
-
-  await editUser(payload)
-    .then(async response => {
-      if (response) {
-        await defineNotification({
-          message: `User Edited successfully`,
-          success: true,
-        });
-        await router.push(`/users/${props.refId}/view`);
+    for (const [key, value] of Object.entries(payload)) {
+      if (!value || value == "") {
+        authStore.addAlerts("warning", `Check form for errors on field ${key}`);
+        return;
       }
-    })
-    .catch(async (error: string) => {
-      await defineNotification({
-        message: error,
-        error: true,
-      });
-    });
-}
+    }
 
-onMounted(async () => {
-  await fetchUser(props.refId).then(() => {
-    if (!user.value) return;
-    form.username = user.value.username;
-    form.firstName = user.value.firstName;
-    form.lastName = user.value.lastName;
-    form.emailAddress = user.value.email;
-    form.username = user.value.username;
-    form.phoneNumber = user.value.phoneNumber;
-    form.ussdPhoneNumber = user.value.ussdPhoneNumber;
-    form.company = organisation.value;
-  });
-});
+    await editUser(payload)
+      .then(async response => {
+        if (response) {
+          // await router.push(`/users/${props.refId}/view`);
+          authStore.addAlerts("success", "User Edited successfully");
+        }
+      })
+      .catch((error: string) => {
+        authStore.addAlerts("error", error);
+      });
+  } else {
+    authStore.addAlerts("warning", `Data is Unchanged`);
+  }
+};
 
 const tab = ref(null);
+
 const tabs = ref(["User Details"]);
 
 const resetCredentialsGroup = computed(() => {
@@ -256,14 +187,27 @@ const accountStatusGroup = computed(() => {
   ];
 });
 
-const accountStatus = ref("Disabled");
-const accessType = ref("Web");
+const accountStatus = ref<"Enabled" | "Disabled">("Disabled");
+const accessType = ref<"Web & Mobile" | "Web">("Web");
 
 watch(user, () => {
   accountStatus.value =
     user && user.value && user.value.isEnabled ? "Enabled" : "Disabled";
   accessType.value =
     user && user.value && !user.value.isUSSDDisabled ? "Web & Mobile" : "Web";
+
+  if (user && user.value) {
+    form.firstName = user.value.firstName ? user.value.firstName : "";
+    form.lastName = user.value.lastName ? user.value.lastName : "";
+    form.emailAddress = user.value.email ? user.value.email : "";
+    form.username = user.value.username ? user.value.username : "";
+    form.phoneNumber = user.value.phoneNumber ? user.value.phoneNumber : "";
+    form.ussdPhoneNumber = user.value.ussdPhoneNumber
+      ? user.value.ussdPhoneNumber
+      : "";
+    form.isEnabled =
+      user.value.isEnabled !== undefined ? user.value.isEnabled : false;
+  }
 });
 
 const roleGroups = computed(() => {
@@ -275,16 +219,66 @@ const selectedGroup = ref(null);
 const openKopesha = () => {
   window.open(`${kopeshaURL.value}#/customers/customer_listing`, "_blank");
 };
+
+const resetCredentialModalOpen = ref(false);
+
+type ResetCredentialsAction = null | "USSD" | "WEB";
+
+const resetCredentialsAction = ref<ResetCredentialsAction>(null);
+
+function openResetCredentialsModal() {
+  resetCredentialModalOpen.value = true;
+}
+
+function closeResetCredentialsModal() {
+  resetCredentialsAction.value = null;
+  resetCredentialModalOpen.value = false;
+}
+
+watch(accountStatus, newStatus => {
+  form.isEnabled = newStatus == "Enabled";
+});
+
+const setWebCredentials = (obj: { email: string; username: string }) => {
+  const { email, username } = obj;
+  if (username !== "") form.username = username;
+  if (email !== "") form.emailAddress = email;
+};
+
+const setPersonalDetails = (obj: {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  email: string;
+}) => {
+  const { firstName, lastName, phoneNumber, email } = obj;
+  if (firstName !== "") form.firstName = firstName;
+  if (lastName !== "") form.lastName = lastName;
+  if (phoneNumber !== "") form.phoneNumber = phoneNumber;
+  if (email !== "") form.emailAddress = email;
+};
+
+onMounted(async () => {
+  await fetchUser(props.refId);
+});
+
+const submitUser = () => {
+  requestData.value = requestData.value + 1;
+  setTimeout(async () => await edit(), 100);
+};
 </script>
 
 <template>
   <FixedHeader
-    :title="user ? user.firstName + ' ' + user.lastName : ''"
-    :sub-title="'Keycloak ID: '"
+    :title="user ? user.firstName + ' ' + user.lastName : 'Create User'"
+    :sub-title="
+      user ? 'Keycloak ID: ' : 'Fill the details below to create a new user.'
+    "
     :highlighted="user ? user.keycloakId : ''"
   >
     <template #refreshContent>
       <v-btn
+        v-if="user"
         variant="outlined"
         density="compact"
         color="none"
@@ -305,8 +299,10 @@ const openKopesha = () => {
       >
         Go Back
       </v-btn>
-      <ButtonDropDown
+      <ResetCredentialsDropDown
+        v-if="user"
         default-text="Reset Credentials"
+        extra-classes="mx-1"
         :groups="resetCredentialsGroup"
         @selected="resetCredentials"
       />
@@ -314,6 +310,8 @@ const openKopesha = () => {
         variant="flat"
         color="primary"
         class="text-none text-caption mx-2"
+        type="button"
+        @click="submitUser"
       >
         Save User
       </v-btn>
@@ -366,8 +364,9 @@ const openKopesha = () => {
                 />
               </template>
               <AddRemoveRoles
-                v-if="user"
+                :key="JSON.stringify(user)"
                 :user="user"
+                :active="true"
               />
             </CustomCard>
           </v-col>
@@ -379,7 +378,7 @@ const openKopesha = () => {
           >
             <CustomCard
               title=""
-              sub-title="Assign Group"
+              sub-title="Assign Label"
               sub-title-classes="text-base"
             >
               <template #information>
@@ -481,9 +480,20 @@ const openKopesha = () => {
               :require-space="true"
             >
               <PersonalDetailsForm
-                v-if="user"
-                :loading="false"
-                :user="user"
+                :key="
+                  form.firstName +
+                  form.lastName +
+                  form.phoneNumber +
+                  form.emailAddress
+                "
+                :first-name="form.firstName"
+                :last-name="form.lastName"
+                :phone-number="form.phoneNumber"
+                :email-address="form.emailAddress"
+                :request-data="requestData"
+                @set-query="setQuery"
+                @updated="setPersonalDetails"
+                @is-error="setError"
               />
             </CustomCard>
           </v-col>
@@ -543,8 +553,13 @@ const openKopesha = () => {
                     </div>
 
                     <WebCredentialsForm
-                      v-if="user"
-                      :user="user"
+                      :key="form.username + form.emailAddress"
+                      :username="form.username"
+                      :email-address="form.emailAddress"
+                      :request-data="requestData"
+                      @set-query="setQuery"
+                      @updated="setWebCredentials"
+                      @is-error="setError"
                     />
                   </v-col>
                 </v-col>
@@ -555,4 +570,12 @@ const openKopesha = () => {
       </v-container>
     </v-window-item>
   </v-window>
+
+  <ResetCredentialsModal
+    v-if="resetCredentialsAction && user"
+    :open="resetCredentialModalOpen"
+    :action="resetCredentialsAction"
+    :user="user"
+    @close="closeResetCredentialsModal"
+  />
 </template>

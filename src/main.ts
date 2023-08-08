@@ -21,7 +21,6 @@ if (spinner) {
 axios.interceptors.request.use(
   function (config) {
     // Do something before request is sent
-    console.log("Intercepted", config);
     // nProgress.start();
     return config;
   },

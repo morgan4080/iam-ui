@@ -1,22 +1,38 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { computed, onMounted, ref, toRef } from "vue";
+import { onMounted, ref, toRef, watch } from "vue";
 import { getUsersRoles } from "@/modules/all";
 import { User } from "@users/types";
+import { useAuthStore } from "@/store/auth-store";
+const authStore = useAuthStore();
 
-const props = defineProps<{
+const componentProps = defineProps<{
   user: User | null;
+  active?: boolean | null;
 }>();
 
-const idsToRemoveFromUser = ref<string[]>([]);
+const active = toRef(componentProps, "active");
 
-const userData = ref(<any>{});
+const emit = defineEmits(["assignRoles"]);
 
-const user = toRef(props, "user");
+type RoleType = {
+  id: string;
+  keycloakRoleId: string;
+  name: string;
+  description?: string;
+  roleType: string;
+  subRolesId: string[];
+};
+
+const userData = ref(<User | null>null);
+
+const user = toRef(componentProps, "user");
 
 const store = useStore();
 
-const userRoles = ref(<any[]>[]);
+const userRoles = ref(<RoleType[]>[]);
+
+const loading = ref(<boolean>false);
 
 const all_roles = ref(
   <
@@ -30,96 +46,50 @@ const all_roles = ref(
   >[]
 );
 
-const selectedRoles = ref([]);
-
-const addRolesToUser = async () => {
-  if (idsToAddToUser.value.length === 0) {
-    await store.dispatch("defineNotification", {
-      message: "Use the checkbox to select roles to remove",
-      warning: true,
-    });
-  } else {
-    if (
-      confirm(
-        `You are about to add ${idsToAddToUser.value.length} roles from user ${userData.value.username}, proceed?`
-      )
-    ) {
-      try {
-        loading.value = true;
-        const userRoleIds = userRoles.value.map(role => role.id);
-        const { messages } = await store.dispatch("assignRoles", {
-          userRefId: user.value.id.value,
-          payload: {
-            roleIds: [...userRoleIds, ...idsToAddToUser.value],
-          },
-        });
-        /*await store.dispatch("defineNotification", {
-          message: messages[0].message,
-          success: true,
-        });*/
-      } catch (e: any) {
-        alert(e.message);
-      } finally {
-        loading.value = false;
-      }
-    }
-  }
-};
-const removeRolesFromUser = async () => {
-  if (idsToRemoveFromUser.value.length === 0) {
-    /*await store.dispatch("defineNotification", {
-      message: "Use the checkbox to select roles to remove",
-      warning: true,
-    });*/
-  } else {
-    if (
-      confirm(
-        `You are about to remove ${idsToRemoveFromUser.value.length} roles from user ${userData.value.username}, proceed?`
-      )
-    ) {
-      const userRolesIds = userRoles.value.map(role => role.id);
-      const newRoleIds = userRolesIds.filter(
-        role_id => idsToRemoveFromUser.value.indexOf(role_id) === -1
-      );
-      try {
-        loading.value = true;
-        const { messages } = await store.dispatch("assignRoles", {
-          userRefId: user.value.id.value,
-          payload: {
-            roleIds: newRoleIds,
-          },
-        });
-        /*await store.dispatch("defineNotification", {
-          message: messages[0].message,
-          success: true,
-        });*/
-        // await router.push(`/users/${route.params.id}/view`);
-      } catch (e: any) {
-        alert(e.message);
-      } finally {
-        loading.value = false;
-      }
-    }
-  }
-};
+const selectedRoles = ref<string[]>([]);
 
 onMounted(async () => {
   try {
-    userData.value = user.value;
+    if (user.value) {
+      userData.value = user.value;
 
-    const { data } = await getUsersRoles(user.value.keycloakId);
+      const { data } = await getUsersRoles(user.value.keycloakId);
 
-    userRoles.value = data;
+      userRoles.value = data;
 
-    userRoles.value.map((rl: any) => {
-      selectedRoles.value.push(rl.id);
-    });
+      userRoles.value.map((rl: RoleType) => {
+        selectedRoles.value.push(rl.id);
+      });
+    }
 
     const { records } = await store.dispatch("getRoles");
 
     all_roles.value = records;
   } catch (e: any) {
-    alert(e.message);
+    authStore.addAlerts("error", e.message);
+  }
+});
+
+watch(selectedRoles, async newSelectedRoles => {
+  if (active.value !== false && user && user.value) {
+    try {
+      loading.value = true;
+      const { messages } = await store.dispatch("assignRoles", {
+        userRefId: user.value.id,
+        payload: {
+          roleIds: newSelectedRoles,
+        },
+      });
+      if (messages.length > 0) {
+        authStore.addAlerts("success", messages[0].message);
+      }
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      loading.value = false;
+    }
+  } else {
+    emit("assignRoles", newSelectedRoles);
   }
 });
 </script>
@@ -137,5 +107,6 @@ onMounted(async () => {
     :multiple="true"
     :chips="true"
     bg-color="#F2F2F223"
-  />
+  >
+  </v-autocomplete>
 </template>

@@ -12,7 +12,6 @@ import {
   minLength,
   numeric,
   required,
-  sameAs,
 } from "@vuelidate/validators";
 import { useUsers } from "@users/composables/useUsers";
 const router = useRouter();

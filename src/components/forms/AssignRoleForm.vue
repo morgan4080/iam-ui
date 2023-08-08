@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, toRef } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { useUsers } from "@users/composables/useUsers";
 import { useSearch } from "@/composables/useSearch";
 import { User } from "@users/types";
 import { debounce } from "lodash";
+import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
+import { useAuthStore } from "@/store/auth-store";
+import { useStore } from "vuex";
+const authStore = useAuthStore();
+const store = useStore();
 
 const { users, pageables, isLoading, fetchUsers } = useUsers();
 const { search } = useSearch(pageables, fetchUsers);
 
-const props = defineProps<{
+const componentProps = defineProps<{
   selectedUser?: User | null;
 }>();
+
+const selectedUser = toRef(componentProps, "selectedUser");
 
 const loading = ref(false);
 
 const initialState = {
-  user: props.selectedUser ? props.selectedUser.id : null,
-  role: null,
+  user: selectedUser.value ? selectedUser.value.id : null,
   group: null,
 };
 
@@ -28,8 +34,7 @@ const state = reactive({
 
 const rules = {
   user: { required },
-  role: { required },
-  group: { required },
+  group: {},
 };
 
 const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
@@ -59,26 +64,51 @@ const customUserFilter = (itemTitle: string, queryText: string) => {
   filterUser();
 };
 
+const newSelectedRoles = ref([]);
+
 const assignUserRole = async () => {
-  loading.value = !loading.value;
-  v$.value.$touch();
   const result = await v$.value.$validate();
   console.log("submit state", state);
-  setTimeout(() => {
-    if (result) {
-      console.log("submit state", state);
-    }
-    // clear();
+  if (result) {
     loading.value = !loading.value;
-  }, 1000);
+
+    try {
+      loading.value = true;
+      const { messages } = await store.dispatch("assignRoles", {
+        userRefId: state.user,
+        payload: {
+          roleIds: newSelectedRoles.value,
+        },
+      });
+      if (messages.length > 0) {
+        authStore.addAlerts("success", messages[0].message);
+      }
+    } catch (e: { message: string }) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      loading.value = false;
+    }
+  }
 };
 
 onMounted(async () => {
-  if (props.selectedUser) {
-    pageables.searchTerm = props.selectedUser.username;
+  if (selectedUser.value) {
+    pageables.searchTerm = selectedUser.value.username;
   }
   await search();
+
+  const { records } = await store.dispatch("getRoles");
+
+  if (records.length > 0) {
+    newSelectedRoles.value = records.map(role => {
+      return role.id;
+    });
+  }
 });
+
+const setUserRolesToAssign = roles => {
+  newSelectedRoles.value = roles;
+};
 </script>
 
 <template>
@@ -102,7 +132,6 @@ onMounted(async () => {
       color="primary"
       :error-messages="v$.user.$errors.map(e => e.$message) as any"
       placeholder="Type"
-      required
       :items="computedUsers"
       :loading="isLoading"
       :custom-filter="customUserFilter as any"
@@ -111,30 +140,26 @@ onMounted(async () => {
       variant="outlined"
       density="compact"
       hide-details="auto"
-    ></v-autocomplete>
+    >
+      <template #item="{ props, item }">
+        <v-list-item
+          v-bind="props"
+          :title="item?.raw?.firstName + ' ' + item?.raw?.lastName"
+          :subtitle="item?.raw?.email"
+        ></v-list-item>
+      </template>
+    </v-autocomplete>
     <div
       class="text-subtitle-1 text-sm-caption mt-2 font-weight-bold text-gray-400 py-2"
     >
-      Role Name
-      <span
-        v-if="v$.role.required"
-        class="text-red"
-        >*</span
-      >
+      Role Names
     </div>
-    <v-autocomplete
-      v-model="state.role"
-      color="primary"
-      :error-messages="v$.role.$errors.map(e => e.$message) as any"
-      placeholder="Type"
-      required
-      :items="[]"
-      variant="outlined"
-      density="compact"
-      item-title="name"
-      item-value="id"
-      hide-details="auto"
-    ></v-autocomplete>
+    <AddRemoveRoles
+      :key="selectedUser"
+      :user="selectedUser"
+      :active="false"
+      @assign-roles="setUserRolesToAssign"
+    />
     <div
       class="text-subtitle-1 text-sm-caption mt-2 font-weight-bold text-gray-400 py-2"
     >
@@ -168,7 +193,7 @@ onMounted(async () => {
       type="button"
       @click="assignUserRole"
     >
-      Assign Role
+      Assign Roles
     </v-btn>
   </form>
 </template>

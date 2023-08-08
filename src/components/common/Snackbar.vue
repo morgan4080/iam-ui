@@ -1,38 +1,45 @@
 <script setup lang="ts">
-import { useSnackbarStore } from "@/store/snackbarStore";
-const snackbarStore = useSnackbarStore();
+import { AlertTypes, useAuthStore } from "@/store/auth-store";
+const authStore = useAuthStore();
 
-const getIcon = (type: any) => {
-  const icon = {
+const getIcon = (type: AlertTypes): string => {
+  const icon: {
+    info: string;
+    success: string;
+    error: string;
+    warning: string;
+  } = {
     info: "mdi-information",
     success: "mdi-check-circle",
     error: "mdi-alert-circle",
     warning: "mdi-alert",
   };
 
-  return (icon as any)[type];
+  return icon[type];
 };
 </script>
 <template>
   <div>
     <v-snackbar
-      v-model="snackbarStore.isShow"
-      timeout="3000"
-      :color="snackbarStore.type"
+      v-for="(alert, i) in authStore.getAlerts"
+      :key="i"
+      v-model="alert.show"
+      timeout="5000"
+      :color="alert.alertType"
       location="bottom"
-      variant="outlined"
+      variant="flat"
       size="x-small"
     >
       <div class="d-flex align-center">
-        <v-icon class="mr-2">{{ getIcon(snackbarStore.type) }}</v-icon>
-        <span> {{ snackbarStore.message }}</span>
+        <v-icon class="mr-2">{{ getIcon(alert.alertType) }}</v-icon>
+        <span> {{ alert.alertMessage }}</span>
       </div>
 
       <template #actions>
         <v-btn
           icon
           variant="text"
-          @click="snackbarStore.isShow = false"
+          @click="authStore.removeAlert(alert.id)"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>

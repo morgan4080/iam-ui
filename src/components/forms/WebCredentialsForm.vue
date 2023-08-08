@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { computed, reactive, toRef } from "vue";
+import { computed, reactive, toRef, watch, onMounted } from "vue";
 import { required, email } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-import { User } from "@users/types";
+
+const emit = defineEmits(["setQuery", "updated", "isError"]);
 
 const props = defineProps<{
-  user: User | null;
+  username?: string;
+  emailAddress?: string;
+  requestData: number;
 }>();
 
-const user = toRef(props, "user");
+const username = toRef(props, "username");
+const emailAddress = toRef(props, "emailAddress");
+const requestData = toRef(props, "requestData");
 
 const initialState = computed(() => {
   return {
-    username: user.value ? user.value.username : "",
-    email: user.value ? user.value.email : "",
+    username: username.value ? username.value : "",
+    email: emailAddress.value ? emailAddress.value : "",
   };
 });
 
@@ -27,6 +32,31 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
+
+watch(state, async () => {
+  const result = await v$.value.$validate();
+  if (result) {
+    emit("isError", false);
+  } else {
+    emit("isError", true);
+  }
+});
+
+watch(requestData, async () => {
+  const result = await v$.value.$validate();
+  if (result) {
+    emit("updated", {
+      ...state,
+    });
+    emit("isError", false);
+  } else {
+    emit("isError", true);
+  }
+});
+
+onMounted(() => {
+  v$.value.$validate();
+});
 </script>
 
 <template>
@@ -37,6 +67,11 @@ const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
     <div class="flex-col">
       <div class="text-subtitle-1 text-sm-caption font-weight-bold py-2">
         Web Username
+        <span
+          v-if="v$.username.required"
+          class="text-red"
+          >*</span
+        >
       </div>
       <v-text-field
         v-model="state.username"
@@ -49,12 +84,22 @@ const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
         hide-details="auto"
         @input="v$.username.$touch"
         @blur="v$.username.$touch"
+        @change="
+          emit('updated', {
+            ...state,
+          })
+        "
       ></v-text-field>
     </div>
 
     <div class="flex-col">
       <div class="text-subtitle-1 text-sm-caption font-weight-bold py-2">
         Email
+        <span
+          v-if="v$.email.required"
+          class="text-red"
+          >*</span
+        >
       </div>
       <v-text-field
         v-model="state.email"
@@ -67,6 +112,13 @@ const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
         hide-details="auto"
         @input="v$.email.$touch"
         @blur="v$.email.$touch"
+        @change="
+          emit('setQuery', { value: state.email, context: 'email' });
+          emit('updated', {
+            ...state,
+            username: '',
+          });
+        "
       ></v-text-field>
     </div>
   </form>
