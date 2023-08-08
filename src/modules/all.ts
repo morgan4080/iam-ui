@@ -103,27 +103,6 @@ export async function getRole(keyCloakId: any): Promise<any> {
 
   return apiCall({ url, method, headers }, { withCredentials: true });
 }
-/*
-export function getUserAdminRoles(roleIds: [], ): Promise<any> {
-
-    const url: string = import.meta.env.VITE_APP_ROOT_AUTH + "/users-admin/api/roles/all"
-
-    const myHeaders = new Headers()
-
-    myHeaders.append("Authorization", `*!/!*`)
-
-    const headers = myHeaders
-
-    const method = 'GET'
-
-    return new Promise((resolve, reject) => {
-        apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
-            resolve(data)
-        }).catch((e: any) => {
-            reject(e)
-        })
-    })
-}*/
 
 export function logout() {
   const url = import.meta.env.VITE_APP_ROOT_AUTH + "/";

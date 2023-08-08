@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
-  ExclamationTriangleIcon,
   CheckCircleIcon,
   DocumentDuplicateIcon,
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/vue/24/outline";
 import type { User } from "@users/types";
-import { useStore } from "vuex";
-import { mapActions } from "@/modules/mapStore";
 import { useUsers } from "@users/composables/useUsers";
 import { useBreakpoints } from "@vueuse/core";
-
-const { pinChange, defineNotification } = mapActions();
+import { useAuthStore } from "@/store/auth-store";
 const { resetWebPassword } = useUsers();
+const authStore = useAuthStore();
 
 const props = defineProps<{
   open: boolean;
@@ -22,7 +19,6 @@ const props = defineProps<{
   user: User;
 }>();
 const emit = defineEmits(["close"]);
-const store = useStore();
 const resetSuccessful = ref(false);
 const loading = ref(false);
 const password = ref<string | null>(null);
@@ -41,9 +37,7 @@ const message = computed(() => {
   return "";
 });
 
-const tenantId = computed(() =>
-  store.state.user ? store.state.user.tenantId : null
-);
+const tenantId = computed(() => authStore.getLoggedInUser?.tenantId);
 
 function closeModal() {
   emit("close");
@@ -68,6 +62,29 @@ async function resetWebPass() {
   });
 }
 
+function pinChange(payload: any) {
+  const url = `${
+    import.meta.env.VITE_APP_ROOT_AUTH
+  }/users-admin/api/v1/auth/ussd/pin?notifyUser=${payload.notifyUser}`;
+  delete payload.notifyUser;
+  return fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(response.statusText);
+    })
+    .catch(error => {
+      throw new Error(error);
+    });
+}
+
 async function resetUSSDPin() {
   try {
     const payload = {
@@ -82,15 +99,11 @@ async function resetUSSDPin() {
       resetSuccessful.value = true;
     } else {
       loading.value = false;
-      await defineNotification({
-        message: "Something went wrong",
-        error: true,
-      });
+      authStore.addAlerts("error", "Something went wrong");
     }
   } catch (e: any) {
-    console.log(e);
     loading.value = false;
-    await defineNotification({ message: e.messages, error: true });
+    authStore.addAlerts("error", e.messages);
   }
 }
 
@@ -104,7 +117,7 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
           setTimeout(() => (showEmailCopied.value = false), 2000);
         })
         .catch(() => {
-          defineNotification({ message: "Could not copy", error: true });
+          authStore.addAlerts("error", "Could not copy");
         });
     }
     if (type === "NAME") {
@@ -116,7 +129,7 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
           setTimeout(() => (showNameCopied.value = false), 2000);
         })
         .catch(() => {
-          defineNotification({ message: "Could not copy", error: true });
+          authStore.addAlerts("error", "Could not copy");
         });
     }
     if (type === "PASSWORD" && password.value) {
@@ -127,7 +140,7 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
           setTimeout(() => (showPasswordCopied.value = false), 2000);
         })
         .catch(() => {
-          defineNotification({ message: "Could not copy", error: true });
+          authStore.addAlerts("error", "Could not copy");
         });
     }
   } catch (e) {

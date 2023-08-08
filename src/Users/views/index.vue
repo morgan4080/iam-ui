@@ -70,21 +70,12 @@ const headers = ref([
   },
 ]);
 
-const groups = computed(() => {
-  return [
-    {
-      name: "Groups",
-      value: null,
-    },
-  ];
+const labels = computed(() => {
+  return [];
 });
 
-const AccessTypes = computed(() => {
+const accessTypes = computed(() => {
   return [
-    {
-      name: "Access Types",
-      value: null,
-    },
     {
       name: "Web",
       value: "WEB",
@@ -99,10 +90,6 @@ const AccessTypes = computed(() => {
 const statusTypes = computed(() => {
   return [
     {
-      name: "Status",
-      value: null,
-    },
-    {
       name: "Enabled",
       value: true,
     },
@@ -113,12 +100,12 @@ const statusTypes = computed(() => {
   ];
 });
 
-const selectedGroup = ref(groups.value[0]);
-const selectedStatus = ref(statusTypes.value[0]);
-const selectedAccessType = ref(AccessTypes.value[0]);
+const selectedLabel = ref(null);
+const selectedStatus = ref(null);
+const selectedAccessType = ref(null);
 
-const setGroup = (group: typeof selectedGroup.value) => {
-  selectedGroup.value = group;
+const setLabel = (group: typeof selectedLabel.value) => {
+  selectedLabel.value = group;
 };
 
 const setAccessType = (access: typeof selectedAccessType.value) => {
@@ -230,16 +217,19 @@ const searchDateRange = () => {
           >
             <v-row class="d-flex pl-2 gap-4 justify-start">
               <DropDownMenu
+                placeholder="Select Access type"
                 :selected="selectedAccessType"
-                :groups="AccessTypes"
+                :groups="accessTypes"
                 @selected="setAccessType($event)"
               />
               <DropDownMenu
-                :selected="selectedGroup"
-                :groups="groups"
-                @selected="setGroup($event)"
+                placeholder="Select Label"
+                :selected="selectedLabel"
+                :groups="labels"
+                @selected="setLabel($event)"
               />
               <DropDownMenu
+                placeholder="Select Status"
                 :selected="selectedStatus"
                 :groups="statusTypes"
                 @selected="setSelectedStatus($event)"

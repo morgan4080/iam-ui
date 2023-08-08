@@ -2,13 +2,11 @@ import { reactive, ref } from "vue";
 import type { Role, RoleV2 } from "@/Roles/types";
 import { Pageables } from "@/types";
 import { useQueryParams } from "@/composables/useQueryParams";
-import { mapActions } from "@/modules/mapStore";
 import { useFetch } from "@vueuse/core";
+import { useAuthStore } from "@/store/auth-store";
 
 export const useRoles = () => {
-  // TODO refactor this to composable
-  const { defineNotification } = mapActions();
-
+  const authStore = useAuthStore();
   const roles = ref<Role[] | null>(null);
   const rolesV2 = ref<RoleV2[] | null>(null);
   const userRoles = ref();
@@ -38,10 +36,7 @@ export const useRoles = () => {
     isLoading.value = isFetching.value;
     if (error.value) {
       errors.value = error.value;
-      await defineNotification({
-        message: error.value,
-        error: true,
-      });
+      authStore.addAlerts("error", error.value);
     }
     rolesV2.value = data.value.records;
     pageables.totalRecords = data.value.totalRecords;
@@ -61,10 +56,7 @@ export const useRoles = () => {
     isLoading.value = isFetching.value;
     if (error.value) {
       errors.value = error.value;
-      await defineNotification({
-        message: error.value,
-        error: true,
-      });
+      authStore.addAlerts("error", error.value);
     }
     roles.value = data.value.records;
     pageables.totalRecords = data.value.totalRecords;
@@ -90,19 +82,14 @@ export const useRoles = () => {
         if (response.ok) {
           return await response.json();
         }
-        await defineNotification({
-          message: await response.text(),
-          error: true,
-        });
+        const text = await response.text();
+        authStore.addAlerts("error", text);
       })
       .then(async data => {
         userRoles.value = data;
       })
       .catch(async err => {
-        await defineNotification({
-          message: err,
-          error: true,
-        });
+        authStore.addAlerts("error", err);
       })
       .finally(() => (isLoading.value = false));
   }
