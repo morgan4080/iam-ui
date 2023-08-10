@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { getRoles } from "@/modules/all";
 import { ref, onMounted } from "vue";
 import { useUsers } from "@users/composables/useUsers";
 import CustomCard from "@/components/common/CustomCard.vue";
 import ActivityLogs from "@/components/tables/ActivityLogs.vue";
+import { useRoles } from "@roles/composables/useRoles";
 const { fetchUsers, users } = useUsers();
+const { getRoles } = useRoles();
 
 const roleCount = ref(0);
 

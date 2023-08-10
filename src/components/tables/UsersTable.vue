@@ -35,6 +35,9 @@ const submitAction = (name: string, user: User) => {
     case "view":
       router.push(`/users/${user.id}/view`);
       break;
+    case "edit":
+      router.push(`/users/${user.id}/edit`);
+      break;
     case "role":
       emit("selectUser", user);
       break;
@@ -58,6 +61,10 @@ const serverItems = computed(() => {
           {
             name: "view",
             icon: "mdi-eye",
+          },
+          {
+            name: "edit",
+            icon: "mdi-pencil",
           },
           {
             name: "role",

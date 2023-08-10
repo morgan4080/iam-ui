@@ -7,17 +7,17 @@ const rolesRoutes = [
   {
     path: "/roles/create",
     name: "RolesCreate",
-    component: () => import("@/views/Roles/create.vue"),
+    component: () => import("@roles/views/create.vue"),
   },
   {
-    path: "/roles/:id",
+    path: "/roles/:id/view",
     name: "RolesView",
-    component: () => import("@/views/Roles/_id.vue"),
+    component: () => import("@/Roles/views/view.vue"),
   },
   {
     path: "/roles/:id/edit",
     name: "RolesEdit",
-    component: () => import("@/views/Roles/edit.vue"),
+    component: () => import("@roles/views/edit.vue"),
   },
 ];
 

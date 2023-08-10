@@ -29,7 +29,7 @@ const Lighttheme: ThemeDefinition = {
     background: "#f2f5f8",
     surface: "#ffffff",
     primary: "#3C7AB7",
-    secondary: "#334155",
+    secondary: "#081419",
     accent: "#705CF6",
     error: "#ef476f",
     info: "#2196F3",

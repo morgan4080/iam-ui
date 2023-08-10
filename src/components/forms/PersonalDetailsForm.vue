@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, toRef, watch, computed, onMounted } from "vue";
+import { reactive, toRef, watch, computed, getCurrentInstance } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { email, helpers, required, numeric } from "@vuelidate/validators";
 import { isValidNumberForRegion, parsePhoneNumber } from "libphonenumber-js";
@@ -7,20 +7,19 @@ import { isValidNumberForRegion, parsePhoneNumber } from "libphonenumber-js";
 const emit = defineEmits(["setQuery", "updated", "isError"]);
 
 const validPhone = (value: number) => isValidNumberForRegion(`${value}`, "KE");
+const instance = getCurrentInstance();
 
 const props = defineProps<{
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
   emailAddress?: string;
-  requestData: number;
 }>();
 
 const firstName = toRef(props, "firstName");
 const lastName = toRef(props, "lastName");
 const phoneNumber = toRef(props, "phoneNumber");
 const emailAddress = toRef(props, "emailAddress");
-const requestData = toRef(props, "requestData");
 
 const initialState = computed(() => {
   return {
@@ -77,23 +76,21 @@ watch(state, async () => {
   }
 });
 
-watch(requestData, async () => {
-  const result = await v$.value.$validate();
-  if (result) {
-    const phone = parseNumber(`${state.phoneNumber}`);
-    emit("updated", {
-      ...state,
-      phoneNumber: `${phone?.countryCallingCode}${phone?.nationalNumber}`,
-    });
-    emit("isError", false);
-  } else {
-    emit("isError", true);
-  }
-});
-
-onMounted(() => {
-  v$.value.$validate();
-});
+if (instance.vnode.key) {
+  (async function () {
+    const result = await v$.value.$validate();
+    if (result) {
+      const phone = parseNumber(`${state.phoneNumber}`);
+      emit("updated", {
+        ...state,
+        phoneNumber: `${phone?.countryCallingCode}${phone?.nationalNumber}`,
+      });
+      emit("isError", false);
+    } else {
+      emit("isError", true);
+    }
+  })();
+}
 </script>
 
 <template>

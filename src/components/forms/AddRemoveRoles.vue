@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useStore } from "vuex";
 import { onMounted, ref, toRef, watch } from "vue";
-import { getUsersRoles } from "@/modules/all";
 import { User } from "@users/types";
 import { useAuthStore } from "@/store/auth-store";
+import { useRoles } from "@roles/composables/useRoles";
 const authStore = useAuthStore();
+const { assign, getRoles, getUsersRoles } = useRoles();
 
 const componentProps = defineProps<{
   user: User | null;
@@ -27,8 +27,6 @@ type RoleType = {
 const userData = ref(<User | null>null);
 
 const user = toRef(componentProps, "user");
-
-const store = useStore();
 
 const userRoles = ref(<RoleType[]>[]);
 
@@ -62,7 +60,7 @@ onMounted(async () => {
       });
     }
 
-    const { records } = await store.dispatch("getRoles");
+    const { records } = await getRoles();
 
     all_roles.value = records;
   } catch (e: any) {
@@ -74,7 +72,7 @@ watch(selectedRoles, async newSelectedRoles => {
   if (active.value !== false && user && user.value) {
     try {
       loading.value = true;
-      const { messages } = await store.dispatch("assignRoles", {
+      const { messages } = await assign({
         userRefId: user.value.id,
         payload: {
           roleIds: newSelectedRoles,
@@ -101,7 +99,7 @@ watch(selectedRoles, async newSelectedRoles => {
     item-title="name"
     item-value="id"
     variant="outlined"
-    :density="'compact'"
+    density="compact"
     :hide-details="true"
     :flat="true"
     :multiple="true"

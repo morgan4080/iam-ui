@@ -24,9 +24,18 @@ defineProps({
     <v-col class="bg-white border-none rounded-sm h-100">
       <v-col v-if="requireSpace">
         <div class="flex flex-wrap items-center justify-between">
-          <div class="pb-3">
-            <h1 class="text-h6 font-weight-regular">{{ title }}</h1>
+          <div
+            v-if="title !== '' || subTitle !== ''"
+            class="pb-3"
+          >
+            <h1
+              v-if="title !== ''"
+              class="text-h6 font-weight-regular"
+            >
+              {{ title }}
+            </h1>
             <h2
+              v-if="subTitle !== ''"
               class="text-grey-darken-1 font-weight-regular"
               :class="subTitleClasses ? subTitleClasses : ''"
             >

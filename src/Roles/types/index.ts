@@ -2,8 +2,11 @@ export interface Role {
   id: string;
   keycloakRoleId: string;
   name: string;
-  roleType: string;
+  groupName: string;
   description: string;
+  userCount: number;
+  services: string[];
+  permissions: Record<string, string>;
 }
 export interface RoleV2 {
   id: string;

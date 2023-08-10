@@ -1,36 +1,23 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
-import { QrInterface, EditUserPayload } from "@/Users/types";
+import { QrInterface } from "@/Users/types";
 import CustomCard from "@/components/common/CustomCard.vue";
 import FixedHeader from "@/components/common/FixedHeader.vue";
-import MobileCredentialsForm from "@/components/forms/MobileCredentialsForm.vue";
 import WebCredentialsForm from "@/components/forms/WebCredentialsForm.vue";
 import PersonalDetailsForm from "@/components/forms/PersonalDetailsForm.vue";
 import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
-import ResetCredentialsDropDown from "@/components/ButtonDropDown.vue";
-import ResetCredentialsModal from "@users/components/ResetCredentialsModal.vue";
 import { useAuthStore } from "@/store/auth-store";
-
-const validateForms = ref(false);
 
 const authStore = useAuthStore();
 
-const kopeshaURL = ref(import.meta.env.VITE_KOPESHA_URL);
-
-const { user, isLoading, fetchUser, verifyUnique, editUser, syncUser } =
-  useUsers();
-
-const props = defineProps<{
-  refId: string;
-}>();
-
-const router = useRouter();
+const { verifyUnique } = useUsers();
 
 const query = ref("?");
 
 const isError = ref(true);
+
+const validateForms = ref(false);
 
 const setError = (err: boolean) => {
   isError.value = err;
@@ -97,82 +84,9 @@ async function setQuery(obj: { value: string; context: string }) {
   }
 }
 
-const edit = async () => {
-  if (!user.value) return;
-  console.log(form, isError.value);
-  if (!isError.value) {
-    const payload: EditUserPayload = {
-      userRefId: user.value.id,
-      userName: form.username,
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.emailAddress,
-      phoneNumber: form.phoneNumber,
-      ussdPhoneNumber: form.ussdPhoneNumber,
-      isEnabled: form.isEnabled,
-    };
-
-    for (const [key, value] of Object.entries(payload)) {
-      if (!value || value == "") {
-        authStore.addAlerts("warning", `Check form for errors on field ${key}`);
-        return;
-      }
-    }
-
-    await editUser(payload)
-      .then(async response => {
-        if (response) {
-          // await router.push(`/users/${props.refId}/view`);
-          authStore.addAlerts("success", "User Edited successfully");
-        }
-      })
-      .catch((error: string) => {
-        authStore.addAlerts("error", error);
-      });
-  } else {
-    authStore.addAlerts("warning", `Data is Unchanged`);
-  }
-};
-
 const tab = ref(null);
 
 const tabs = ref(["User Details"]);
-
-const resetCredentialsGroup = computed(() => {
-  if (!user.value?.isUSSDDisabled) {
-    return [
-      {
-        name: "Reset USSD Pin",
-        value: "reset-pin",
-      },
-      {
-        name: "Reset Web Password",
-        value: "reset-password",
-      },
-    ];
-  } else {
-    return [
-      {
-        name: "Reset Web Password",
-        value: "reset-password",
-      },
-    ];
-  }
-});
-
-const resetCredentials = async (group: { name: string; value: string }) => {
-  switch (group.value) {
-    case "reset-pin":
-      resetCredentialsAction.value = "USSD";
-      openResetCredentialsModal();
-      break;
-    case "reset-password":
-      resetCredentialsAction.value = "WEB";
-      openResetCredentialsModal();
-      break;
-  }
-  console.log(group);
-};
 
 const accountStatusGroup = computed(() => {
   return [
@@ -190,50 +104,11 @@ const accountStatusGroup = computed(() => {
 const accountStatus = ref<"Enabled" | "Disabled">("Disabled");
 const accessType = ref<"Web & Mobile" | "Web">("Web");
 
-watch(user, () => {
-  accountStatus.value =
-    user && user.value && user.value.isEnabled ? "Enabled" : "Disabled";
-  accessType.value =
-    user && user.value && !user.value.isUSSDDisabled ? "Web & Mobile" : "Web";
-
-  if (user && user.value) {
-    form.firstName = user.value.firstName ? user.value.firstName : "";
-    form.lastName = user.value.lastName ? user.value.lastName : "";
-    form.emailAddress = user.value.email ? user.value.email : "";
-    form.username = user.value.username ? user.value.username : "";
-    form.phoneNumber = user.value.phoneNumber ? user.value.phoneNumber : "";
-    form.ussdPhoneNumber = user.value.ussdPhoneNumber
-      ? user.value.ussdPhoneNumber
-      : "";
-    form.isEnabled =
-      user.value.isEnabled !== undefined ? user.value.isEnabled : false;
-  }
-});
-
 const roleGroups = computed(() => {
   return [];
 });
 
 const selectedGroup = ref(null);
-
-const openKopesha = () => {
-  window.open(`${kopeshaURL.value}#/customers/customer_listing`, "_blank");
-};
-
-const resetCredentialModalOpen = ref(false);
-
-type ResetCredentialsAction = null | "USSD" | "WEB";
-
-const resetCredentialsAction = ref<ResetCredentialsAction>(null);
-
-function openResetCredentialsModal() {
-  resetCredentialModalOpen.value = true;
-}
-
-function closeResetCredentialsModal() {
-  resetCredentialsAction.value = null;
-  resetCredentialModalOpen.value = false;
-}
 
 watch(accountStatus, newStatus => {
   form.isEnabled = newStatus == "Enabled";
@@ -258,10 +133,6 @@ const setPersonalDetails = (obj: {
   if (email !== "") form.emailAddress = email;
 };
 
-onMounted(async () => {
-  await fetchUser(props.refId);
-});
-
 const submitUser = () => {
   validateForms.value = !validateForms.value;
   if (!isError.value) {
@@ -272,26 +143,10 @@ const submitUser = () => {
 
 <template>
   <FixedHeader
-    :title="user ? user.firstName + ' ' + user.lastName : 'Create User'"
-    :sub-title="
-      user ? 'Keycloak ID: ' : 'Fill the details below to create a new user.'
-    "
-    :highlighted="user ? user.keycloakId : ''"
+    :title="'Create User'"
+    :sub-title="'Fill the details below to create a new user.'"
+    :highlighted="''"
   >
-    <template #refreshContent>
-      <v-btn
-        v-if="user"
-        variant="outlined"
-        density="compact"
-        color="none"
-        :loading="isLoading"
-        class="text-none text-caption mx-2 ml-md-8"
-        style="border-color: #e4e4e4 !important"
-        @click="syncUser"
-      >
-        Refresh
-      </v-btn>
-    </template>
     <template #buttons>
       <v-btn
         variant="outlined"
@@ -301,13 +156,6 @@ const submitUser = () => {
       >
         Go Back
       </v-btn>
-      <ResetCredentialsDropDown
-        v-if="user"
-        default-text="Reset Credentials"
-        extra-classes="mx-1"
-        :groups="resetCredentialsGroup"
-        @selected="resetCredentials"
-      />
       <v-btn
         variant="flat"
         color="primary"
@@ -366,8 +214,7 @@ const submitUser = () => {
                 />
               </template>
               <AddRemoveRoles
-                :key="JSON.stringify(user)"
-                :user="user"
+                :user="null"
                 :active="true"
               />
             </CustomCard>
@@ -482,7 +329,6 @@ const submitUser = () => {
               :require-space="true"
             >
               <PersonalDetailsForm
-                v-if="user"
                 :key="validateForms"
                 :first-name="form.firstName"
                 :last-name="form.lastName"
@@ -500,37 +346,6 @@ const submitUser = () => {
             md="6"
             sm="12"
           >
-            <v-col v-if="user && !user.isUSSDDisabled">
-              <v-card
-                color="surface"
-                variant="flat"
-              >
-                <v-col>
-                  <v-col>
-                    <div class="flex flex-wrap items-center justify-between">
-                      <div class="pb-3">
-                        <h3 class="font-weight-regular">Mobile Credentials</h3>
-                        <h5
-                          class="text-grey-darken-1 text-caption font-weight-regular"
-                        >
-                          Edit Your Mobile Credentials
-                        </h5>
-                      </div>
-
-                      <v-btn
-                        variant="tonal"
-                        size="x-small"
-                        color="primary"
-                        @click="openKopesha"
-                      >
-                        EDIT
-                      </v-btn>
-                    </div>
-                    <MobileCredentialsForm :user="user" />
-                  </v-col>
-                </v-col>
-              </v-card>
-            </v-col>
             <v-col>
               <v-card
                 color="surface"
@@ -550,7 +365,6 @@ const submitUser = () => {
                     </div>
 
                     <WebCredentialsForm
-                      v-if="user"
                       :key="validateForms"
                       :username="form.username"
                       :email-address="form.emailAddress"
@@ -567,12 +381,4 @@ const submitUser = () => {
       </v-container>
     </v-window-item>
   </v-window>
-
-  <ResetCredentialsModal
-    v-if="resetCredentialsAction && user"
-    :open="resetCredentialModalOpen"
-    :action="resetCredentialsAction"
-    :user="user"
-    @close="closeResetCredentialsModal"
-  />
 </template>

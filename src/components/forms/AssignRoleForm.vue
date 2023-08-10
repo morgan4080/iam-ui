@@ -8,10 +8,9 @@ import { User } from "@users/types";
 import { debounce } from "lodash";
 import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 import { useAuthStore } from "@/store/auth-store";
-import { useStore } from "vuex";
+import { useRoles } from "@roles/composables/useRoles";
 const authStore = useAuthStore();
-const store = useStore();
-
+const { assign, getRoles } = useRoles();
 const { users, pageables, isLoading, fetchUsers } = useUsers();
 const { search } = useSearch(pageables, fetchUsers);
 
@@ -74,7 +73,7 @@ const assignUserRole = async () => {
 
     try {
       loading.value = true;
-      const { messages } = await store.dispatch("assignRoles", {
+      const { messages } = await assign({
         userRefId: state.user,
         payload: {
           roleIds: newSelectedRoles.value,
@@ -97,7 +96,7 @@ onMounted(async () => {
   }
   await search();
 
-  const { records } = await store.dispatch("getRoles");
+  const { records } = await getRoles();
 
   if (records.length > 0) {
     newSelectedRoles.value = records.map(role => {
@@ -163,7 +162,7 @@ const setUserRolesToAssign = roles => {
     <div
       class="text-subtitle-1 text-sm-caption mt-2 font-weight-bold text-gray-400 py-2"
     >
-      Group
+      Label
       <span
         v-if="v$.group.required"
         class="text-red"

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { getRole } from "@/modules/all";
 import { useRoute } from "vue-router";
 import { ref } from "vue";
+import { useRoles } from "@roles/composables/useRoles";
 const route = useRoute();
-
-const role = ref(<any>{});
+const { getRole } = useRoles();
+const role = ref<Record<any, any>>(<any>{});
 getRole(route.params.id).then((r: any) => {
   role.value = r;
 });
@@ -150,6 +150,7 @@ getRole(route.params.id).then((r: any) => {
               </p>
               <div
                 v-for="(permission, i) in post.permissions"
+                :key="i"
                 class="p-1 rounded"
                 :class="{ 'bg-gray-100': i % 2 === 0 }"
               >

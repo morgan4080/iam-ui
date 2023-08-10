@@ -108,3 +108,22 @@ a.navbar.router-link-active.router-link-exact-active {
 .bg-presta-dark-blue {
   background-color: #28637F;
 }
+
+.v-card-subtitle {
+  opacity: 100 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.border-round {
+  border-left: 1px solid rgb(228, 228, 228);
+  border-right: 1px solid rgb(228, 228, 228);
+}
+
+.v-label {
+  opacity: unset !important;
+}
+.customSelect {
+  appearance: auto;
+  width: 100%;
+}

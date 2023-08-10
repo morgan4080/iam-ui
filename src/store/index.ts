@@ -168,26 +168,6 @@ const store = createStore<State>({
           throw new Error(error);
         });
     },
-    /* getUserAdminRoles({ }, roleIds: []): Promise<any> {
-
-             const url: string = import.meta.env.VITE_APP_ROOT_AUTH + "/api/roles/all"
-
-             const myHeaders = new Headers()
-
-             myHeaders.append("Authorization", `*!/!*`)
-
-             const headers = myHeaders
-
-             const method = 'GET'
-
-             return new Promise((resolve, reject) => {
-                 apiCall({ url, method, headers}, { withCredentials: true }).then((data: any) => {
-                     resolve(data)
-                 }).catch((e: any) => {
-                     reject(e)
-                 })
-             })
-         },*/
     getRole({}, keyCloakId: any): Promise<any> {
       const url: string =
         import.meta.env.VITE_APP_ROOT_AUTH + "/api/roles/" + keyCloakId;
@@ -359,27 +339,6 @@ const store = createStore<State>({
         }
       });
     },
-    getRoles({}, query = ""): Promise<any> {
-      const url = `${
-        import.meta.env.VITE_APP_ROOT_AUTH
-      }/users-admin/api/roles${query}`;
-      const method = "GET";
-      return new Promise(async (resolve, reject) => {
-        const response = await fetch(url, {
-          method: method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-
-        if (response.status !== 200) {
-          reject(data);
-        } else {
-          resolve(data);
-        }
-      });
-    },
     getUsers({ commit }, query = ""): Promise<any> {
       const url = `${
         import.meta.env.VITE_APP_ROOT_AUTH
@@ -436,31 +395,6 @@ const store = createStore<State>({
         })
           .then(response => response.json())
           .then(data => {
-            resolve(data);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
-    },
-    assignRoles({ commit }, { userRefId, payload }) {
-      const url = `${
-        import.meta.env.VITE_APP_ROOT_AUTH
-      }/users-admin/api/v1/roles/users/${userRefId}/assign`;
-      const method = `POST`;
-      return new Promise((resolve, reject) => {
-        fetch(url, {
-          method: method,
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.error) {
-              reject(data);
-            }
             resolve(data);
           })
           .catch(error => {

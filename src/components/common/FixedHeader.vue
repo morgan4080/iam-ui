@@ -13,12 +13,17 @@ const highlighted = toRef(props, "highlighted");
 </script>
 
 <template>
-  <div class="bg-white border-none">
+  <div class="bg-white border-none sticky top-0 z-10 shadow-md">
     <v-container :fluid="true">
       <v-row class="d-flex pb-4 items-center space-y-2 md:space-y-0">
         <v-col class="space-y-2">
           <div class="flex items-center">
-            <h1 class="text-h6 font-weight-regular">{{ title }}</h1>
+            <h1
+              class="text-h6 font-weight-regular"
+              style="text-transform: capitalize !important"
+            >
+              {{ title }}
+            </h1>
             <slot name="refreshContent" />
           </div>
           <h2
