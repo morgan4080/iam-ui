@@ -9,11 +9,11 @@ const { getLabels, getServiceConfiguration } = useRoles();
 const { isLoading, serviceConfiguration, labels } = storeToRefs(useRoles());
 
 const form = reactive({
-  name: null,
-  description: null,
-  id: null,
-  keycloakId: null,
-  groupName: null,
+  name: "",
+  description: "",
+  id: "",
+  keycloakId: "",
+  groupName: "",
   permissions: [],
 });
 
@@ -35,7 +35,7 @@ const saveRole = () => {
       });
     });
   });
-  form.permissions = Array.from(permissions);
+  form.permissions = Array.from(permissions) as typeof form.permissions;
   console.log("form", form);
 };
 </script>
@@ -233,7 +233,7 @@ const saveRole = () => {
                             resource => {
                               return {
                                 ...resource,
-                                show: e,
+                                show: e !== undefined ? e : false,
                               };
                             }
                           );

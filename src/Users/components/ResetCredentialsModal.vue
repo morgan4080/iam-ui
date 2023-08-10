@@ -47,7 +47,7 @@ async function resetWebPass() {
   const payload = {
     username: props.user.username,
     userRefId: props.user.keycloakId,
-    tenantId: tenantId.value,
+    tenantId: `${tenantId.value}`,
   };
 
   await resetWebPassword(payload).then(response => {

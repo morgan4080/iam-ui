@@ -13,16 +13,16 @@ const { isLoading, role, serviceConfiguration, labels } = storeToRefs(
 );
 
 const form = reactive({
-  name: null,
-  description: null,
-  id: null,
-  keycloakId: null,
-  groupName: null,
+  name: "",
+  description: "",
+  id: "",
+  keycloakId: "",
+  groupName: "",
   permissions: [],
 });
 
 onMounted(() => {
-  Promise.all([getRole(route.params.id), getLabels()]).then(() => {
+  Promise.all([getRole(`${route.params.id}`), getLabels()]).then(() => {
     if (role.value) {
       form.name = role.value.name;
       form.description = role.value.description;
@@ -48,7 +48,7 @@ const updateRole = () => {
       });
     });
   });
-  form.permissions = Array.from(permissions);
+  form.permissions = Array.from(permissions) as typeof form.permissions;
   console.log("form", form);
 };
 </script>
@@ -247,7 +247,7 @@ const updateRole = () => {
                             resource => {
                               return {
                                 ...resource,
-                                show: e,
+                                show: e !== undefined ? e : false,
                               };
                             }
                           );

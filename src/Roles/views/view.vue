@@ -16,26 +16,12 @@ const authStore = useAuthStore();
 onMounted(async () => {
   await Promise.allSettled([
     getServiceConfiguration(),
-    getRole(route.params.id),
+    getRole(`${route.params.id}`),
   ]);
 });
 
 const tab = ref(null);
 const tabs = ref(["Role Details"]);
-
-const roleSync = async () => {
-  try {
-    loading.value = true;
-    await syncServices();
-    const response = await syncRoles();
-    authStore.addAlerts("success", response.message);
-    await reFetch();
-  } catch (e) {
-    authStore.addAlerts("error", e.message);
-  } finally {
-    loading.value = false;
-  }
-};
 </script>
 
 <template>

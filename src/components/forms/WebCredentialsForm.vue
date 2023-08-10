@@ -41,7 +41,7 @@ watch(state, async () => {
   }
 });
 
-if (instance.vnode.key) {
+if (instance && instance.vnode.key) {
   (async function () {
     const result = await v$.value.$validate();
     if (result) {

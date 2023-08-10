@@ -18,7 +18,7 @@ export const useUsers = () => {
     currentPage: 0,
     sort: "firstName",
     order: "DESC",
-    searchTerm: null,
+    searchTerm: undefined,
     startDate: null,
     endDate: null,
   }) as Pageables;

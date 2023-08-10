@@ -21,7 +21,7 @@ export const useDashboard = defineStore("dashboard", () => {
     currentPage: 0,
     sort: "ASC",
     order: "ASC",
-    searchTerm: null,
+    searchTerm: undefined,
     startDate: null,
     endDate: null,
   }) as Pageables;

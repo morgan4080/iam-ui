@@ -39,7 +39,7 @@ const loadItems = (options: optionsType) => {
 };
 
 const showDateRange = ref(false);
-const dateRange = ref(null);
+const dateRange = ref([]);
 
 const searchDateRange = () => {
   showDateRange.value = false;
@@ -64,7 +64,7 @@ const submitAction = (name: string, role: Role) => {
 };
 
 const serverItems = computed(() => {
-  let data = [];
+  let data: any[] = [];
   if (roles.value) {
     data = roles.value.map(role => {
       return {
@@ -205,7 +205,7 @@ const serverItems = computed(() => {
                 @click:save="searchDateRange"
                 @click:cancel="
                   showDateRange = false;
-                  dateRange = '';
+                  dateRange = [];
                   pageables.startDate = null;
                   pageables.endDate = null;
                   search();

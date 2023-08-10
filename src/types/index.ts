@@ -3,7 +3,7 @@ export interface Pageables {
   totalRecords: number;
   totalPages: number;
   currentPage: number;
-  searchTerm: string | null;
+  searchTerm: string | undefined;
   sort: string;
   order: "ASC" | "DESC";
   startDate: string | null;

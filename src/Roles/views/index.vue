@@ -3,21 +3,21 @@ import FixedHeader from "@/components/common/FixedHeader.vue";
 import { useRoles } from "@roles/composables/useRoles";
 import { storeToRefs } from "pinia";
 import RolesTable from "@/components/tables/RolesTable.vue";
-
+import { useAuthStore } from "@/store/auth-store";
+const authStore = useAuthStore();
 const { syncRoles, syncServices } = useRoles();
 const { isLoading } = storeToRefs(useRoles());
 
 const roleSync = async () => {
   try {
-    loading.value = true;
+    isLoading.value = true;
     await syncServices();
     const response: any = await syncRoles();
     authStore.addAlerts("success", response.message);
-    await reFetch();
   } catch (e: any) {
     authStore.addAlerts("error", e.message);
   } finally {
-    loading.value = false;
+    isLoading.value = false;
   }
 };
 </script>

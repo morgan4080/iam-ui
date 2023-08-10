@@ -483,7 +483,7 @@ const submitUser = () => {
             >
               <PersonalDetailsForm
                 v-if="user"
-                :key="validateForms"
+                :key="`${validateForms}`"
                 :first-name="form.firstName"
                 :last-name="form.lastName"
                 :phone-number="form.phoneNumber"
@@ -551,7 +551,7 @@ const submitUser = () => {
 
                     <WebCredentialsForm
                       v-if="user"
-                      :key="validateForms"
+                      :key="`${validateForms}`"
                       :username="form.username"
                       :email-address="form.emailAddress"
                       @set-query="setQuery"

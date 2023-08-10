@@ -1,12 +1,27 @@
 export interface Role {
   id: string;
-  keycloakRoleId: string;
+  keycloakId: string;
   name: string;
   groupName: string;
   description: string;
   userCount: number;
   services: string[];
   permissions: Record<string, string>;
+}
+
+export type ServiceConfigurationType = {
+  name: string;
+  selected: boolean;
+  resources: {
+    name: string;
+    selected: boolean;
+    show: boolean;
+    permissions: {
+      id: string;
+      name: string;
+      selected: boolean;
+    }[];
+  }[];
 }
 export interface RoleV2 {
   id: string;

@@ -329,7 +329,7 @@ const submitUser = () => {
               :require-space="true"
             >
               <PersonalDetailsForm
-                :key="validateForms"
+                :key="`${validateForms}`"
                 :first-name="form.firstName"
                 :last-name="form.lastName"
                 :phone-number="form.phoneNumber"
@@ -365,7 +365,7 @@ const submitUser = () => {
                     </div>
 
                     <WebCredentialsForm
-                      :key="validateForms"
+                      :key="`${validateForms}`"
                       :username="form.username"
                       :email-address="form.emailAddress"
                       @set-query="setQuery"

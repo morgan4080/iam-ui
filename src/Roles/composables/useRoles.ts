@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from "vue";
-import type { Role } from "@/Roles/types";
+import type { Role, ServiceConfigurationType } from "@/Roles/types";
 import { Pageables } from "@/types";
 import { useQueryParams } from "@/composables/useQueryParams";
 import { useAuthStore } from "@/store/auth-store";
@@ -14,8 +14,8 @@ export const useRoles = defineStore("roles", () => {
   const userRoles = ref();
   const role = ref<Role | null>(null);
   const isLoading = ref(false);
-  const labels = ref([]);
-  const serviceConfiguration = ref([]);
+  const labels = ref<{ name: string }[]>([]);
+  const serviceConfiguration = ref<ServiceConfigurationType[]>([]);
   const error = ref<null | unknown>(null);
   const errors = ref<null | unknown>(null);
   const pageables = reactive({
@@ -24,7 +24,7 @@ export const useRoles = defineStore("roles", () => {
     totalPages: 0,
     currentPage: 0,
     sort: "ASC",
-    searchTerm: null,
+    searchTerm: undefined,
     order: "DESC",
   }) as Pageables;
   const { params, generateParams } = useQueryParams(pageables);
@@ -41,7 +41,7 @@ export const useRoles = defineStore("roles", () => {
       pageables.totalPages = response.data.totalPages;
       pageables.currentPage = response.data.currentPage;
       isLoading.value = false;
-    } catch (e) {
+    } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
       isLoading.value = false;
@@ -59,7 +59,7 @@ export const useRoles = defineStore("roles", () => {
         });
       }
       labels.value = l;
-    } catch (e) {
+    } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
       isLoading.value = false;
@@ -95,7 +95,7 @@ export const useRoles = defineStore("roles", () => {
       })
       .finally(() => (isLoading.value = false));
   }
-  const assignRoles = ({ userRefId, payload }) => {
+  const assignRoles = ({ userRefId, payload }: any) => {
     isLoading.value = true;
     const url = `${
       import.meta.env.VITE_APP_ROOT_AUTH
@@ -174,7 +174,7 @@ export const useRoles = defineStore("roles", () => {
         selectedPermissions.value.push(key);
       }
       await getServiceConfiguration();
-    } catch (e) {
+    } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
       isLoading.value = false;
@@ -188,7 +188,8 @@ export const useRoles = defineStore("roles", () => {
       isLoading.value = true;
       await generateParams();
       const response = await axios.get(`/users-admin/api/v1/service-config`);
-      serviceConfiguration.value = response.data.map(config => {
+      const data: ServiceConfigurationType[] = response.data;
+      serviceConfiguration.value = data.map(config => {
         return {
           ...config,
           selected: true,
@@ -208,7 +209,7 @@ export const useRoles = defineStore("roles", () => {
           }),
         };
       });
-    } catch (e) {
+    } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
       isLoading.value = false;
@@ -219,7 +220,7 @@ export const useRoles = defineStore("roles", () => {
     try {
       await axios.post("/users-admin/api/roles", payload);
       authStore.addAlerts("success", "Role created successfully");
-    } catch (e) {
+    } catch (e: any) {
       authStore.addAlerts("error", e.message);
     }
   };
@@ -328,7 +329,7 @@ export const useRoles = defineStore("roles", () => {
   const selectedAccessType = ref(null);
 
   const setAccessType = (accessType: typeof selectedAccessType.value) => {
-    selectedActivityType.value = accessType;
+    selectedAccessType.value = accessType;
   };
 
   return {
@@ -353,7 +354,6 @@ export const useRoles = defineStore("roles", () => {
     setAccessType,
     selectedAccessType,
     accessTypes,
-    labels,
     selectedLabel,
     role,
     serviceConfiguration,

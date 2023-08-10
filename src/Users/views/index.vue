@@ -17,7 +17,7 @@ const router = useRouter();
 const loading = ref(isLoading);
 const showOverlay = ref(false);
 const showDateRange = ref(false);
-const dateRange = ref(null);
+const dateRange = ref([]);
 const selectedUser = ref<User | null>(null);
 
 const setSelectedUser = (user: User) => {
@@ -126,13 +126,21 @@ function changeVisibility(key: string) {
 }
 
 watch(dateRange, () => {
-  if (dateRange.value.length > 1) {
-    pageables.startDate = dateRange.value[0].toLocaleDateString("en-GB");
-    pageables.endDate = dateRange.value[1].toLocaleDateString("en-GB");
-  } else {
+  if (dateRange.value && dateRange.value.length > 1) {
+    pageables.startDate = (dateRange.value[0] as Date).toLocaleDateString(
+      "en-GB"
+    );
+    pageables.endDate = (dateRange.value[1] as Date).toLocaleDateString(
+      "en-GB"
+    );
+  } else if (dateRange.value && dateRange.value.length > 0) {
     try {
-      pageables.startDate = dateRange.value[0].toLocaleDateString("en-GB");
-      pageables.endDate = dateRange.value[0].toLocaleDateString("en-GB");
+      pageables.startDate = (dateRange.value[0] as Date).toLocaleDateString(
+        "en-GB"
+      );
+      pageables.endDate = (dateRange.value[0] as Date).toLocaleDateString(
+        "en-GB"
+      );
     } catch {
       pageables.startDate = null;
       pageables.endDate = null;
@@ -312,7 +320,7 @@ const searchDateRange = () => {
                     @click:save="searchDateRange"
                     @click:cancel="
                       showDateRange = false;
-                      dateRange = '';
+                      dateRange = [];
                       pageables.startDate = null;
                       pageables.endDate = null;
                       search();
