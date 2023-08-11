@@ -9,6 +9,7 @@ import { debounce } from "lodash";
 import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 import { useAuthStore } from "@/store/auth-store";
 import { useRoles } from "@roles/composables/useRoles";
+import { Role } from "@roles/types";
 const authStore = useAuthStore();
 const { assign, getRoles } = useRoles();
 const { users, pageables, isLoading, fetchUsers } = useUsers();
@@ -16,6 +17,7 @@ const { search } = useSearch(pageables, fetchUsers);
 
 const componentProps = defineProps<{
   selectedUser?: User | null;
+  selectedRole?: Role | null;
 }>();
 
 const selectedUser = toRef(componentProps, "selectedUser");

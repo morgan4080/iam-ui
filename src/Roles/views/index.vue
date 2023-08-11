@@ -4,9 +4,12 @@ import { useRoles } from "@roles/composables/useRoles";
 import { storeToRefs } from "pinia";
 import RolesTable from "@/components/tables/RolesTable.vue";
 import { useAuthStore } from "@/store/auth-store";
+import AssignRoleOverlay from "@/components/overlays/AssignRoleOverlay.vue";
+import { ref } from "vue";
 const authStore = useAuthStore();
 const { syncRoles, syncServices } = useRoles();
 const { isLoading } = storeToRefs(useRoles());
+const showOverlay = ref(false);
 
 const roleSync = async () => {
   try {
@@ -49,6 +52,15 @@ const roleSync = async () => {
     </template>
   </FixedHeader>
   <v-container :fluid="true">
-    <RolesTable />
+    <RolesTable @select-role="showOverlay = true" />
   </v-container>
+  <Teleport to="body">
+    <AssignRoleOverlay
+      :is-loading="isLoading"
+      :show-overlay="showOverlay"
+      :selected-user="null"
+      :selected-role="null"
+      @hide-roles-overlay="showOverlay = false"
+    />
+  </Teleport>
 </template>

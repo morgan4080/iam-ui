@@ -5,26 +5,44 @@ import { chunk } from "lodash";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref } from "vue";
 import CustomCard from "@/components/common/CustomCard.vue";
-const { getLabels, getServiceConfiguration } = useRoles();
+import { required } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
+import { useRouter } from "vue-router";
+import InheritRoleOverlay from "@/components/overlays/InheritRoleOverlay.vue";
+const router = useRouter();
+const showOverlay = ref(false);
+const {
+  getLabels,
+  getServiceConfiguration,
+  emptySelectedPermissions,
+  createRole,
+} = useRoles();
 const { isLoading, serviceConfiguration, labels } = storeToRefs(useRoles());
 
 const form = reactive({
   name: "",
   description: "",
-  id: "",
-  keycloakId: "",
-  groupName: "",
+  groupName: undefined,
+  parentRoleIds: [],
   permissions: [],
 });
 
+const rules = {
+  name: { required },
+  description: { required },
+};
+
+const v$ = useVuelidate(rules, form, { $lazy: true, $autoDirty: true });
+
 onMounted(() => {
+  emptySelectedPermissions();
   Promise.all([getLabels(), getServiceConfiguration()]);
 });
 
 const tab = ref(null);
 const tabs = ref(["Role Details"]);
 
-const saveRole = () => {
+const saveRole = async () => {
   const permissions = new Set();
   serviceConfiguration.value.forEach(service => {
     service.resources.forEach(resource => {
@@ -35,8 +53,28 @@ const saveRole = () => {
       });
     });
   });
+
   form.permissions = Array.from(permissions) as typeof form.permissions;
-  console.log("form", form);
+
+  const result = await v$.value.$validate();
+
+  if (result) {
+    await createRole({
+      name: form.name,
+      description: form.description,
+      groupName: form.groupName,
+      permissions: form.permissions,
+      parentRoleIds: form.parentRoleIds,
+    });
+
+    await router.back();
+  }
+};
+
+const setInheritedRole = rolesToInherit => {
+  console.log(rolesToInherit);
+  form.parentRoleIds = rolesToInherit;
+  showOverlay.value = false;
 };
 </script>
 
@@ -54,6 +92,15 @@ const saveRole = () => {
         @click="$router.back()"
       >
         Go Back
+      </v-btn>
+      <v-btn
+        :loading="isLoading"
+        variant="outlined"
+        color="secondary"
+        class="text-none text-caption mx-2"
+        @click="showOverlay = true"
+      >
+        Inherit Role
       </v-btn>
       <v-btn
         :loading="isLoading"
@@ -113,15 +160,19 @@ const saveRole = () => {
                 />
               </template>
               <v-input
-                class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 hide-details="auto"
+                :error-messages="v$.name.$errors.map(e => e.$message) as any"
               >
-                <input
-                  v-model="form.name"
-                  type="search"
-                  placeholder="Role Name"
-                  class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
-                />
+                <div
+                  class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
+                >
+                  <input
+                    v-model="form.name"
+                    type="search"
+                    placeholder="Role Name"
+                    class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
+                  />
+                </div>
               </v-input>
             </CustomCard>
           </v-col>
@@ -144,23 +195,24 @@ const saveRole = () => {
                   class="opacity-50 ml-1"
                 />
               </template>
-              <v-input
-                class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
-                hide-details="auto"
-              >
-                <select
-                  v-model="form.groupName"
-                  class="customSelect bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
+              <v-input hide-details="auto">
+                <div
+                  class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 >
-                  <option :value="undefined">Select Label</option>
-                  <option
-                    v-for="(label, labelIndex) in labels"
-                    :key="labelIndex"
-                    :value="label.name"
+                  <select
+                    v-model="form.groupName"
+                    class="customSelect bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
                   >
-                    {{ label.name }}
-                  </option>
-                </select>
+                    <option :value="undefined">Select Label</option>
+                    <option
+                      v-for="(label, labelIndex) in labels"
+                      :key="labelIndex"
+                      :value="label.name"
+                    >
+                      {{ label.name }}
+                    </option>
+                  </select>
+                </div>
               </v-input>
             </CustomCard>
           </v-col>
@@ -184,16 +236,20 @@ const saveRole = () => {
                 />
               </template>
               <v-input
-                class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 hide-details="auto"
+                :error-messages="v$.name.$errors.map(e => e.$message) as any"
               >
-                <textarea
-                  v-model="form.description"
-                  rows="1"
-                  type="search"
-                  placeholder="Role Description"
-                  class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
-                />
+                <div
+                  class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
+                >
+                  <textarea
+                    v-model="form.description"
+                    rows="1"
+                    type="search"
+                    placeholder="Role Description"
+                    class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
+                  />
+                </div>
               </v-input>
             </CustomCard>
           </v-col>
@@ -343,4 +399,12 @@ const saveRole = () => {
       </v-container>
     </v-window-item>
   </v-window>
+  <Teleport to="body">
+    <InheritRoleOverlay
+      :is-loading="isLoading"
+      :show-overlay="showOverlay"
+      @hide-roles-overlay="showOverlay = false"
+      @inherit-role="setInheritedRole"
+    />
+  </Teleport>
 </template>

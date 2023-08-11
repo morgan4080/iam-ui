@@ -66,6 +66,56 @@ export const useRoles = defineStore("roles", () => {
     }
   };
 
+  const createRole = async (
+    payload: Pick<
+      Role,
+      "name" | "permissions" | "groupName" | "description"
+    > & { parentRoleIds: string }
+  ) => {
+    try {
+      isLoading.value = true;
+
+      const response = await axios.post(`/users-admin/api/permissions/roles`, {
+        ...payload,
+      });
+
+      console.log(response);
+
+      authStore.addAlerts("success", "Role Created Successfully");
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const emptySelectedPermissions = () => {
+    selectedPermissions.value = [];
+  };
+
+  const updateRole = async (
+    payload: Pick<
+      Role,
+      "id" | "name" | "permissions" | "groupName" | "description"
+    >
+  ) => {
+    try {
+      isLoading.value = true;
+
+      const response = await axios.put(`/users-admin/api/permissions/roles`, {
+        ...payload,
+      });
+
+      response.data.messages.map(message => {
+        authStore.addAlerts("success", message.message);
+      });
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   async function fetchUserRoles(userRefId: string) {
     isLoading.value = true;
     error.value = null;
@@ -162,7 +212,6 @@ export const useRoles = defineStore("roles", () => {
 
   const getRole = async (id: string): Promise<void> => {
     try {
-      console.log("exe");
       selectedPermissions.value = [];
       isLoading.value = true;
       await generateParams();
@@ -183,7 +232,6 @@ export const useRoles = defineStore("roles", () => {
 
   const getServiceConfiguration = async (): Promise<void> => {
     try {
-      console.log("ete");
       serviceConfiguration.value = [];
       isLoading.value = true;
       await generateParams();
@@ -213,15 +261,6 @@ export const useRoles = defineStore("roles", () => {
       authStore.addAlerts("error", e.message);
     } finally {
       isLoading.value = false;
-    }
-  };
-
-  const createRole = async (payload: any): Promise<void> => {
-    try {
-      await axios.post("/users-admin/api/roles", payload);
-      authStore.addAlerts("success", "Role created successfully");
-    } catch (e: any) {
-      authStore.addAlerts("error", e.message);
     }
   };
 
@@ -360,5 +399,7 @@ export const useRoles = defineStore("roles", () => {
     getServiceConfiguration,
     getLabels,
     labels,
+    updateRole,
+    emptySelectedPermissions,
   };
 });

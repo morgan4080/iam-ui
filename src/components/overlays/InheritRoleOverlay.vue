@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import CustomCard from "@/components/common/CustomCard.vue";
 import { toRef } from "vue";
-import AssignRoleForm from "@/components/forms/AssignRoleForm.vue";
 import { useBreakpoints } from "@vueuse/core";
 import { User } from "@users/types";
 import { Role } from "@roles/types";
+import InheritRoleForm from "@/components/forms/InheritRoleForm.vue";
 
 const breakpoints = useBreakpoints({
   mobile: 320,
@@ -20,10 +20,8 @@ const mobile = breakpoints.between("mobile", "tablet");
 const props = defineProps<{
   isLoading: boolean;
   showOverlay: boolean;
-  selectedUser: User | null;
-  selectedRole?: Role | null;
 }>();
-const emit = defineEmits(["assignRole", "hideRolesOverlay"]);
+const emit = defineEmits(["inheritRole", "hideRolesOverlay"]);
 const show = toRef(props, "showOverlay");
 </script>
 
@@ -37,7 +35,7 @@ const show = toRef(props, "showOverlay");
   >
     <CustomCard
       title=""
-      sub-title="Assign Roles"
+      sub-title="Inherit Roles"
       sub-title-classes="text-lg -mx-2"
     >
       <template #search>
@@ -50,10 +48,7 @@ const show = toRef(props, "showOverlay");
       </template>
 
       <template #default>
-        <AssignRoleForm
-          :selected-user="selectedUser"
-          :selected-role="selectedRole"
-        />
+        <InheritRoleForm @inherit-role="emit('inheritRole', $event)" />
       </template>
     </CustomCard>
   </v-overlay>

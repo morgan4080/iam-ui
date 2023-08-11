@@ -8,8 +8,14 @@ import { useRoles } from "@roles/composables/useRoles";
 import { Role } from "@roles/types";
 import { useRouter } from "vue-router";
 const router = useRouter();
-const { fetchRoles, pageables, changeVisibility, setLabel, setAccessType, getLabels } =
-  useRoles();
+const {
+  fetchRoles,
+  pageables,
+  changeVisibility,
+  setLabel,
+  setAccessType,
+  getLabels,
+} = useRoles();
 const { search } = useSearch(pageables, fetchRoles);
 const {
   roles,

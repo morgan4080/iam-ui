@@ -6,8 +6,10 @@ import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { onMounted, reactive, ref } from "vue";
 import CustomCard from "@/components/common/CustomCard.vue";
+import { required } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
 const route = useRoute();
-const { getRole, getLabels } = useRoles();
+const { getRole, getLabels, updateRole } = useRoles();
 const { isLoading, role, serviceConfiguration, labels } = storeToRefs(
   useRoles()
 );
@@ -16,28 +18,38 @@ const form = reactive({
   name: "",
   description: "",
   id: "",
-  keycloakId: "",
   groupName: "",
   permissions: [],
 });
 
-onMounted(() => {
+const rules = {
+  name: { required },
+  description: { required },
+  id: { required },
+};
+
+const v$ = useVuelidate(rules, form, { $lazy: true, $autoDirty: true });
+
+const loadPageData = () => {
   Promise.all([getRole(`${route.params.id}`), getLabels()]).then(() => {
     if (role.value) {
       form.name = role.value.name;
       form.description = role.value.description;
       form.id = role.value.id;
-      form.keycloakId = role.value.keycloakId;
       form.groupName = role.value.groupName;
       form.permissions = [];
     }
   });
+};
+
+onMounted(() => {
+  loadPageData();
 });
 
 const tab = ref(null);
 const tabs = ref(["Role Details"]);
 
-const updateRole = () => {
+const editRole = async () => {
   const permissions = new Set();
   serviceConfiguration.value.forEach(service => {
     service.resources.forEach(resource => {
@@ -49,7 +61,20 @@ const updateRole = () => {
     });
   });
   form.permissions = Array.from(permissions) as typeof form.permissions;
-  console.log("form", form);
+
+  const result = await v$.value.$validate();
+
+  if (result) {
+    await updateRole({
+      id: form.id,
+      name: form.name,
+      description: form.description,
+      groupName: form.groupName,
+      permissions: form.permissions,
+    });
+
+    loadPageData();
+  }
 };
 </script>
 
@@ -74,7 +99,7 @@ const updateRole = () => {
         variant="flat"
         color="primary"
         class="text-none text-caption mx-2"
-        @click="updateRole"
+        @click="editRole"
       >
         Update Role
       </v-btn>
@@ -129,6 +154,7 @@ const updateRole = () => {
               <v-input
                 class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 hide-details="auto"
+                :error-messages="v$.name.$errors.map(e => e.$message) as any"
               >
                 <input
                   v-model="form.name"
@@ -200,6 +226,7 @@ const updateRole = () => {
               <v-input
                 class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 hide-details="auto"
+                :error-messages="v$.description.$errors.map(e => e.$message) as any"
               >
                 <textarea
                   v-model="form.description"
