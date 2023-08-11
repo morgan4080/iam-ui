@@ -62,8 +62,8 @@ const saveRole = async () => {
     await createRole({
       name: form.name,
       description: form.description,
-      groupName: form.groupName,
-      permissions: form.permissions,
+      groupName: form.groupName ? form.groupName : "",
+      permissions: form.permissions as any,
       parentRoleIds: form.parentRoleIds,
     });
 
@@ -71,8 +71,7 @@ const saveRole = async () => {
   }
 };
 
-const setInheritedRole = rolesToInherit => {
-  console.log(rolesToInherit);
+const setInheritedRole = (rolesToInherit: typeof form.parentRoleIds) => {
   form.parentRoleIds = rolesToInherit;
   showOverlay.value = false;
 };

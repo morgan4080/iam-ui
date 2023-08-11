@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
 import { QrInterface } from "@/Users/types";
 import CustomCard from "@/components/common/CustomCard.vue";
@@ -8,6 +8,10 @@ import WebCredentialsForm from "@/components/forms/WebCredentialsForm.vue";
 import PersonalDetailsForm from "@/components/forms/PersonalDetailsForm.vue";
 import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 import { useAuthStore } from "@/store/auth-store";
+import { useRoles } from "@roles/composables/useRoles";
+import { storeToRefs } from "pinia";
+const { getLabels } = useRoles();
+const { labels } = storeToRefs(useRoles());
 
 const authStore = useAuthStore();
 
@@ -22,6 +26,10 @@ const validateForms = ref(false);
 const setError = (err: boolean) => {
   isError.value = err;
 };
+
+onMounted(() => {
+  getLabels();
+});
 
 const form = reactive({
   username: "",
@@ -92,27 +100,18 @@ const accountStatusGroup = computed(() => {
   return [
     {
       name: "Enabled",
-      value: "enable",
+      value: true,
     },
     {
       name: "Disabled",
-      value: "disable",
+      value: false,
     },
   ];
 });
 
-const accountStatus = ref<"Enabled" | "Disabled">("Disabled");
 const accessType = ref<"Web & Mobile" | "Web">("Web");
 
-const roleGroups = computed(() => {
-  return [];
-});
-
 const selectedGroup = ref(null);
-
-watch(accountStatus, newStatus => {
-  form.isEnabled = newStatus == "Enabled";
-});
 
 const setWebCredentials = (obj: { email: string; username: string }) => {
   const { email, username } = obj;
@@ -241,7 +240,7 @@ const submitUser = () => {
               <div>
                 <v-autocomplete
                   v-model="selectedGroup"
-                  :items="roleGroups"
+                  :items="labels"
                   item-title="name"
                   item-value="id"
                   variant="outlined"
@@ -304,9 +303,10 @@ const submitUser = () => {
               </template>
               <div>
                 <v-select
-                  v-model="accountStatus"
+                  v-model="form.isEnabled"
                   :items="accountStatusGroup"
                   item-title="name"
+                  item-value="value"
                   variant="outlined"
                   :density="'compact'"
                   :hide-details="true"

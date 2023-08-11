@@ -1,6 +1,5 @@
 import { createApp } from "vue";
 import router from "./router/";
-import store from "./store/";
 import App from "./App.vue";
 import "../node_modules/nprogress/nprogress.css";
 import "./index.css";
@@ -35,16 +34,10 @@ authStore
   .initialize()
   .then(response => {
     function instantiateApp() {
-      createApp(App)
-        .use(pinia)
-        .use(router)
-        .use(store)
-        .use(vuetify)
-        .mount("#app");
+      createApp(App).use(pinia).use(router).use(vuetify).mount("#app");
     }
     instantiateApp();
     authStore.setAuthState(response);
-    store.commit("set_current_user", response);
   })
   .catch(() => {
     const currentUrl = window.location.href;

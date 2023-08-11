@@ -58,14 +58,14 @@ const filterUser = debounce(async () => {
 
 const customUserFilter = (itemTitle: string, queryText: string) => {
   if (queryText == "") {
-    pageables.searchTerm = null;
+    pageables.searchTerm = undefined;
   } else {
     pageables.searchTerm = queryText;
   }
   filterUser();
 };
 
-const newSelectedRoles = ref([]);
+const newSelectedRoles = ref<string[]>([]);
 
 const assignUserRole = async () => {
   const result = await v$.value.$validate();
@@ -75,7 +75,7 @@ const assignUserRole = async () => {
 
     try {
       loading.value = true;
-      const { messages } = await assign({
+      const { messages }: any = await assign({
         userRefId: state.user,
         payload: {
           roleIds: newSelectedRoles.value,
@@ -84,7 +84,7 @@ const assignUserRole = async () => {
       if (messages.length > 0) {
         authStore.addAlerts("success", messages[0].message);
       }
-    } catch (e: { message: string }) {
+    } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
       loading.value = false;
@@ -101,13 +101,13 @@ onMounted(async () => {
   const { records } = await getRoles();
 
   if (records.length > 0) {
-    newSelectedRoles.value = records.map(role => {
+    newSelectedRoles.value = records.map((role: any) => {
       return role.id;
     });
   }
 });
 
-const setUserRolesToAssign = roles => {
+const setUserRolesToAssign = (roles: string[]) => {
   newSelectedRoles.value = roles;
 };
 </script>
@@ -156,7 +156,7 @@ const setUserRolesToAssign = roles => {
       Role Names
     </div>
     <AddRemoveRoles
-      :key="selectedUser"
+      :key="`${selectedUser}`"
       :user="selectedUser"
       :active="false"
       @assign-roles="setUserRolesToAssign"

@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import { PropType } from "vue";
+
+type CustomVariant =
+  | "flat"
+  | "text"
+  | "elevated"
+  | "tonal"
+  | "outlined"
+  | "plain";
+
 defineProps({
   defaultText: {
     type: String,
@@ -9,7 +19,7 @@ defineProps({
     default: () => [],
   },
   variant: {
-    type: String,
+    type: String as PropType<CustomVariant>,
     default: "flat",
   },
   color: {
@@ -60,7 +70,7 @@ defineEmits(["selected"]);
           class="text-caption"
           @click="$emit('selected', group)"
         >
-          {{ group.name }}
+          {{ (group as any).name }}
         </v-list-item>
       </v-list>
     </v-sheet>

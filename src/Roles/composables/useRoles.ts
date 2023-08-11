@@ -70,7 +70,7 @@ export const useRoles = defineStore("roles", () => {
     payload: Pick<
       Role,
       "name" | "permissions" | "groupName" | "description"
-    > & { parentRoleIds: string }
+    > & { parentRoleIds: string[]; permissions: string[] }
   ) => {
     try {
       isLoading.value = true;
@@ -94,10 +94,9 @@ export const useRoles = defineStore("roles", () => {
   };
 
   const updateRole = async (
-    payload: Pick<
-      Role,
-      "id" | "name" | "permissions" | "groupName" | "description"
-    >
+    payload: Pick<Role, "id" | "name" | "groupName" | "description"> & {
+      permissions: string[];
+    }
   ) => {
     try {
       isLoading.value = true;
@@ -106,7 +105,7 @@ export const useRoles = defineStore("roles", () => {
         ...payload,
       });
 
-      response.data.messages.map(message => {
+      response.data.messages.map((message: { message: string }) => {
         authStore.addAlerts("success", message.message);
       });
     } catch (e: any) {

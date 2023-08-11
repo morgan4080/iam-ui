@@ -7,7 +7,7 @@ const authStore = useAuthStore();
 const { assign, getRoles, getUsersRoles } = useRoles();
 
 const componentProps = defineProps<{
-  user: User | null;
+  user: User | null | undefined;
   active?: boolean | null;
 }>();
 
@@ -72,7 +72,7 @@ watch(selectedRoles, async newSelectedRoles => {
   if (active.value !== false && user && user.value) {
     try {
       loading.value = true;
-      const { messages } = await assign({
+      const { messages }: any = await assign({
         userRefId: user.value.id,
         payload: {
           roleIds: newSelectedRoles,

@@ -202,5 +202,3 @@ if (instance && instance.vnode.key) {
     ></v-text-field>
   </form>
 </template>
-
-<style scoped></style>

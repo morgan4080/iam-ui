@@ -70,7 +70,7 @@ const editRole = async () => {
       name: form.name,
       description: form.description,
       groupName: form.groupName,
-      permissions: form.permissions,
+      permissions: form.permissions as string[],
     });
 
     loadPageData();
@@ -152,16 +152,19 @@ const editRole = async () => {
                 />
               </template>
               <v-input
-                class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 hide-details="auto"
                 :error-messages="v$.name.$errors.map(e => e.$message) as any"
               >
-                <input
-                  v-model="form.name"
-                  type="search"
-                  placeholder="Role Name"
-                  class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
-                />
+                <div
+                  class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
+                >
+                  <input
+                    v-model="form.name"
+                    type="search"
+                    placeholder="Role Name"
+                    class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
+                  />
+                </div>
               </v-input>
             </CustomCard>
           </v-col>
@@ -224,17 +227,20 @@ const editRole = async () => {
                 />
               </template>
               <v-input
-                class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
                 hide-details="auto"
                 :error-messages="v$.description.$errors.map(e => e.$message) as any"
               >
-                <textarea
-                  v-model="form.description"
-                  rows="1"
-                  type="search"
-                  placeholder="Role Description"
-                  class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
-                />
+                <div
+                  class="px-2 border-0 bg-background rounded text-caption w-100 searchField"
+                >
+                  <textarea
+                    v-model="form.description"
+                    rows="1"
+                    type="search"
+                    placeholder="Role Description"
+                    class="bg-transparent focus:ring-0 text-caption w-full p-2 focus:outline-0"
+                  />
+                </div>
               </v-input>
             </CustomCard>
           </v-col>

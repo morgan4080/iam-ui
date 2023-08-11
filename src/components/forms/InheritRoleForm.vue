@@ -6,9 +6,9 @@ const emit = defineEmits(["inheritRole"]);
 
 const loading = ref(false);
 
-const newSelectedRoles = ref([]);
+const newSelectedRoles = ref<string[]>([]);
 
-const setRolesToAssign = roles => {
+const setRolesToAssign = (roles: string[]) => {
   newSelectedRoles.value = roles;
 };
 </script>
