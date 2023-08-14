@@ -16,6 +16,7 @@ export interface User {
   passwordStatus: string;
   requiredActions: string[];
   accessTypes: string[];
+  userLabel: string;
 }
 
 export interface KeycloakUser {

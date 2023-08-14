@@ -1,9 +1,10 @@
 import { reactive, ref } from "vue";
-import { EditUserPayload, EnableUserPayload, User } from "@/Users/types";
+import { EnableUserPayload, User } from "@/Users/types";
 import { Pageables } from "@/types";
 import { useQueryParams } from "@/composables/useQueryParams";
 import { useFetch } from "@vueuse/core";
 import { useAuthStore } from "@/store/auth-store";
+import axios from "axios";
 
 export const useUsers = () => {
   const authStore = useAuthStore();
@@ -21,7 +22,9 @@ export const useUsers = () => {
     searchTerm: undefined,
     startDate: null,
     endDate: null,
-  }) as Pageables;
+    group: undefined,
+    appId: undefined,
+  }) as Pageables & { group: string | undefined; appId: string | undefined };
 
   const { params, generateParams } = useQueryParams(pageables);
 
@@ -187,42 +190,29 @@ export const useUsers = () => {
     );
   }
 
-  async function editUser(payload: EditUserPayload) {
-    isLoading.value = true;
-    error.value = null;
-    return await fetch(
-      `${import.meta.env.VITE_APP_ROOT_AUTH}/users-admin/api/v1/users`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+  const editUser = async (payload: any) => {
+    try {
+      isLoading.value = true;
+
+      const response = await axios.put(`/users-admin/api/v1/users`, {
+        ...payload,
+      });
+
+      console.log(response);
+
+      if (response?.data?.messages[0]?.message) {
+        authStore.addAlerts("success", response?.data?.messages[0]?.message);
+      } else {
+        authStore.addAlerts("success", "User Edited Successfully");
       }
-    )
-      .then(response => {
-        if (response.ok) return response.json();
-        throw new Error(response.statusText);
-      })
-      .catch(error => {
-        error.value = error;
-        throw new Error(error);
-      })
-      .finally(() => {
-        isLoading.value = false;
-      })
-      .then(async response => {
-        if (response.ok) {
-          return await response.json();
-        }
-        const txt = await response.text();
-        authStore.addAlerts("error", txt);
-      })
-      .catch(async err => {
-        authStore.addAlerts("error", err);
-      })
-      .finally(() => (isLoading.value = false));
-  }
+
+      return response.data;
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
   async function deleteUser(user: User) {
     if (
@@ -311,6 +301,29 @@ export const useUsers = () => {
       .finally(() => (isLoading.value = false));
   }
 
+  const createUser = async (payload: any): Promise<any> => {
+    try {
+      isLoading.value = true;
+
+      const response = await axios.post(`/users-admin/api/v1/users`, {
+        ...payload,
+      });
+
+      authStore.addAlerts("success", "User Created Successfully");
+
+      return response.data;
+    } catch (e: any) {
+      console.log(e);
+      if (e?.response?.data?.errors[0]?.message) {
+        authStore.addAlerts("error", e.response.data.errors[0].message);
+      } else {
+        authStore.addAlerts("error", e.message);
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     user,
     pageables,
@@ -326,5 +339,6 @@ export const useUsers = () => {
     deleteUser,
     verifyUnique,
     resetWebPassword,
+    createUser,
   };
 };

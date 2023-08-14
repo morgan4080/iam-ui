@@ -8,16 +8,16 @@ const instance = getCurrentInstance();
 
 const props = defineProps<{
   username?: string;
-  emailAddress?: string;
+  password?: string;
 }>();
 
 const username = toRef(props, "username");
-const emailAddress = toRef(props, "emailAddress");
+const password = toRef(props, "password");
 
 const initialState = computed(() => {
   return {
     username: username.value ? username.value : "",
-    email: emailAddress.value ? emailAddress.value : "",
+    password: password.value ? password.value : "",
   };
 });
 
@@ -26,8 +26,8 @@ const state = reactive({
 });
 
 const rules = {
-  username: { required },
-  email: { email, required },
+  username: { email, required },
+  password: {},
 };
 
 const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
@@ -61,7 +61,10 @@ if (instance && instance.vnode.key) {
     action=""
     class="grid grid-cols-2 gap-4 pb-4"
   >
-    <div class="flex-col">
+    <div
+      class="flex-col"
+      :class="{ 'col-span-2': props.password === undefined }"
+    >
       <div class="text-subtitle-1 text-sm-caption font-weight-bold py-2">
         Web Username
         <span
@@ -79,6 +82,7 @@ if (instance && instance.vnode.key) {
         variant="outlined"
         density="compact"
         hide-details="auto"
+        type="email"
         @input="v$.username.$touch"
         @blur="v$.username.$touch"
         @change="
@@ -89,32 +93,26 @@ if (instance && instance.vnode.key) {
       ></v-text-field>
     </div>
 
-    <div class="flex-col">
+    <div
+      v-if="props.password !== undefined"
+      class="flex-col"
+    >
       <div class="text-subtitle-1 text-sm-caption font-weight-bold py-2">
-        Email
-        <span
-          v-if="v$.email.required"
-          class="text-red"
-          >*</span
-        >
+        Password
       </div>
       <v-text-field
-        v-model="state.email"
+        v-model="state.password"
         color="primary"
-        :error-messages="v$.email.$errors.map(e => e.$message) as any"
-        placeholder="Email address"
+        placeholder="Password"
         required
         variant="outlined"
         density="compact"
         hide-details="auto"
-        @input="v$.email.$touch"
-        @blur="v$.email.$touch"
+        type="password"
         @change="
-          emit('setQuery', { value: state.email, context: 'email' });
           emit('updated', {
             ...state,
-            username: '',
-          });
+          })
         "
       ></v-text-field>
     </div>

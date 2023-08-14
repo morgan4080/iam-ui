@@ -10,18 +10,21 @@ import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 import { useAuthStore } from "@/store/auth-store";
 import { useRoles } from "@roles/composables/useRoles";
 import { storeToRefs } from "pinia";
-const { getLabels } = useRoles();
+import UserCreatedOverlay from "@/components/overlays/UserCreatedOverlay.vue";
+const { getLabels, assign } = useRoles();
 const { labels } = storeToRefs(useRoles());
 
 const authStore = useAuthStore();
 
-const { verifyUnique } = useUsers();
+const { verifyUnique, createUser } = useUsers();
 
 const query = ref("?");
 
 const isError = ref(true);
 
 const validateForms = ref(false);
+
+const selectedRoles = ref<string[]>([]);
 
 const setError = (err: boolean) => {
   isError.value = err;
@@ -33,6 +36,7 @@ onMounted(() => {
 
 const form = reactive({
   username: "",
+  password: "",
   firstName: "",
   lastName: "",
   emailAddress: "",
@@ -40,6 +44,10 @@ const form = reactive({
   ussdPhoneNumber: "",
   isEnabled: true,
 });
+
+const temporaryPassword = ref("");
+const refId = ref("");
+const isCreated = ref(false);
 
 const qrObject: QrInterface = {
   phoneNumber: "",
@@ -109,14 +117,14 @@ const accountStatusGroup = computed(() => {
   ];
 });
 
-const accessType = ref<"Web & Mobile" | "Web">("Web");
+const accessType = ref<"Web & Mobile" | "WEB">("WEB");
 
-const selectedGroup = ref(null);
+const selectedGroup = ref("");
 
-const setWebCredentials = (obj: { email: string; username: string }) => {
-  const { email, username } = obj;
+const setWebCredentials = (obj: { password: string; username: string }) => {
+  const { password, username } = obj;
   if (username !== "") form.username = username;
-  if (email !== "") form.emailAddress = email;
+  if (password !== "") form.password = password;
 };
 
 const setPersonalDetails = (obj: {
@@ -132,10 +140,57 @@ const setPersonalDetails = (obj: {
   if (email !== "") form.emailAddress = email;
 };
 
-const submitUser = () => {
+const submitUser = async () => {
   validateForms.value = !validateForms.value;
   if (!isError.value) {
-    console.log("submit user", form);
+    const payload = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      userLabel: selectedGroup.value,
+      contact: {
+        email: form.emailAddress,
+        phone: form.phoneNumber,
+      },
+      webCredentials: {
+        username: form.username,
+        password: form.password,
+      },
+      enabled: form.isEnabled,
+      userTypes: [accessType.value],
+    };
+
+    if (selectedGroup.value == "") {
+      Reflect.deleteProperty(payload, "userLabel");
+    }
+
+    if (form.password == "") {
+      Reflect.deleteProperty(payload.webCredentials, "password");
+    }
+
+    try {
+      console.log(payload);
+
+      const response = await createUser(payload);
+
+      console.log("response", response);
+
+      temporaryPassword.value = response.data.temporaryPassword;
+
+      refId.value = response.data.id;
+
+      isCreated.value = true;
+
+      if (selectedRoles.value.length > 0) {
+        await assign({
+          userRefId: response.data.id,
+          payload: {
+            roleIds: selectedRoles.value,
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 };
 </script>
@@ -215,6 +270,7 @@ const submitUser = () => {
               <AddRemoveRoles
                 :user="null"
                 :active="true"
+                @assign-roles="selectedRoles = $event"
               />
             </CustomCard>
           </v-col>
@@ -242,7 +298,7 @@ const submitUser = () => {
                   v-model="selectedGroup"
                   :items="labels"
                   item-title="name"
-                  item-value="id"
+                  item-value="value"
                   variant="outlined"
                   :density="'compact'"
                   :hide-details="true"
@@ -367,7 +423,7 @@ const submitUser = () => {
                     <WebCredentialsForm
                       :key="`${validateForms}`"
                       :username="form.username"
-                      :email-address="form.emailAddress"
+                      :password="form.password"
                       @set-query="setQuery"
                       @updated="setWebCredentials"
                       @is-error="setError"
@@ -381,4 +437,15 @@ const submitUser = () => {
       </v-container>
     </v-window-item>
   </v-window>
+  <UserCreatedOverlay
+    :first-name="form.firstName"
+    :last-name="form.lastName"
+    :temporary-password="temporaryPassword"
+    :open="isCreated"
+    :username="form.username"
+    @close="
+      isCreated = !isCreated;
+      $router.push(`/users/${refId}/edit`);
+    "
+  />
 </template>

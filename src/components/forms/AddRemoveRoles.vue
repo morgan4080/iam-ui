@@ -9,6 +9,7 @@ const { assign, getRoles, getUsersRoles } = useRoles();
 const componentProps = defineProps<{
   user: User | null | undefined;
   active?: boolean | null;
+  disabled?: boolean;
 }>();
 
 const active = toRef(componentProps, "active");
@@ -27,6 +28,8 @@ type RoleType = {
 const userData = ref(<User | null>null);
 
 const user = toRef(componentProps, "user");
+
+const disabled = toRef(componentProps, "disabled");
 
 const userRoles = ref(<RoleType[]>[]);
 
@@ -79,7 +82,10 @@ watch(selectedRoles, async newSelectedRoles => {
         },
       });
       if (messages.length > 0) {
-        authStore.addAlerts("success", messages[0].message);
+        authStore.addAlerts(
+          "success",
+          "Role Assignment " + messages[0].message
+        );
       }
     } catch (e: any) {
       authStore.addAlerts("error", e.message);
@@ -105,6 +111,7 @@ watch(selectedRoles, async newSelectedRoles => {
     :multiple="true"
     :chips="true"
     bg-color="#F2F2F223"
+    :disabled="disabled"
   >
   </v-autocomplete>
 </template>

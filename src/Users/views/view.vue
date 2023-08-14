@@ -8,7 +8,9 @@ import ResetCredentialsDropDown from "@/components/ButtonDropDown.vue";
 import ResetCredentialsModal from "@users/components/ResetCredentialsModal.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store/auth-store";
-const { fetchUserRoles, userRoles } = useRoles();
+import { storeToRefs } from "pinia";
+const { fetchUserRoles } = useRoles();
+const { userRoles } = storeToRefs(useRoles());
 const { user, fetchUser, syncUser, enableOrDisableUser, isLoading } =
   useUsers();
 const props = defineProps<{

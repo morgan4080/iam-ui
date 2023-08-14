@@ -81,10 +81,11 @@ if (instance && instance.vnode.key) {
     const result = await v$.value.$validate();
     if (result) {
       const phone = parseNumber(`${state.phoneNumber}`);
-      emit("updated", {
+      const payload = {
         ...state,
         phoneNumber: `${phone?.countryCallingCode}${phone?.nationalNumber}`,
-      });
+      };
+      emit("updated", payload);
       emit("isError", false);
     } else {
       emit("isError", true);
@@ -191,6 +192,7 @@ if (instance && instance.vnode.key) {
       variant="outlined"
       density="compact"
       hide-details="auto"
+      type="email"
       @input="v$.email.$touch"
       @blur="v$.email.$touch"
       @change="

@@ -12,6 +12,8 @@ import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 import ResetCredentialsDropDown from "@/components/ButtonDropDown.vue";
 import ResetCredentialsModal from "@users/components/ResetCredentialsModal.vue";
 import { useAuthStore } from "@/store/auth-store";
+import { useRoles } from "@roles/composables/useRoles";
+import { storeToRefs } from "pinia";
 
 const validateForms = ref(false);
 
@@ -21,6 +23,10 @@ const kopeshaURL = ref(import.meta.env.VITE_KOPESHA_URL);
 
 const { user, isLoading, fetchUser, verifyUnique, editUser, syncUser } =
   useUsers();
+
+const { getLabels } = useRoles();
+
+const { labels } = storeToRefs(useRoles());
 
 const props = defineProps<{
   refId: string;
@@ -38,6 +44,7 @@ const setError = (err: boolean) => {
 
 const form = reactive({
   username: "",
+  password: "",
   firstName: "",
   lastName: "",
   emailAddress: "",
@@ -97,43 +104,6 @@ async function setQuery(obj: { value: string; context: string }) {
   }
 }
 
-const edit = async () => {
-  if (!user.value) return;
-  console.log(form, isError.value);
-  if (!isError.value) {
-    const payload: EditUserPayload = {
-      userRefId: user.value.id,
-      userName: form.username,
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.emailAddress,
-      phoneNumber: form.phoneNumber,
-      ussdPhoneNumber: form.ussdPhoneNumber,
-      isEnabled: form.isEnabled,
-    };
-
-    for (const [key, value] of Object.entries(payload)) {
-      if (!value || value == "") {
-        authStore.addAlerts("warning", `Check form for errors on field ${key}`);
-        return;
-      }
-    }
-
-    await editUser(payload)
-      .then(async response => {
-        if (response) {
-          // await router.push(`/users/${props.refId}/view`);
-          authStore.addAlerts("success", "User Edited successfully");
-        }
-      })
-      .catch((error: string) => {
-        authStore.addAlerts("error", error);
-      });
-  } else {
-    authStore.addAlerts("warning", `Data is Unchanged`);
-  }
-};
-
 const tab = ref(null);
 
 const tabs = ref(["User Details"]);
@@ -189,6 +159,9 @@ const accountStatusGroup = computed(() => {
 
 const accountStatus = ref<"Enabled" | "Disabled">("Disabled");
 const accessType = ref<"Web & Mobile" | "Web">("Web");
+const selectedGroup = ref<{ name: string; value: string } | undefined>(
+  undefined
+);
 
 watch(user, () => {
   accountStatus.value =
@@ -207,14 +180,11 @@ watch(user, () => {
       : "";
     form.isEnabled =
       user.value.isEnabled !== undefined ? user.value.isEnabled : false;
+    if (user.value && user.value.userLabel) {
+      selectedGroup.value = user.value.userLabel;
+    }
   }
 });
-
-const roleGroups = computed(() => {
-  return [];
-});
-
-const selectedGroup = ref(null);
 
 const openKopesha = () => {
   window.open(`${kopeshaURL.value}#/customers/customer_listing`, "_blank");
@@ -239,10 +209,9 @@ watch(accountStatus, newStatus => {
   form.isEnabled = newStatus == "Enabled";
 });
 
-const setWebCredentials = (obj: { email: string; username: string }) => {
-  const { email, username } = obj;
+const setWebCredentials = (obj: { password: string; username: string }) => {
+  const { username } = obj;
   if (username !== "") form.username = username;
-  if (email !== "") form.emailAddress = email;
 };
 
 const setPersonalDetails = (obj: {
@@ -259,13 +228,46 @@ const setPersonalDetails = (obj: {
 };
 
 onMounted(async () => {
-  await fetchUser(props.refId);
+  await Promise.all([getLabels(), fetchUser(props.refId)]);
 });
 
-const submitUser = () => {
-  validateForms.value = !validateForms.value;
-  if (!isError.value) {
-    console.log("submit user", form);
+const submitUser = async () => {
+  try {
+    validateForms.value = !validateForms.value;
+    if (!isError.value && user && user.value) {
+      const payload: {
+        userRefId: string;
+        keycloakId: string;
+        userName: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+        isEnabled: boolean;
+        userLabel: string;
+      } = {
+        userRefId: props.refId,
+        keycloakId: user.value.keycloakId,
+        userName: form.username,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.emailAddress,
+        phoneNumber: form.phoneNumber,
+        isEnabled: form.isEnabled,
+        userLabel: selectedGroup.value ? selectedGroup.value : "",
+      };
+      for (const [key, value] of Object.entries(payload)) {
+        if (value === "") {
+          Reflect.deleteProperty(payload, key);
+        }
+      }
+
+      const response = await editUser(payload);
+
+      await router.push(`/users/${props.refId}/view`);
+    }
+  } catch (e) {
+    console.log(e);
   }
 };
 </script>
@@ -394,9 +396,9 @@ const submitUser = () => {
               <div>
                 <v-autocomplete
                   v-model="selectedGroup"
-                  :items="roleGroups"
+                  :items="labels"
                   item-title="name"
-                  item-value="id"
+                  item-value="value"
                   variant="outlined"
                   :density="'compact'"
                   :hide-details="true"
@@ -553,7 +555,7 @@ const submitUser = () => {
                       v-if="user"
                       :key="`${validateForms}`"
                       :username="form.username"
-                      :email-address="form.emailAddress"
+                      :password="undefined"
                       @set-query="setQuery"
                       @updated="setWebCredentials"
                       @is-error="setError"
