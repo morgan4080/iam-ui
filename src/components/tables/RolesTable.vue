@@ -13,18 +13,20 @@ const {
   pageables,
   changeVisibility,
   setLabel,
-  setAccessType,
+  setApplicationType,
   getLabels,
+  getApplications,
+  clearPageables,
 } = useRoles();
 const { search } = useSearch(pageables, fetchRoles);
 const {
   roles,
   labels,
-  accessTypes,
-  selectedAccessType,
+  selectedApplication,
   selectedLabel,
   headers,
   isLoading,
+  applications,
 } = storeToRefs(useRoles());
 
 const emit = defineEmits(["selectRole", "deleteRole"]);
@@ -42,6 +44,7 @@ const loadItems = (options: optionsType) => {
   pageables.currentPage = options.page - 1;
   fetchRoles();
   getLabels();
+  getApplications();
 };
 
 const showDateRange = ref(false);
@@ -128,18 +131,103 @@ const serverItems = computed(() => {
         class="pt-10 pb-8"
       >
         <v-row class="d-flex gap-4 justify-start">
-          <DropDownMenu
-            placeholder="Select Label"
-            :selected="selectedLabel"
-            :groups="labels"
-            @selected="setLabel($event)"
-          />
-          <DropDownMenu
-            placeholder="Select App Access"
-            :selected="selectedAccessType"
-            :groups="accessTypes"
-            @selected="setAccessType($event)"
-          />
+          <v-menu transition="slide-y-transition">
+            <template #activator="{ props }">
+              <v-btn
+                class="v-btn--size-default text-caption text-capitalize"
+                density="compact"
+                append-icon="mdi:mdi-chevron-down"
+                v-bind="props"
+                :flat="true"
+                style="border: 1px solid rgba(128, 128, 128, 0.25)"
+              >
+                {{ selectedLabel ? selectedLabel.name : "Select Group" }}
+              </v-btn>
+            </template>
+            <v-sheet
+              border
+              rounded
+            >
+              <v-list
+                :nav="true"
+                density="compact"
+                role="listbox"
+                size="small"
+              >
+                <v-list-item
+                  v-for="(label, it) in labels"
+                  :key="it"
+                  :value="it"
+                  density="compact"
+                  size="small"
+                  class="text-caption"
+                  @click="
+                    setLabel(label);
+                    search();
+                  "
+                >
+                  {{ label.name }}
+                </v-list-item>
+              </v-list>
+            </v-sheet>
+          </v-menu>
+          <v-menu transition="slide-y-transition">
+            <template #activator="{ props }">
+              <v-btn
+                class="v-btn--size-default text-caption text-capitalize"
+                density="compact"
+                append-icon="mdi:mdi-chevron-down"
+                v-bind="props"
+                :flat="true"
+                style="border: 1px solid rgba(128, 128, 128, 0.25)"
+              >
+                {{
+                  selectedApplication
+                    ? selectedApplication.name
+                    : "Select App Access"
+                }}
+              </v-btn>
+            </template>
+            <v-sheet
+              border
+              rounded
+            >
+              <v-list
+                :nav="true"
+                density="compact"
+                role="listbox"
+                size="small"
+              >
+                <v-list-item
+                  v-for="(group, it) in applications"
+                  :key="it"
+                  :value="it"
+                  density="compact"
+                  size="small"
+                  class="text-caption"
+                  @click="
+                    setApplicationType(group);
+                    search();
+                  "
+                >
+                  {{ group.name }}
+                </v-list-item>
+              </v-list>
+            </v-sheet>
+          </v-menu>
+          <v-btn
+            class="v-btn--size-default text-caption text-capitalize"
+            density="compact"
+            append-icon="mdi:mdi-close"
+            :flat="true"
+            style="border: 1px solid rgba(128, 128, 128, 0.25)"
+            @click="
+              clearPageables();
+              search();
+            "
+          >
+            Clear Filters
+          </v-btn>
           <v-spacer />
           <v-menu transition="slide-y-transition">
             <template #activator="{ props }">
@@ -190,7 +278,10 @@ const serverItems = computed(() => {
                 append-icon="mdi:mdi-chevron-down"
                 v-bind="props"
                 class="mr-4 text-none text-caption"
-                style="border: 1px solid rgba(128, 128, 128, 0.25)"
+                style="
+                  border: 1px solid rgba(128, 128, 128, 0.25);
+                  display: none;
+                "
               >
                 {{
                   pageables.startDate

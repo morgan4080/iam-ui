@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 import type { Role, ServiceConfigurationType } from "@/Roles/types";
 import { Pageables } from "@/types";
 import { useQueryParams } from "@/composables/useQueryParams";
@@ -11,13 +11,13 @@ export const useRoles = defineStore("roles", () => {
   const authStore = useAuthStore();
   const roles = ref<Role[]>([]);
   const selectedPermissions = ref<string[]>([]);
+  const applications = ref<{ name: string; value: string }[]>([]);
   const userRoles = ref();
   const role = ref<Role | null>(null);
   const isLoading = ref(false);
-  const labels = ref<{ name: string }[]>([]);
+  const labels = ref<{ name: string; value: string }[]>([]);
   const serviceConfiguration = ref<ServiceConfigurationType[]>([]);
   const error = ref<null | unknown>(null);
-  const errors = ref<null | unknown>(null);
   const pageables = reactive({
     recordsPerPage: 10,
     totalRecords: 0,
@@ -25,8 +25,10 @@ export const useRoles = defineStore("roles", () => {
     currentPage: 0,
     sort: "ASC",
     searchTerm: undefined,
-    order: "DESC",
-  }) as Pageables;
+    order: "ASC",
+    group: undefined,
+    appId: undefined,
+  }) as Pageables & { group: string | undefined; appId: string | undefined };
   const { params, generateParams } = useQueryParams(pageables);
 
   const fetchRoles = async () => {
@@ -52,13 +54,35 @@ export const useRoles = defineStore("roles", () => {
     try {
       isLoading.value = true;
       const response = await axios.get(`/users-admin/api/v1/users/labels`);
-      const l = [];
+      const l: { name: string; value: string }[] = [];
       for (const [key, value] of Object.entries(response.data)) {
         l.push({
-          name: key,
+          name: `${value}`,
+          value: `${key}`,
         });
       }
       labels.value = l;
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const getApplications = async () => {
+    try {
+      isLoading.value = true;
+      const response = await axios.get(
+        `/users-admin/api/permissions/applications`
+      );
+      const apps: { name: string; value: string }[] = [];
+      for (const [key, value] of Object.entries(response.data)) {
+        apps.push({
+          name: `${value}`,
+          value: `${key}`,
+        });
+      }
+      applications.value = apps;
     } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
@@ -357,17 +381,38 @@ export const useRoles = defineStore("roles", () => {
     });
   };
 
-  const selectedLabel = ref(null);
+  const selectedLabel = ref<{ name: string; value: string } | undefined>(
+    undefined
+  );
   const setLabel = (group: typeof selectedLabel.value) => {
     selectedLabel.value = group;
+    pageables.group = group?.value;
   };
 
-  const accessTypes = ref([]);
+  const selectedApplication = ref<{ name: string; value: string } | undefined>(
+    undefined
+  );
 
-  const selectedAccessType = ref(null);
+  const setApplicationType = (
+    applicationType: typeof selectedApplication.value
+  ) => {
+    selectedApplication.value = applicationType;
+    pageables.appId = applicationType?.value;
+  };
 
-  const setAccessType = (accessType: typeof selectedAccessType.value) => {
-    selectedAccessType.value = accessType;
+  const clearPageables = () => {
+    selectedApplication.value = undefined;
+    selectedLabel.value = undefined;
+
+    pageables.recordsPerPage = 10;
+    pageables.totalRecords = 0;
+    pageables.totalPages = 0;
+    pageables.currentPage = 0;
+    pageables.sort = "ASC";
+    pageables.searchTerm = undefined;
+    pageables.order = "ASC";
+    pageables.group = undefined;
+    pageables.appId = undefined;
   };
 
   return {
@@ -389,9 +434,8 @@ export const useRoles = defineStore("roles", () => {
     headers,
     changeVisibility,
     setLabel,
-    setAccessType,
-    selectedAccessType,
-    accessTypes,
+    setApplicationType,
+    selectedApplication,
     selectedLabel,
     role,
     serviceConfiguration,
@@ -400,5 +444,8 @@ export const useRoles = defineStore("roles", () => {
     labels,
     updateRole,
     emptySelectedPermissions,
+    getApplications,
+    applications,
+    clearPageables,
   };
 });

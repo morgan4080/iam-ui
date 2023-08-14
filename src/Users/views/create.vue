@@ -38,7 +38,7 @@ const form = reactive({
   emailAddress: "",
   phoneNumber: "",
   ussdPhoneNumber: "",
-  isEnabled: false,
+  isEnabled: true,
 });
 
 const qrObject: QrInterface = {
