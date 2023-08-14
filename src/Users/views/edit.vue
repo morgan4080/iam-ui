@@ -2,7 +2,7 @@
 import { useRouter } from "vue-router";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
-import { QrInterface, EditUserPayload } from "@/Users/types";
+import { QrInterface } from "@/Users/types";
 import CustomCard from "@/components/common/CustomCard.vue";
 import FixedHeader from "@/components/common/FixedHeader.vue";
 import MobileCredentialsForm from "@/components/forms/MobileCredentialsForm.vue";
@@ -159,9 +159,7 @@ const accountStatusGroup = computed(() => {
 
 const accountStatus = ref<"Enabled" | "Disabled">("Disabled");
 const accessType = ref<"Web & Mobile" | "Web">("Web");
-const selectedGroup = ref<{ name: string; value: string } | undefined>(
-  undefined
-);
+const selectedGroup = ref<string>("");
 
 watch(user, () => {
   accountStatus.value =

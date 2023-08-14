@@ -24,7 +24,9 @@ export const useDashboard = defineStore("dashboard", () => {
     searchTerm: undefined,
     startDate: null,
     endDate: null,
-  }) as Pageables;
+    group: undefined,
+    appId: undefined,
+  }) as Pageables & { group: string | undefined; appId: string | undefined };
   const { params, generateParams } = useQueryParams(pageables);
   const activityList = ref<Activity[]>([]);
   const labels = ref([]);
