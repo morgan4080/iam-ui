@@ -116,7 +116,7 @@ const loadItems = (options: optionsType) => {
       </v-col>
       <v-data-table-server
         id="activity-logs"
-        class="text-md-body-2"
+        class="text-sm"
         :items-per-page="pageables.recordsPerPage"
         :headers="headers as any"
         :items-length="pageables.totalRecords"

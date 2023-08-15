@@ -5,28 +5,131 @@ import { useQueryParams } from "@/composables/useQueryParams";
 import { useFetch } from "@vueuse/core";
 import { useAuthStore } from "@/store/auth-store";
 import axios from "axios";
+import { defineStore } from "pinia";
 
-export const useUsers = () => {
+export const useUsers = defineStore("users", () => {
   const authStore = useAuthStore();
   const user = ref<User | null>(null);
   const users = ref<User[] | null>(null);
   const isLoading = ref(false);
   const error = ref<null | unknown>(null);
+  const labels = ref<{ name: string; value: string }[]>([]);
   const pageables = reactive({
     recordsPerPage: 5,
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
     sort: "firstName",
-    order: "DESC",
+    order: "ASC",
     searchTerm: undefined,
     startDate: null,
     endDate: null,
     group: undefined,
     appId: undefined,
-  }) as Pageables & { group: string | undefined; appId: string | undefined };
+    isEnabled: undefined,
+    accessType: undefined,
+    keycloakRoleId: undefined,
+  }) as Pageables & {
+    group: string | undefined;
+    appId: string | undefined;
+    isEnabled: boolean | undefined;
+    accessType: string | undefined;
+    keycloakRoleId: string | undefined;
+  };
 
   const { params, generateParams } = useQueryParams(pageables);
+
+  const headers = ref([
+    {
+      title: "User",
+      key: "user",
+      align: "start",
+      sortable: false,
+      visible: true,
+    },
+    {
+      title: "Username/USSD",
+      key: "username",
+      align: "start",
+      sortable: false,
+      visible: true,
+    },
+    {
+      title: "Access",
+      key: "access",
+      align: "start",
+      sortable: false,
+      visible: true,
+    },
+    {
+      title: "Label",
+      key: "userLabel",
+      align: "start",
+      sortable: false,
+      visible: true,
+    },
+    {
+      title: "Status",
+      key: "status",
+      align: "start",
+      sortable: false,
+      visible: true,
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      align: "start",
+      sortable: false,
+      visible: true,
+    },
+  ]);
+
+  const accessTypes = ref([
+    {
+      name: "Web",
+      value: "WEB",
+    },
+    {
+      name: "Mobile",
+      value: "USSD",
+    },
+  ]);
+
+  const statusTypes = ref([
+    {
+      name: "Enabled",
+      value: true,
+    },
+    {
+      name: "Disabled",
+      value: false,
+    },
+  ]);
+
+  const selectedLabel = ref<{ name: string; value: string } | undefined>(
+    undefined
+  );
+  const selectedStatus = ref<{ name: string; value: boolean } | undefined>(
+    undefined
+  );
+  const selectedAccessType = ref<{ name: string; value: string } | undefined>(
+    undefined
+  );
+
+  const setLabel = (group: typeof selectedLabel.value) => {
+    selectedLabel.value = group;
+    pageables.group = group?.value;
+  };
+
+  const setAccessType = (access: typeof selectedAccessType.value) => {
+    selectedAccessType.value = access;
+    pageables.accessType = access?.value;
+  };
+
+  const setSelectedStatus = (status: typeof selectedStatus.value) => {
+    selectedStatus.value = status;
+    pageables.isEnabled = status?.value;
+  };
 
   async function fetchUser(userRefId: string) {
     isLoading.value = true;
@@ -259,12 +362,9 @@ export const useUsers = () => {
     userRefId: string;
     tenantId: string;
   }) {
-    isLoading.value = true;
-
     const url = `${
       import.meta.env.VITE_APP_ROOT_AUTH
     }/users-admin/api/users/reset-password`;
-
     const { isFetching, error, data } = await useFetch(url)
       .post(payload)
       .json();
@@ -324,6 +424,55 @@ export const useUsers = () => {
     }
   };
 
+  const clearPageables = () => {
+    selectedLabel.value = undefined;
+    selectedStatus.value = undefined;
+    selectedAccessType.value = undefined;
+
+    pageables.recordsPerPage = 5;
+    pageables.totalRecords = 0;
+    pageables.totalPages = 0;
+    pageables.currentPage = 0;
+    pageables.sort = "firstName";
+    pageables.order = "ASC";
+    pageables.searchTerm = undefined;
+    pageables.startDate = null;
+    pageables.endDate = null;
+    pageables.group = undefined;
+    pageables.appId = undefined;
+    pageables.isEnabled = undefined;
+    pageables.accessType = undefined;
+    pageables.keycloakRoleId = undefined;
+  };
+
+  const changeVisibility = (key: string) => {
+    headers.value.forEach(header => {
+      if (header.key === key) {
+        header.visible = !header.visible;
+        header.align = header.align === " d-none" ? " start" : " d-none";
+      }
+    });
+  };
+
+  const getLabels = async () => {
+    try {
+      isLoading.value = true;
+      const response = await axios.get(`/users-admin/api/v1/users/labels`);
+      const l: { name: string; value: string }[] = [];
+      for (const [key, value] of Object.entries(response.data)) {
+        l.push({
+          name: `${value}`,
+          value: `${key}`,
+        });
+      }
+      labels.value = l;
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     user,
     pageables,
@@ -340,5 +489,18 @@ export const useUsers = () => {
     verifyUnique,
     resetWebPassword,
     createUser,
+    clearPageables,
+    headers,
+    changeVisibility,
+    accessTypes,
+    statusTypes,
+    labels,
+    setLabel,
+    setSelectedStatus,
+    setAccessType,
+    selectedAccessType,
+    selectedLabel,
+    selectedStatus,
+    getLabels,
   };
-};
+});

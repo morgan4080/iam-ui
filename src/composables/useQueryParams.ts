@@ -1,12 +1,6 @@
 import { ref } from "vue";
-import { Pageables } from "@/types";
 
-export const useQueryParams = (
-  pageables: Pageables & {
-    group: string | undefined;
-    appId: string | undefined;
-  }
-) => {
+export const useQueryParams = (pageables: any) => {
   const params = ref("");
 
   async function generateParams() {
@@ -15,6 +9,12 @@ export const useQueryParams = (
       queryParams.set("searchTerm", pageables.searchTerm);
     if (pageables.group) queryParams.set("group", pageables.group);
     if (pageables.appId) queryParams.set("appId", pageables.appId);
+    if (pageables.isEnabled !== undefined)
+      queryParams.set("isEnabled", pageables.isEnabled);
+    if (pageables.accessType)
+      queryParams.set("accessType", pageables.accessType);
+    if (pageables.keycloakRoleId)
+      queryParams.set("keycloakRoleId", pageables.keycloakRoleId);
     if (pageables.startDate) queryParams.set("startDate", pageables.startDate);
     if (pageables.endDate) queryParams.set("endDate", pageables.endDate);
     queryParams.set("order", pageables.order);

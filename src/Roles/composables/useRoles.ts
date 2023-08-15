@@ -19,7 +19,7 @@ export const useRoles = defineStore("roles", () => {
   const serviceConfiguration = ref<ServiceConfigurationType[]>([]);
   const error = ref<null | unknown>(null);
   const pageables = reactive({
-    recordsPerPage: 10,
+    recordsPerPage: 5,
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
@@ -404,7 +404,7 @@ export const useRoles = defineStore("roles", () => {
     selectedApplication.value = undefined;
     selectedLabel.value = undefined;
 
-    pageables.recordsPerPage = 10;
+    pageables.recordsPerPage = 5;
     pageables.totalRecords = 0;
     pageables.totalPages = 0;
     pageables.currentPage = 0;

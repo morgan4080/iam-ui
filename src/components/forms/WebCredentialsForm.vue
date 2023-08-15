@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, toRef, watch, getCurrentInstance } from "vue";
-import { required, email } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 const emit = defineEmits(["setQuery", "updated", "isError"]);
@@ -26,7 +26,7 @@ const state = reactive({
 });
 
 const rules = {
-  username: { email, required },
+  username: { required },
   password: {},
 };
 

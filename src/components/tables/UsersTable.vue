@@ -3,8 +3,10 @@ import { computed, ref, toRef } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
 import { useRouter } from "vue-router";
 import { User } from "@users/types";
+import { storeToRefs } from "pinia";
 const router = useRouter();
-const { users, pageables } = useUsers();
+const { pageables } = useUsers();
+const { users } = storeToRefs(useUsers());
 
 const props = defineProps<{
   headers: {
@@ -97,7 +99,7 @@ const loadItems = async (options: optionsType) => {
 <template>
   <v-data-table-server
     id="activity-logs"
-    class="text-md-body-2"
+    class="text-sm"
     :items-per-page="paginationData.recordsPerPage"
     :headers="headers as any"
     :items-length="paginationData.totalRecords"
@@ -139,7 +141,7 @@ const loadItems = async (options: optionsType) => {
       </v-chip>
     </template>
 
-    <template #[`item.group`]="{ item }">
+    <template #[`item.userLabel`]="{ item }">
       <v-chip
         density="compact"
         variant="outlined"
@@ -147,7 +149,7 @@ const loadItems = async (options: optionsType) => {
         color="secondary"
         class="text-caption"
       >
-        {{ item.raw.group }}
+        {{ item.raw.userLabel ? item.raw.userLabel : "_" }}
       </v-chip>
     </template>
 

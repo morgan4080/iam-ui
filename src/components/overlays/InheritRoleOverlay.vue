@@ -31,7 +31,7 @@ const show = toRef(props, "showOverlay");
     :contained="true"
     class="pt-10 align-start justify-center"
     scroll-strategy="block"
-    :width="mobile ? '95%' : '25%'"
+    :width="mobile ? '95%' : '35%'"
   >
     <CustomCard
       title=""

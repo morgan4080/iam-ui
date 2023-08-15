@@ -10,7 +10,9 @@ import type { User } from "@users/types";
 import { useUsers } from "@users/composables/useUsers";
 import { useBreakpoints } from "@vueuse/core";
 import { useAuthStore } from "@/store/auth-store";
+import { storeToRefs } from "pinia";
 const { resetWebPassword } = useUsers();
+const { isLoading } = storeToRefs(useUsers());
 const authStore = useAuthStore();
 
 const props = defineProps<{
@@ -20,7 +22,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["close"]);
 const resetSuccessful = ref(false);
-const loading = ref(false);
 const password = ref<string | null>(null);
 const formattedPassword = ref<string | null>(null);
 const passwordType = ref<"password" | "text">("password");
@@ -54,10 +55,7 @@ async function resetWebPass() {
     if (response) {
       password.value = response.temporaryPassword;
       formatPassword("password");
-      loading.value = false;
       resetSuccessful.value = true;
-    } else {
-      loading.value = false;
     }
   });
 }
@@ -95,14 +93,11 @@ async function resetUSSDPin() {
     };
     const response = await pinChange(payload);
     if (response.messages.some((message: any) => message.type === "SUCCESS")) {
-      loading.value = false;
       resetSuccessful.value = true;
     } else {
-      loading.value = false;
       authStore.addAlerts("error", "Something went wrong");
     }
   } catch (e: any) {
-    loading.value = false;
     authStore.addAlerts("error", e.messages);
   }
 }
@@ -150,10 +145,8 @@ async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
 
 async function reset() {
   if (props.action === "USSD") {
-    loading.value = true;
     await resetUSSDPin();
   } else if (props.action === "WEB") {
-    loading.value = true;
     await resetWebPass();
   }
 }
@@ -189,7 +182,7 @@ const mobile = breakpoints.between("mobile", "tablet");
     :contained="true"
     class="pt-16 align-start justify-center"
     scroll-strategy="block"
-    :width="mobile ? '95%' : '25%'"
+    :width="mobile ? '95%' : '35%'"
   >
     <v-card
       v-if="resetSuccessful"
@@ -327,13 +320,13 @@ const mobile = breakpoints.between("mobile", "tablet");
 
         <v-btn
           v-if="!resetSuccessful"
-          :loading="loading"
+          :loading="isLoading"
           color="error"
           type="button"
           class="text-none"
           @click.prevent="reset"
         >
-          <span :class="{ invisible: loading }"> Reset</span>
+          <span :class="{ invisible: isLoading }"> Reset</span>
         </v-btn>
       </v-card-actions>
     </v-card>

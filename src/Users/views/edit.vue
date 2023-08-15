@@ -21,12 +21,12 @@ const authStore = useAuthStore();
 
 const kopeshaURL = ref(import.meta.env.VITE_KOPESHA_URL);
 
-const { user, isLoading, fetchUser, verifyUnique, editUser, syncUser } =
-  useUsers();
+const { fetchUser, verifyUnique, editUser, syncUser } = useUsers();
 
 const { getLabels } = useRoles();
 
 const { labels } = storeToRefs(useRoles());
+const { user, isLoading } = storeToRefs(useUsers());
 
 const props = defineProps<{
   refId: string;
@@ -176,8 +176,7 @@ watch(user, () => {
     form.ussdPhoneNumber = user.value.ussdPhoneNumber
       ? user.value.ussdPhoneNumber
       : "";
-    form.isEnabled =
-      user.value.isEnabled !== undefined ? user.value.isEnabled : false;
+    form.isEnabled = user.value.isEnabled;
     if (user.value && user.value.userLabel) {
       selectedGroup.value = user.value.userLabel;
     }
@@ -483,7 +482,7 @@ const submitUser = async () => {
             >
               <PersonalDetailsForm
                 v-if="user"
-                :key="`${validateForms}`"
+                :key="Math.random().toString(36).substr(2, 16)"
                 :first-name="form.firstName"
                 :last-name="form.lastName"
                 :phone-number="form.phoneNumber"
@@ -551,7 +550,7 @@ const submitUser = async () => {
 
                     <WebCredentialsForm
                       v-if="user"
-                      :key="`${validateForms}`"
+                      :key="Math.random().toString(36).substr(2, 16)"
                       :username="form.username"
                       :password="undefined"
                       @set-query="setQuery"

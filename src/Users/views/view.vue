@@ -11,8 +11,8 @@ import { useAuthStore } from "@/store/auth-store";
 import { storeToRefs } from "pinia";
 const { fetchUserRoles } = useRoles();
 const { userRoles } = storeToRefs(useRoles());
-const { user, fetchUser, syncUser, enableOrDisableUser, isLoading } =
-  useUsers();
+const { fetchUser, syncUser, enableOrDisableUser } = useUsers();
+const { isLoading, user } = storeToRefs(useUsers());
 const props = defineProps<{
   refId: string;
 }>();

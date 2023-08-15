@@ -104,7 +104,7 @@ watch(isOpen, () => {
     :contained="true"
     class="pt-16 align-start justify-center"
     scroll-strategy="block"
-    :width="mobile ? '95%' : '25%'"
+    :width="mobile ? '95%' : '35%'"
   >
     <CustomCard
       title="Successfully Created Web User"

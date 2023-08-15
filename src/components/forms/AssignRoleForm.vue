@@ -10,9 +10,11 @@ import AddRemoveRoles from "@/components/forms/AddRemoveRoles.vue";
 import { useAuthStore } from "@/store/auth-store";
 import { useRoles } from "@roles/composables/useRoles";
 import { Role } from "@roles/types";
+import { storeToRefs } from "pinia";
 const authStore = useAuthStore();
 const { assign, getRoles } = useRoles();
-const { users, pageables, isLoading, fetchUsers } = useUsers();
+const { pageables, fetchUsers } = useUsers();
+const { users, isLoading } = storeToRefs(useUsers());
 const { search } = useSearch(pageables, fetchUsers);
 
 const componentProps = defineProps<{
@@ -161,7 +163,7 @@ const setUserRolesToAssign = (roles: string[]) => {
       :active="false"
       @assign-roles="setUserRolesToAssign"
     />
-    <div
+    <!--    <div
       class="text-subtitle-1 text-sm-caption mt-2 font-weight-bold text-gray-400 py-2"
     >
       Label
@@ -183,7 +185,7 @@ const setUserRolesToAssign = (roles: string[]) => {
       item-title="name"
       item-value="id"
       hide-details="auto"
-    ></v-autocomplete>
+    ></v-autocomplete>-->
 
     <v-btn
       :loading="loading"

@@ -22,10 +22,7 @@ const isRouterLoaded = computed(() => {
         :is="currentLayout"
         v-if="isRouterLoaded"
       >
-        <div
-          class="flex-col h-screen w-full overflow-y-auto pb-28 relative"
-          style="min-height: 640px"
-        >
+        <div class="pb-44 h-full overflow-y-auto overflow-x-hidden">
           <router-view />
         </div>
       </component>

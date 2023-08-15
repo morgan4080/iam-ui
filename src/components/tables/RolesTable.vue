@@ -108,6 +108,7 @@ const serverItems = computed(() => {
     <CustomCard
       title="Roles Listing"
       sub-title="A List Of All Your Roles"
+      class="px-0 py-0"
     >
       <template #search>
         <div class="align-center d-flex w-full md:w-1/5">
@@ -219,7 +220,8 @@ const serverItems = computed(() => {
             class="v-btn--size-default text-caption text-capitalize"
             density="compact"
             append-icon="mdi:mdi-close"
-            :flat="true"
+            color="primary"
+            variant="tonal"
             style="border: 1px solid rgba(128, 128, 128, 0.25)"
             @click="
               clearPageables();
@@ -314,7 +316,7 @@ const serverItems = computed(() => {
       </v-col>
       <v-data-table-server
         id="activity-logs"
-        class="text-md-body-2"
+        class="text-sm"
         :items-per-page="pageables.recordsPerPage"
         :headers="headers as any"
         :items-length="pageables.totalRecords"
@@ -346,7 +348,18 @@ const serverItems = computed(() => {
         @update:options="loadItems"
       >
         <template #[`item.userCount`]="{ item }">
-          <p class="max-w-xs text-caption">{{ item.raw.userCount }}</p>
+          <v-chip
+            density="compact"
+            variant="outlined"
+            :label="true"
+            color="secondary"
+            class="text-caption"
+            @click="$router.push(`users?keycloakRoleId=${item.raw.keycloakId}`)"
+          >
+            <span class="cursor-pointer">{{
+              item.raw.userCount ? item.raw.userCount : "_"
+            }}</span>
+          </v-chip>
         </template>
         <template #[`item.name`]="{ item }">
           <p class="max-w-xs text-caption">{{ item.raw.name }}</p>
