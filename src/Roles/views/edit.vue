@@ -199,7 +199,7 @@ const editRole = async () => {
                   <option
                     v-for="(label, labelIndex) in labels"
                     :key="labelIndex"
-                    :value="label.name"
+                    :value="label.value"
                   >
                     {{ label.name }}
                   </option>
@@ -296,12 +296,12 @@ const editRole = async () => {
                 >
                   <v-table
                     density="compact"
-                    class="text-caption border-round"
+                    class="text-caption border-round w-full"
                   >
                     <tbody>
                       <tr class="bg-gray-100">
                         <th
-                          class="text-left font-weight-medium text-capitalize cursor-pointer"
+                          class="text-left font-weight-medium text-capitalize cursor-pointer w-10/12"
                           @click="resource.show = !resource.show"
                         >
                           <span>{{ resource.name }}</span>
