@@ -67,7 +67,7 @@ const saveRole = async () => {
       parentRoleIds: form.parentRoleIds,
     });
 
-    await router.back();
+    await router.push("/roles");
   }
 };
 
@@ -309,7 +309,7 @@ const setInheritedRole = (rolesToInherit: typeof form.parentRoleIds) => {
                     <tbody>
                       <tr class="bg-gray-100">
                         <th
-                          class="text-left font-weight-medium text-capitalize cursor-pointer"
+                          class="text-left font-weight-medium text-capitalize cursor-pointer w-10/12"
                           @click="resource.show = !resource.show"
                         >
                           <span>{{ resource.name }}</span>

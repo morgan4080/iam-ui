@@ -99,7 +99,7 @@ const loadItems = async (options: optionsType) => {
 <template>
   <v-data-table-server
     id="activity-logs"
-    class="text-sm"
+    class="text-caption"
     :items-per-page="paginationData.recordsPerPage"
     :headers="headers as any"
     :items-length="paginationData.totalRecords"

@@ -14,9 +14,7 @@ import "vuetify/styles";
 // Composables
 import { createVuetify } from "vuetify";
 import type { ThemeDefinition } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
-import * as labs from "vuetify/labs/components";
+import { VDataTableServer, VDatePicker } from "vuetify/labs/components";
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 
@@ -57,10 +55,9 @@ const Darktheme: ThemeDefinition = {
 
 export default createVuetify({
   components: {
-    ...components,
-    ...labs,
+    VDataTableServer,
+    VDatePicker,
   },
-  directives,
   theme: {
     themes: {
       light: Lighttheme,
