@@ -75,17 +75,19 @@ watch(selectedRoles, async newSelectedRoles => {
   if (active.value !== false && user && user.value) {
     try {
       loading.value = true;
-      const { messages }: any = await assign({
+      const response: any = await assign({
         userRefId: user.value.id,
         payload: {
           roleIds: newSelectedRoles,
         },
       });
-      if (messages.length > 0) {
+      if (response.messages && response.messages.length > 0) {
         authStore.addAlerts(
           "success",
-          "Role Assignment " + messages[0].message
+          "Role Assignment " + response.messages[0].message
         );
+      } else {
+        authStore.addAlerts("success", "Role Assignment Successful");
       }
     } catch (e: any) {
       authStore.addAlerts("error", e.message);

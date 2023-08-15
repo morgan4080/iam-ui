@@ -77,14 +77,19 @@ const assignUserRole = async () => {
 
     try {
       loading.value = true;
-      const { messages }: any = await assign({
+      const response: any = await assign({
         userRefId: state.user,
         payload: {
           roleIds: newSelectedRoles.value,
         },
       });
-      if (messages.length > 0) {
-        authStore.addAlerts("success", messages[0].message);
+      if (response.messages && response.messages.length > 0) {
+        authStore.addAlerts(
+          "success",
+          "Role Assignment " + response.messages[0].message
+        );
+      } else {
+        authStore.addAlerts("success", "Role Assignment Successful");
       }
     } catch (e: any) {
       authStore.addAlerts("error", e.message);
