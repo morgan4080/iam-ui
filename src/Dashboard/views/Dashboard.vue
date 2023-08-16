@@ -26,7 +26,7 @@ const topRoleCounts = computed(() => {
         [k]: v,
       }),
       {}
-    );;
+    );
 });
 </script>
 <template>
