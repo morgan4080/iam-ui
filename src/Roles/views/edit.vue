@@ -265,7 +265,7 @@ const editRole = async () => {
                 <v-card-item class="text-white bg-presta-dark-blue">
                   <template #subtitle>
                     <h4 class="font-medium text-sm">
-                      {{ "Presta " + service.name.toUpperCase() }}
+                      {{ service.name.toUpperCase() }}
                     </h4>
                   </template>
                   <template #append>

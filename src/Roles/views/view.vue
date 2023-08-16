@@ -164,8 +164,28 @@ const tabs = ref(["Role Details"]);
                 <v-card-item class="text-white bg-presta-dark-blue">
                   <template #subtitle>
                     <h4 class="font-medium text-sm">
-                      {{ "Presta " + service.name.toUpperCase() }}
+                      {{ service.name.toUpperCase() }}
                     </h4>
+                  </template>
+                  <template #append>
+                    <v-switch
+                      v-model="service.selected"
+                      density="compact"
+                      color="surface"
+                      hide-details
+                      @update:model-value="
+                        e => {
+                          service.resources = service.resources.map(
+                            resource => {
+                              return {
+                                ...resource,
+                                show: e !== undefined ? e : false,
+                              };
+                            }
+                          );
+                        }
+                      "
+                    ></v-switch>
                   </template>
                 </v-card-item>
                 <div
@@ -187,15 +207,6 @@ const tabs = ref(["Role Details"]);
                           <v-icon
                             :icon="
                               !resource.show ? 'mdi-menu-down' : 'mdi-menu-up'
-                            "
-                          />
-                        </th>
-                        <th class="text-right">
-                          <v-icon
-                            size="small"
-                            color="primary"
-                            :icon="
-                              resource.selected ? 'mdi-check' : 'mdi-minus'
                             "
                           />
                         </th>
@@ -228,6 +239,9 @@ const tabs = ref(["Role Details"]);
                               >
                                 <v-icon
                                   size="small"
+                                  class="bg-black rounded"
+                                  :class="{ 'bg-white': !permission.selected }"
+                                  color="#FFFFFF"
                                   :icon="
                                     permission.selected
                                       ? 'mdi-check'
