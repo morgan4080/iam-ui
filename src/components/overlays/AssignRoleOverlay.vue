@@ -53,6 +53,7 @@ const show = toRef(props, "showOverlay");
         <AssignRoleForm
           :selected-user="selectedUser"
           :selected-role="selectedRole"
+          @close-overlay="emit('hideRolesOverlay')"
         />
       </template>
     </CustomCard>

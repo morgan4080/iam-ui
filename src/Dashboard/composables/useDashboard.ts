@@ -29,6 +29,8 @@ export const useDashboard = defineStore("dashboard", () => {
   }) as Pageables & { group: string | undefined; appId: string | undefined };
   const { params, generateParams } = useQueryParams(pageables);
   const activityList = ref<Activity[]>([]);
+  const userCounts = ref<Record<string, string>>({});
+  const roleCounts = ref<Record<string, number>>({});
   const labels = ref([]);
   const activityTypes = ref([]);
   const loading = ref(false);
@@ -90,6 +92,20 @@ export const useDashboard = defineStore("dashboard", () => {
     pageables.currentPage = response.data.currentPage;
     loading.value = false;
   };
+  const fetchUserCount = async () => {
+    loading.value = true;
+    const response = await axios.get(`/users-admin/api/v1/users/userCounts`);
+    userCounts.value = response.data;
+    loading.value = false;
+  };
+  const fetchRoleCount = async () => {
+    loading.value = true;
+    const response = await axios.get(
+      `/users-admin/api/permissions/roles/count`
+    );
+    roleCounts.value = response.data;
+    loading.value = false;
+  };
   return {
     activityList,
     fetchActivityList,
@@ -103,5 +119,9 @@ export const useDashboard = defineStore("dashboard", () => {
     setGroup: setLabel,
     setActivityType,
     loading,
+    userCounts,
+    fetchUserCount,
+    fetchRoleCount,
+    roleCounts,
   };
 });

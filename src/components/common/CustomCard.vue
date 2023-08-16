@@ -28,12 +28,12 @@ defineProps({
             v-if="title !== '' || subTitle !== ''"
             class="pb-3"
           >
-            <h1
+            <h4
               v-if="title !== ''"
-              class="text-h6 font-weight-regular"
+              class="font-weight-medium"
             >
               {{ title }}
-            </h1>
+            </h4>
             <h2
               v-if="subTitle !== ''"
               class="text-grey-darken-1 font-weight-regular"

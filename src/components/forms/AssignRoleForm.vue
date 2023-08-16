@@ -17,6 +17,8 @@ const { pageables, fetchUsers } = useUsers();
 const { users, isLoading } = storeToRefs(useUsers());
 const { search } = useSearch(pageables, fetchUsers);
 
+const emit = defineEmits(["closeOverlay"]);
+
 const componentProps = defineProps<{
   selectedUser?: User | null;
   selectedRole?: Role | null;
@@ -95,6 +97,7 @@ const assignUserRole = async () => {
       authStore.addAlerts("error", e.message);
     } finally {
       loading.value = false;
+      emit("closeOverlay");
     }
   }
 };

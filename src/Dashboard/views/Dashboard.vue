@@ -1,24 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useUsers } from "@users/composables/useUsers";
+import { computed, onMounted } from "vue";
 import CustomCard from "@/components/common/CustomCard.vue";
 import ActivityLogs from "@/components/tables/ActivityLogs.vue";
-import { useRoles } from "@roles/composables/useRoles";
-const { fetchUsers, users } = useUsers();
-const { getRoles } = useRoles();
-
-const roleCount = ref(0);
-
-getRoles()
-  .then(({ totalRecords }) => {
-    roleCount.value = totalRecords;
-  })
-  .catch((e: any) => {
-    alert(e.message);
-  });
+import { useDashboard } from "@/Dashboard/composables/useDashboard";
+import { storeToRefs } from "pinia";
+const { fetchUserCount, fetchRoleCount } = useDashboard();
+const { roleCounts, userCounts } = storeToRefs(useDashboard());
 
 onMounted(async () => {
-  await fetchUsers();
+  await fetchUserCount();
+  await fetchRoleCount();
+});
+
+const topRoleCounts = computed(() => {
+  const computedRoleCounts = roleCounts.value;
+  Reflect.deleteProperty(computedRoleCounts, "totalRoles");
+  return Object.entries(computedRoleCounts)
+    .sort(([, v1], [, v2]) => v1 - v2)
+    .splice(3)
+    .reverse()
+    .reduce(
+      (obj, [k, v]) => ({
+        ...obj,
+        [k]: v,
+      }),
+      {}
+    );;
 });
 </script>
 <template>
@@ -46,7 +53,7 @@ onMounted(async () => {
             <div class="space-y-2">
               <div class="flex flex-wrap justify-between">
                 <h1 class="text-primary font-normal text-xl">
-                  {{ users ? users.length : 0 }}
+                  {{ userCounts["totalUsers"] ? userCounts["totalUsers"] : 0 }}
                 </h1>
                 <v-btn
                   variant="tonal"
@@ -60,16 +67,15 @@ onMounted(async () => {
               </div>
               <div class="flex gap-4 md:gap-8">
                 <h6 class="text-caption text-grey-darken-1">
-                  Web: <span class="font-semibold text-grey-darken-2">0</span>
+                  Web:
+                  <span class="font-semibold text-grey-darken-2">{{
+                    userCounts["webUsers"]
+                  }}</span>
                 </h6>
                 <h6 class="text-caption text-grey-darken-1">
                   Mobile:
-                  <span class="font-semibold text-grey-darken-2">0</span>
-                </h6>
-                <h6 class="text-caption text-grey-darken-1">
-                  Web & Mobile:
                   <span class="font-semibold text-grey-darken-2">{{
-                    users ? users.length : 0
+                    userCounts["mobileUsers"]
                   }}</span>
                 </h6>
               </div>
@@ -83,7 +89,7 @@ onMounted(async () => {
             <div class="space-y-2">
               <div class="flex flex-wrap justify-between">
                 <h1 class="text-primary font-normal text-xl">
-                  {{ roleCount }}
+                  {{ roleCounts["totalRoles"] ? roleCounts["totalRoles"] : 0 }}
                 </h1>
                 <v-btn
                   variant="tonal"
@@ -96,21 +102,16 @@ onMounted(async () => {
                 </v-btn>
               </div>
               <div class="flex gap-4 md:gap-8">
-                <h6 class="text-caption text-grey-darken-1">
-                  Owner:
-                  <span class="font-semibold text-grey-darken-2">0</span>
-                </h6>
-                <h6 class="text-caption text-grey-darken-1">
-                  Business Manager:
-                  <span class="font-semibold text-grey-darken-2">0</span>
-                </h6>
-                <h6 class="text-caption text-grey-darken-1">
-                  Operator:
-                  <span class="font-semibold text-grey-darken-2">0</span>
-                </h6>
-                <h6 class="text-caption text-grey-darken-1">
-                  Sales Agent:
-                  <span class="font-semibold text-grey-darken-2">0</span>
+                <h6
+                  v-for="(value, name, index) in topRoleCounts"
+                  :key="index"
+                  class="text-caption text-grey-darken-1"
+                  style="text-transform: capitalize !important"
+                >
+                  {{ name }}:
+                  <span class="font-semibold text-grey-darken-2">{{
+                    value
+                  }}</span>
                 </h6>
               </div>
             </div>

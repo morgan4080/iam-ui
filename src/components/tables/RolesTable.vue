@@ -87,10 +87,6 @@ const serverItems = computed(() => {
             name: "edit",
             icon: "mdi-pencil",
           },
-          {
-            name: "role",
-            icon: "mdi-swap-vertical",
-          },
         ],
       };
     });

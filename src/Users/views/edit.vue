@@ -539,7 +539,7 @@ const submitUser = async () => {
                   <v-col>
                     <div class="flex flex-wrap items-center justify-between">
                       <div class="pb-3">
-                        <h3 class="font-weight-regular">Web Credentials</h3>
+                        <h4 class="font-weight-medium">Web Credentials</h4>
                         <h5
                           class="text-grey-darken-1 text-caption font-weight-regular"
                         >

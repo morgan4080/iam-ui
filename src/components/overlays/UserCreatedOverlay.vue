@@ -20,7 +20,7 @@ const props = defineProps<{
 const isOpen = toRef(props, "open");
 const firstName = toRef(props, "firstName");
 const lastName = toRef(props, "lastName");
-const email = toRef(props, "username");
+const username = toRef(props, "username");
 const temporaryPassword = toRef(props, "temporaryPassword");
 const showEmailCopied = ref(false);
 const showPasswordCopied = ref(false);
@@ -41,11 +41,11 @@ function closeModal() {
   emit("close");
 }
 
-const copyToClipboard = async (type: "EMAIL" | "NAME" | "PASSWORD") => {
+const copyToClipboard = async (type: "USERNAME" | "NAME" | "PASSWORD") => {
   try {
-    if (type === "EMAIL") {
+    if (type === "USERNAME") {
       await navigator.clipboard
-        .writeText(email.value)
+        .writeText(username.value)
         .then(() => {
           showEmailCopied.value = true;
           setTimeout(() => (showEmailCopied.value = false), 2000);
@@ -110,21 +110,12 @@ watch(isOpen, () => {
       title="Successfully Created Web User"
       sub-title=""
     >
-      <template #search>
-        <v-btn
-          size="small"
-          variant="flat"
-          icon="mdi-close-circle-outline"
-          class="-mt-12 -mr-6"
-          @click="closeModal"
-        />
-      </template>
       <div>
         <div class="pb-4 flex">
           <p>
             {{
               `A temporary password has been sent to
-                (${email})
+                (${username})
                 Once they click on the email or access the web service, they
                 will be prompted to set a new password.`
             }}
@@ -152,7 +143,7 @@ watch(isOpen, () => {
           <div class="space-y-1 pb-2">
             <div class="flex space-x-4">
               <p class="text-gray-600">
-                {{ "Email" }}
+                {{ "Username" }}
               </p>
               <div
                 v-if="showEmailCopied"
@@ -164,10 +155,10 @@ watch(isOpen, () => {
             <div class="ml-1 flex space-x-2">
               <DocumentDuplicateIcon
                 class="h-5 w-5 hover:cursor-pointer"
-                @click.prevent="copyToClipboard('EMAIL')"
+                @click.prevent="copyToClipboard('USERNAME')"
               />
               <p>
-                {{ email }}
+                {{ username }}
               </p>
             </div>
           </div>
@@ -201,6 +192,14 @@ watch(isOpen, () => {
           </div>
         </div>
       </div>
+      <v-card-actions class="justify-center pt-6 -mx-3 -mb-2">
+        <v-btn
+          variant="elevated"
+          class="bg-green-lighten-1 w-100"
+          @click="closeModal"
+          >CLOSE</v-btn
+        >
+      </v-card-actions>
     </CustomCard>
   </v-overlay>
 </template>

@@ -18,12 +18,12 @@ const highlighted = toRef(props, "highlighted");
       <v-row class="d-flex pb-4 items-center space-y-2 md:space-y-0">
         <v-col class="space-y-2">
           <div class="flex items-center">
-            <h1
-              class="text-h6 font-weight-regular"
+            <h4
+              class="font-weight-medium leading-snug tracking-tight"
               style="text-transform: capitalize !important"
             >
               {{ title }}
-            </h1>
+            </h4>
             <slot name="refreshContent" />
           </div>
           <h2
