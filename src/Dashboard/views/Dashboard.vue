@@ -4,6 +4,7 @@ import CustomCard from "@/components/common/CustomCard.vue";
 import ActivityLogs from "@/components/tables/ActivityLogs.vue";
 import { useDashboard } from "@/Dashboard/composables/useDashboard";
 import { storeToRefs } from "pinia";
+import { cloneDeep } from "lodash";
 const { fetchUserCount, fetchRoleCount } = useDashboard();
 const { roleCounts, userCounts } = storeToRefs(useDashboard());
 
@@ -13,7 +14,7 @@ onMounted(async () => {
 });
 
 const topRoleCounts = computed(() => {
-  const computedRoleCounts = roleCounts.value;
+  const computedRoleCounts = cloneDeep(roleCounts.value);
   Reflect.deleteProperty(computedRoleCounts, "totalRoles");
   return Object.entries(computedRoleCounts)
     .sort(([, v1], [, v2]) => v1 - v2)
@@ -89,7 +90,7 @@ const topRoleCounts = computed(() => {
             <div class="space-y-2">
               <div class="flex flex-wrap justify-between">
                 <h1 class="text-primary font-normal text-xl">
-                  {{ roleCounts["totalRoles"] ? roleCounts["totalRoles"] : 0 }}
+                  {{ roleCounts["totalRoles"] }}
                 </h1>
                 <v-btn
                   variant="tonal"
