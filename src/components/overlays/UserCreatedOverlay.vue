@@ -79,6 +79,10 @@ const copyToClipboard = async (type: "USERNAME" | "NAME" | "PASSWORD") => {
     }
   } catch (e) {
     console.log(e);
+    authStore.addAlerts(
+      "error",
+      "Could not copy, clipboard only works in a secure context"
+    );
   }
 };
 

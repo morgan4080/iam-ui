@@ -78,11 +78,11 @@ async function setQuery(obj: { value: string; context: string }) {
     qrObject.email = value;
     qrObject.username = "";
   }
-  if (context === "phone-number") {
+  /*if (context === "phone-number") {
     qrObject.phoneNumber = value;
     qrObject.email = "";
     qrObject.username = "";
-  }
+  }*/
   if (context === "username") {
     qrObject.phoneNumber = "";
     qrObject.email = "";

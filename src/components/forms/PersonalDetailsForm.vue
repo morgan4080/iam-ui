@@ -1,12 +1,26 @@
 <script setup lang="ts">
-import { reactive, toRef, watch, computed, getCurrentInstance } from "vue";
+import {
+  reactive,
+  toRef,
+  watch,
+  computed,
+  getCurrentInstance,
+  onMounted,
+} from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import { email, helpers, required, numeric } from "@vuelidate/validators";
-import { isValidNumberForRegion, parsePhoneNumber } from "libphonenumber-js";
-
+import {
+  AsYouType,
+  isValidPhoneNumber,
+  parsePhoneNumber,
+} from "libphonenumber-js";
+import { useUsers } from "@users/composables/useUsers";
+import { storeToRefs } from "pinia";
+const { countries } = useUsers();
+const { countrySelected } = storeToRefs(useUsers());
 const emit = defineEmits(["setQuery", "updated", "isError"]);
-
-const validPhone = (value: number) => isValidNumberForRegion(`${value}`, "KE");
+const validPhone = (value: number) =>
+  isValidPhoneNumber(`${value}`, countrySelected.value);
 const instance = getCurrentInstance();
 
 const props = defineProps<{
@@ -51,16 +65,11 @@ const rules = {
 const v$ = useVuelidate(rules, state, { $lazy: true, $autoDirty: true });
 
 const parseNumber = (phoneNo: string) => {
-  return parsePhoneNumber(phoneNo, "KE");
+  return parsePhoneNumber(phoneNo, countrySelected.value);
 };
 
 const phoneChanged = async () => {
   if (v$.value.phoneNumber.$errors.length == 0) {
-    const phone = parseNumber(state.phoneNumber);
-    emit("setQuery", {
-      value: `${phone?.countryCallingCode}${phone?.nationalNumber}`,
-      context: "phone-number",
-    });
     emit("updated", {
       ...state,
     });
@@ -92,6 +101,14 @@ if (instance && instance.vnode.key) {
     }
   })();
 }
+
+onMounted(() => {
+  const asYouType = new AsYouType();
+  asYouType.input(`+${state.phoneNumber}`);
+  if (asYouType.getNumber()?.country) {
+    countrySelected.value = asYouType.getNumber()?.country;
+  }
+});
 </script>
 
 <template>
@@ -165,7 +182,7 @@ if (instance && instance.vnode.key) {
       v-model="state.phoneNumber"
       color="primary"
       :error-messages="v$.phoneNumber.$errors.map(e => e.$message) as any"
-      placeholder="254*********"
+      placeholder="722000000"
       required
       variant="outlined"
       density="compact"
@@ -173,7 +190,40 @@ if (instance && instance.vnode.key) {
       @input="v$.phoneNumber.$touch"
       @blur="v$.phoneNumber.$touch"
       @change="phoneChanged"
-    ></v-text-field>
+    >
+      <template #prepend>
+        <v-autocomplete
+          v-model="countrySelected"
+          :items="countries"
+          item-title="name"
+          item-value="alpha2Code"
+          variant="outlined"
+          :density="'compact'"
+          :hide-details="true"
+          :flat="true"
+          style="width: 150px"
+          auto-select-first
+          :chips="true"
+          placeholder="Country"
+        >
+          <template #chip="{ props, item }">
+            <v-chip
+              v-bind="props"
+              :prepend-avatar="`https://flagcdn.com/h40/${item?.raw?.alpha2Code.toLowerCase()}.png`"
+            ></v-chip>
+          </template>
+          <template #item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :prepend-avatar="`https://flagcdn.com/h40/${item?.raw?.alpha2Code.toLowerCase()}.png`"
+              :title="item?.raw?.name"
+              :subtitle="item?.raw?.code"
+              class="text-caption"
+            />
+          </template>
+        </v-autocomplete>
+      </template>
+    </v-text-field>
 
     <div class="text-subtitle-1 text-sm-caption font-weight-bold py-2">
       Email

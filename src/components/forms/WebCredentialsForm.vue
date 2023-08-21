@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, toRef, watch, getCurrentInstance } from "vue";
+import { computed, reactive, toRef, watch, getCurrentInstance, onMounted } from "vue";
 import { required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import { useUsers } from "@users/composables/useUsers";
+const { canEditUsername } = useUsers();
 
 const emit = defineEmits(["setQuery", "updated", "isError"]);
 const instance = getCurrentInstance();
@@ -54,6 +56,11 @@ if (instance && instance.vnode.key) {
     }
   })();
 }
+
+onMounted(async () => {
+  const response = await canEditUsername();
+  console.log(response);
+});
 </script>
 
 <template>

@@ -82,11 +82,6 @@ async function setQuery(obj: { value: string; context: string }) {
     qrObject.email = value;
     qrObject.username = "";
   }
-  if (context === "phone-number") {
-    qrObject.phoneNumber = value;
-    qrObject.email = "";
-    qrObject.username = "";
-  }
   if (context === "username") {
     qrObject.phoneNumber = "";
     qrObject.email = "";
@@ -148,11 +143,11 @@ const accountStatusGroup = computed(() => {
   return [
     {
       name: "Enabled",
-      value: "enable",
+      value: "Enabled",
     },
     {
       name: "Disabled",
-      value: "disable",
+      value: "Disabled",
     },
   ];
 });
@@ -202,8 +197,9 @@ function closeResetCredentialsModal() {
   resetCredentialModalOpen.value = false;
 }
 
-watch(accountStatus, newStatus => {
-  form.isEnabled = newStatus == "Enabled";
+watch(accountStatus, () => {
+  console.log(accountStatus.value);
+  form.isEnabled = accountStatus.value === "Enabled";
 });
 
 const setWebCredentials = (obj: { password: string; username: string }) => {
@@ -259,7 +255,7 @@ const submitUser = async () => {
         }
       }
 
-      const response = await editUser(payload);
+      await editUser(payload);
 
       await router.push(`/users/${props.refId}/view`);
     }
@@ -286,7 +282,10 @@ const submitUser = async () => {
         :loading="isLoading"
         class="text-none text-caption mx-2 ml-md-8"
         style="border-color: #e4e4e4 !important"
-        @click="syncUser"
+        @click="
+          syncUser(user.id);
+          fetchUser(refId);
+        "
       >
         Refresh
       </v-btn>

@@ -8,10 +8,6 @@
     :permanent="true"
   >
     <v-col>
-      <!--      <v-img
-        width="150"
-        src="@/assets/presta-white-logo-full.png"
-      />-->
       <h1 class="text-h6 pa-5 font-weight-regular">IAM</h1>
     </v-col>
 
@@ -193,8 +189,8 @@
 
           <v-list-item
             :link="true"
-            href="https://accounts.presta.co.ke/"
             density="compact"
+            @click="doLogout"
           >
             <template #append>
               <v-icon icon="mdi:mdi-logout-variant"></v-icon>
@@ -370,12 +366,8 @@ const items = ref<
     href: "#",
     subItems: [
       {
-        text: "Dashboard",
-        href: "/",
-      },
-      {
         text: "Activity Log",
-        href: "/dashboard#activity-logs",
+        href: "/",
       },
     ],
   },
@@ -400,6 +392,21 @@ const redirectAuth = () => {
   authStore.setAuthPrompt(false);
   const currentUrl = window.location.href;
   window.location.href = `${appRoot}?redirect_url=${currentUrl}`;
+};
+
+const doLogout = async () => {
+  try {
+    await fetch(`${import.meta.env.VITE_APP_ROOT_AUTH}/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  } catch (e: any) {
+    console.log(e.message);
+  } finally {
+    window.location.reload();
+  }
 };
 </script>
 

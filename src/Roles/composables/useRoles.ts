@@ -199,7 +199,7 @@ export const useRoles = defineStore("roles", () => {
   const getRoles = (query = ""): Promise<any> => {
     const url = `${
       import.meta.env.VITE_APP_ROOT_AUTH
-    }/users-admin/api/roles${query}`;
+    }/users-admin/api/permissions/roles${query}`;
     const method = "GET";
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {

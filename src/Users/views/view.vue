@@ -179,13 +179,17 @@ const editIAMUser = (group: { name: string; value: string }) => {
   >
     <template #refreshContent>
       <v-btn
+        v-if="user"
         variant="outlined"
         density="compact"
         color="none"
         :loading="isLoading"
         class="text-none text-caption mx-2 ml-md-8"
         style="border-color: #e4e4e4 !important"
-        @click="syncUser"
+        @click="
+          syncUser(user.id);
+          fetchUserData();
+        "
       >
         Refresh
       </v-btn>
@@ -357,7 +361,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                     density="compact"
                     :label="true"
                     variant="tonal"
-                    color="danger"
+                    color="error"
                     class="text-caption"
                   >
                     Disabled
@@ -564,7 +568,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                                         density="compact"
                                         :label="true"
                                         variant="tonal"
-                                        color="danger"
+                                        color="error"
                                         class="text-caption"
                                       >
                                         Disabled
@@ -596,7 +600,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                                         density="compact"
                                         :label="true"
                                         variant="tonal"
-                                        color="danger"
+                                        color="error"
                                         class="text-caption"
                                       >
                                         SET
@@ -672,7 +676,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                                         density="compact"
                                         :label="true"
                                         variant="tonal"
-                                        color="danger"
+                                        color="error"
                                         class="text-caption"
                                       >
                                         Disabled
