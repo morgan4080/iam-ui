@@ -57,7 +57,7 @@ const serverItems = computed(() => {
         ...user,
         user: user.firstName + " " + user.lastName,
         status: user.isEnabled,
-        access: !user.isUSSDDisabled ? "Web & Mobile" : "Web",
+        access: user.accessTypes,
         group: "_",
         actions: [
           {
@@ -132,12 +132,14 @@ const loadItems = async (options: optionsType) => {
   >
     <template #[`item.access`]="{ item }">
       <v-chip
+        v-for="(type, i) in item.raw.access"
+        :key="i"
         density="compact"
         :label="true"
         color="primary"
         class="text-caption"
       >
-        {{ item.raw.access }}
+        {{ type }}
       </v-chip>
     </template>
 

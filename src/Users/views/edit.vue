@@ -153,14 +153,14 @@ const accountStatusGroup = computed(() => {
 });
 
 const accountStatus = ref<"Enabled" | "Disabled">("Disabled");
-const accessType = ref<"Web & Mobile" | "Web">("Web");
+const accessType = ref<string>("Web");
 const selectedGroup = ref<string>("");
 
 watch(user, () => {
   accountStatus.value =
     user && user.value && user.value.isEnabled ? "Enabled" : "Disabled";
   accessType.value =
-    user && user.value && !user.value.isUSSDDisabled ? "Web & Mobile" : "Web";
+    user && user.value ? user.value.accessTypes.join(" & ") : "";
 
   if (user && user.value) {
     form.firstName = user.value.firstName ? user.value.firstName : "";
@@ -498,7 +498,7 @@ const submitUser = async () => {
             md="6"
             sm="12"
           >
-            <v-col v-if="user && !user.isUSSDDisabled">
+            <v-col v-if="user && user.accessTypes.includes('USSD')">
               <v-card
                 color="surface"
                 variant="flat"
@@ -529,7 +529,7 @@ const submitUser = async () => {
                 </v-col>
               </v-card>
             </v-col>
-            <v-col>
+            <v-col v-if="user && user.accessTypes.includes('WEB')">
               <v-card
                 color="surface"
                 variant="flat"

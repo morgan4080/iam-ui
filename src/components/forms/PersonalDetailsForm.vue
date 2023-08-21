@@ -8,7 +8,13 @@ import {
   onMounted,
 } from "vue";
 import { useVuelidate } from "@vuelidate/core";
-import { email, helpers, required, numeric } from "@vuelidate/validators";
+import {
+  email,
+  helpers,
+  required,
+  numeric,
+  requiredIf,
+} from "@vuelidate/validators";
 import {
   AsYouType,
   isValidPhoneNumber,
@@ -19,8 +25,7 @@ import { storeToRefs } from "pinia";
 const { countries } = useUsers();
 const { countrySelected } = storeToRefs(useUsers());
 const emit = defineEmits(["setQuery", "updated", "isError"]);
-const validPhone = (value: number) =>
-  isValidPhoneNumber(`${value}`, countrySelected.value);
+
 const instance = getCurrentInstance();
 
 const props = defineProps<{
@@ -48,12 +53,20 @@ const state = reactive({
   ...initialState.value,
 });
 
+const validPhone = (value: number) => {
+  if (state.phoneNumber !== "") {
+    return isValidPhoneNumber(`${value}`, countrySelected.value);
+  } else {
+    return true;
+  }
+};
+
 const rules = {
   firstName: { required },
   lastName: { required },
-  email: { required, email },
+  email: { email },
   phoneNumber: {
-    required,
+    required: requiredIf(state.phoneNumber),
     numeric,
     validPhone: helpers.withMessage(
       "Please provide a valid number",

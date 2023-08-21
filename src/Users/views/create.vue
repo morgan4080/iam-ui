@@ -148,8 +148,8 @@ const submitUser = async () => {
       lastName: form.lastName,
       userLabel: selectedGroup.value,
       contact: {
-        email: form.emailAddress,
-        phone: form.phoneNumber,
+        email: form.emailAddress !== "" ? form.emailAddress : null,
+        phone: form.phoneNumber !== "" ? form.phoneNumber : null,
       },
       webCredentials: {
         username: form.username,
