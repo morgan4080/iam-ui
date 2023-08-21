@@ -302,24 +302,15 @@ const editIAMUser = (group: { name: string; value: string }) => {
               <v-col>
                 <v-row class="space-x-2 px-2">
                   <v-chip
-                    v-if="!user?.isUSSDDisabled"
+                    v-for="(type, i) in user?.accessTypes"
+                    :key="i"
                     density="compact"
                     :label="true"
                     variant="tonal"
                     color="dark-blue"
                     class="text-caption"
                   >
-                    Web & Mobile
-                  </v-chip>
-                  <v-chip
-                    v-else
-                    density="compact"
-                    :label="true"
-                    variant="tonal"
-                    color="dark-blue"
-                    class="text-caption"
-                  >
-                    Web
+                    {{ type }}
                   </v-chip>
                 </v-row>
               </v-col>
