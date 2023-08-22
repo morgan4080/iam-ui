@@ -1,7 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
-
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
 
 a.router-link-active.router-link-exact-active {
@@ -10,4 +6,120 @@ a.router-link-active.router-link-exact-active {
 
 a.navbar.router-link-active.router-link-exact-active {
   background-color: hsla(199, 89%, 48%, 0.5);
+}
+
+.searchField:focus {
+  outline: rgba(128, 128, 128, 0.35) solid 1px;
+  border: none;
+}
+
+.v-text-field .v-input__details {
+  padding-inline-start: 0 !important;
+}
+
+.v-input__details {
+  font-size: 0;
+}
+
+.v-field {
+  border-radius: 0;
+}
+
+.v-theme--light {
+  --v-border-color: 228, 228, 228 !important;
+}
+
+.v-data-table__tr {
+  --v-border-opacity: 1;
+  color: #081419 !important
+}
+
+.v-data-table__thead {
+  --v-border-opacity: 1;
+}
+
+.v-data-table-footer {
+  margin-top: 20px !important;
+}
+
+.appBar {
+  border-bottom: 1px solid #D9DEE4 !important;
+}
+
+.v-field__input {
+  font-size: .85rem;
+}
+
+.action-btn {
+  align-self: center;
+  border: 0.2px solid #E4E4E4 !important;
+  height: 1.5rem !important;
+}
+
+.action-btn-icon {
+  min-width: 0 !important;
+  padding: 0 6px !important;
+}
+
+.v-field.v-field--appended {
+  --v-field-padding-end: 0px;
+}
+
+.v-field--focused {
+  border: none;
+}
+
+.v-expansion-panel-title__overlay {
+  background: none !important;
+  border-bottom: 1px solid #9d9d9d;
+  border-top: 1px solid #9d9d9d;
+}
+
+.expansion-panel-container {
+  border: 1px solid #e4e4e4;
+}
+
+.v-expansion-panel-text__wrapper {
+  padding: 0 !important;
+}
+
+.expansion-panel {
+  border: 1px solid #9d9d9d;
+  border-top: none;
+}
+.v-data-table-header__content {
+  font-weight: bold !important;
+  color: #081419 !important;
+}
+
+.v-input--disabled {
+  background: #E4E4E4;
+  color: #081419;
+}
+
+.v-field--disabled {
+  opacity: 1 !important;
+}
+
+.bg-presta-dark-blue {
+  background-color: #28637F;
+}
+
+.v-card-subtitle {
+  opacity: 100 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.border-round {
+  border-left: 1px solid rgb(228, 228, 228);
+  border-right: 1px solid rgb(228, 228, 228);
+}
+
+.v-label {
+  opacity: unset !important;
+}
+.customSelect {
+  appearance: auto;
+  width: 100%;
 }

@@ -1,36 +1,33 @@
 <script setup lang="ts">
-import TheNavBar from "./components/TheNavBar.vue";
-import TheFooter from "./components/TheFooter.vue";
-import TheSideBar from "./components/TheSideBar.vue";
-import Notification from "./components/Notification.vue";
-import { useStore } from "vuex";
+import DefaultLayout from "@/layouts/default/Default.vue";
+import BackToTop from "@/components/common/BackToTop.vue";
+import Snackbar from "@/components/common/Snackbar.vue";
+import { useRoute } from "vue-router";
 import { computed } from "vue";
+const route = useRoute();
 
-const store = useStore();
-const notification = computed(() => store.getters.getNotification);
+const currentLayout = computed(() => {
+  return DefaultLayout;
+});
+
+const isRouterLoaded = computed(() => {
+  return route.name !== null;
+});
 </script>
 
 <template>
-  <TheNavBar
-    v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'"
-  />
-  <div class="flex h-full">
-    <TheSideBar
-      v-if="$route.name !== 'Landing' && $route.name !== 'Password-Reset'"
-    />
-    <div class="flex flex-col w-full">
-      <Notification
-        v-if="notification.message"
-        :success="notification.success"
-        :warning="notification.warning"
-        :error="notification.error"
+  <v-app>
+    <v-layout>
+      <component
+        :is="currentLayout"
+        v-if="isRouterLoaded"
       >
-        <p>{{ notification.message }}</p>
-      </Notification>
-      <div class="pb-20">
-        <router-view />
-      </div>
-    </div>
-  </div>
-  <TheFooter />
+        <div class="pb-44 h-full overflow-y-auto overflow-x-hidden">
+          <router-view />
+        </div>
+      </component>
+    </v-layout>
+    <BackToTop />
+    <Snackbar />
+  </v-app>
 </template>

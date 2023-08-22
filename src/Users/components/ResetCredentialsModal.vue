@@ -1,26 +1,19 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  TransitionChild,
-  TransitionRoot,
-} from "@headlessui/vue";
-import {
-  ExclamationTriangleIcon,
   CheckCircleIcon,
   DocumentDuplicateIcon,
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/vue/24/outline";
 import type { User } from "@users/types";
-import { useStore } from "vuex";
-import { mapActions } from "@/modules/mapStore";
 import { useUsers } from "@users/composables/useUsers";
-
-const { pinChange, defineNotification } = mapActions();
+import { useBreakpoints } from "@vueuse/core";
+import { useAuthStore } from "@/store/auth-store";
+import { storeToRefs } from "pinia";
 const { resetWebPassword } = useUsers();
+const { isLoading } = storeToRefs(useUsers());
+const authStore = useAuthStore();
 
 const props = defineProps<{
   open: boolean;
@@ -28,9 +21,7 @@ const props = defineProps<{
   user: User;
 }>();
 const emit = defineEmits(["close"]);
-const store = useStore();
 const resetSuccessful = ref(false);
-const loading = ref(false);
 const password = ref<string | null>(null);
 const formattedPassword = ref<string | null>(null);
 const passwordType = ref<"password" | "text">("password");
@@ -44,11 +35,10 @@ const message = computed(() => {
   } else if (props.action === "WEB") {
     return `Are you sure you want to reset web password for <strong>${props.user.firstName} ${props.user.lastName}</strong> - <strong>${props.user.email}</strong> ?`;
   }
+  return "";
 });
 
-const tenantId = computed(() =>
-  store.state.user ? store.state.user.tenantId : null
-);
+const tenantId = computed(() => authStore.getLoggedInUser?.tenantId);
 
 function closeModal() {
   emit("close");
@@ -58,19 +48,39 @@ async function resetWebPass() {
   const payload = {
     username: props.user.username,
     userRefId: props.user.keycloakId,
-    tenantId: tenantId.value,
+    tenantId: `${tenantId.value}`,
   };
 
   await resetWebPassword(payload).then(response => {
     if (response) {
       password.value = response.temporaryPassword;
       formatPassword("password");
-      loading.value = false;
       resetSuccessful.value = true;
-    } else {
-      loading.value = false;
     }
   });
+}
+
+function pinChange(payload: any) {
+  const url = `${
+    import.meta.env.VITE_APP_ROOT_AUTH
+  }/users-admin/api/v1/auth/ussd/pin?notifyUser=${payload.notifyUser}`;
+  delete payload.notifyUser;
+  return fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(response.statusText);
+    })
+    .catch(error => {
+      throw new Error(error);
+    });
 }
 
 async function resetUSSDPin() {
@@ -83,65 +93,60 @@ async function resetUSSDPin() {
     };
     const response = await pinChange(payload);
     if (response.messages.some((message: any) => message.type === "SUCCESS")) {
-      loading.value = false;
       resetSuccessful.value = true;
     } else {
-      loading.value = false;
-      await defineNotification({
-        message: "Something went wrong",
-        error: true,
-      });
+      authStore.addAlerts("error", "Something went wrong");
     }
   } catch (e: any) {
-    console.log(e);
-    loading.value = false;
-    await defineNotification({ message: e.messages, error: true });
+    authStore.addAlerts("error", e.messages);
   }
 }
 
 async function copyToClipboard(type: "EMAIL" | "NAME" | "PASSWORD") {
-  if (type === "EMAIL") {
-    await navigator.clipboard
-      .writeText(props.user.email)
-      .then(() => {
-        showEmailCopied.value = true;
-        setTimeout(() => (showEmailCopied.value = false), 2000);
-      })
-      .catch(() => {
-        defineNotification({ message: "Could not copy", error: true });
-      });
-  }
-  if (type === "NAME") {
-    const name = props.user.firstName + " " + props.user.lastName;
-    await navigator.clipboard
-      .writeText(name)
-      .then(() => {
-        showNameCopied.value = true;
-        setTimeout(() => (showNameCopied.value = false), 2000);
-      })
-      .catch(() => {
-        defineNotification({ message: "Could not copy", error: true });
-      });
-  }
-  if (type === "PASSWORD" && password.value) {
-    await navigator.clipboard
-      .writeText(password.value)
-      .then(() => {
-        showPasswordCopied.value = true;
-        setTimeout(() => (showPasswordCopied.value = false), 2000);
-      })
-      .catch(() => {
-        defineNotification({ message: "Could not copy", error: true });
-      });
+  try {
+    if (type === "EMAIL") {
+      await navigator.clipboard
+        .writeText(props.user.email)
+        .then(() => {
+          showEmailCopied.value = true;
+          setTimeout(() => (showEmailCopied.value = false), 2000);
+        })
+        .catch(() => {
+          authStore.addAlerts("error", "Could not copy");
+        });
+    }
+    if (type === "NAME") {
+      const name = props.user.firstName + " " + props.user.lastName;
+      await navigator.clipboard
+        .writeText(name)
+        .then(() => {
+          showNameCopied.value = true;
+          setTimeout(() => (showNameCopied.value = false), 2000);
+        })
+        .catch(() => {
+          authStore.addAlerts("error", "Could not copy");
+        });
+    }
+    if (type === "PASSWORD" && password.value) {
+      await navigator.clipboard
+        .writeText(password.value)
+        .then(() => {
+          showPasswordCopied.value = true;
+          setTimeout(() => (showPasswordCopied.value = false), 2000);
+        })
+        .catch(() => {
+          authStore.addAlerts("error", "Could not copy");
+        });
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
 async function reset() {
   if (props.action === "USSD") {
-    loading.value = true;
     await resetUSSDPin();
   } else if (props.action === "WEB") {
-    loading.value = true;
     await resetWebPass();
   }
 }
@@ -156,248 +161,174 @@ function formatPassword(value: "password" | "text") {
     }
   }
 }
+
+const isOpen = ref(props.open);
+
+const breakpoints = useBreakpoints({
+  mobile: 320,
+  tablet: 600,
+  laptop: 960,
+  desktop: 1280,
+  large_desktop: 1920,
+  extra_large_desktop: 2560,
+});
+
+const mobile = breakpoints.between("mobile", "tablet");
 </script>
 
 <template>
-  <TransitionRoot
-    as="template"
-    :show="open"
+  <v-overlay
+    v-model="isOpen"
+    :contained="true"
+    class="pt-16 align-start justify-center"
+    scroll-strategy="block"
+    :width="mobile ? '95%' : '35%'"
   >
-    <Dialog
-      as="div"
-      class="relative z-10"
-      @close="closeModal"
+    <v-card
+      v-if="resetSuccessful"
+      :title="`Successfully reset
+              ${action === 'USSD' ? 'USSD Pin' : 'Web Password'}`"
     >
-      <TransitionChild
-        as="template"
-        enter="ease-out duration-300"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="ease-in duration-200"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
-      >
+      <template #prepend>
         <div
-          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-        />
-      </TransitionChild>
-
-      <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div
-          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+          class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10"
         >
-          <TransitionChild
-            as="template"
-            enter="ease-out duration-300"
-            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            enter-to="opacity-100 translate-y-0 sm:scale-100"
-            leave="ease-in duration-200"
-            leave-from="opacity-100 translate-y-0 sm:scale-100"
-            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          >
-            <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all p-2 sm:my-8 sm:w-full sm:max-w-xl"
-            >
-              <div
-                class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border rounded-sm m-2"
-                :class="resetSuccessful ? 'border-green-500' : 'border-red-500'"
-              >
-                <div class="sm:flex sm:items-start">
-                  <div
-                    v-if="resetSuccessful"
-                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10"
-                  >
-                    <CheckCircleIcon
-                      class="h-6 w-6 text-green-600"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div
-                    v-else
-                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-                  >
-                    <ExclamationTriangleIcon
-                      class="h-6 w-6 text-red-600"
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div
-                    v-if="resetSuccessful"
-                    class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left"
-                  >
-                    <DialogTitle
-                      as="h3"
-                      class="text-base font-noemal leading-6 text-gray-900"
-                    >
-                      Successfully reset
-                      {{ action === "USSD" ? "USSD Pin" : "Web Password" }}
-                    </DialogTitle>
-                    <div class="mt-2">
-                      <p
-                        v-if="action === 'USSD'"
-                        class="text-sm text-gray-500"
-                      >
-                        Please note that the next time they access the USSD
-                        service, they will be prompted to set a new pin.
-                      </p>
-                      <p
-                        v-else
-                        class="text-gray-500 text-sm"
-                      >
-                        A password reset email has been sent to
-                        <strong>{{ user.email }}</strong
-                        >. <br />
-                        Once they click on the email or access the web service,
-                        they will be prompted to set a new password.
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    v-else
-                    class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left"
-                  >
-                    <DialogTitle
-                      as="h3"
-                      class="text-base font-semibold leading-6 text-gray-900"
-                    >
-                      {{
-                        action === "USSD"
-                          ? "Reset USSD Pin"
-                          : "Reset Web Password"
-                      }}
-                    </DialogTitle>
-                    <div class="mt-2">
-                      <p
-                        class="text-gray-500 leading-7 text-sm"
-                        v-html="message"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                v-if="resetSuccessful"
-                class="my-2 px-4 text-sm space-y-4"
-              >
-                <div class="space-y-1">
-                  <div class="flex space-x-4">
-                    <p class="text-gray-600">Name</p>
-                    <div
-                      v-if="showNameCopied"
-                      class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
-                    >
-                      Copied
-                    </div>
-                  </div>
-                  <div class="ml-1 flex space-x-2">
-                    <DocumentDuplicateIcon
-                      class="h-5 w-5 hover:cursor-pointer"
-                      @click.prevent="copyToClipboard('NAME')"
-                    />
-                    <p>{{ user.firstName + " " + user.lastName }}</p>
-                  </div>
-                </div>
-                <div class="space-y-1">
-                  <div class="flex space-x-4">
-                    <p class="text-gray-600">
-                      {{ action === "USSD" ? "Phone number" : "Email" }}
-                    </p>
-                    <div
-                      v-if="showEmailCopied"
-                      class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
-                    >
-                      Copied
-                    </div>
-                  </div>
-                  <div class="ml-1 flex space-x-2">
-                    <DocumentDuplicateIcon
-                      class="h-5 w-5 hover:cursor-pointer"
-                      @click.prevent="copyToClipboard('EMAIL')"
-                    />
-                    <p>
-                      {{
-                        action === "USSD" ? user.ussdPhoneNumber : user.email
-                      }}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  v-if="action === 'WEB'"
-                  class="space-y-1"
-                >
-                  <div class="flex space-x-4">
-                    <p class="text-gray-600">Temporary Password</p>
-                    <div
-                      v-if="showPasswordCopied"
-                      class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
-                    >
-                      Copied
-                    </div>
-                  </div>
-                  <div
-                    class="ml-1 flex space-x-4"
-                    v-if="password"
-                  >
-                    <DocumentDuplicateIcon
-                      class="h-5 w-5 hover:cursor-pointer"
-                      @click.prevent="copyToClipboard('PASSWORD')"
-                    />
-                    <p>{{ formattedPassword }}</p>
-                    <EyeIcon
-                      v-if="passwordType === 'password'"
-                      class="h-5 w-5 hover:cursor-pointer"
-                      @click.prevent="formatPassword('text')"
-                    />
-                    <EyeSlashIcon
-                      v-else
-                      class="h-5 w-5 hover:cursor-pointer"
-                      @click.prevent="formatPassword('password')"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
-                <button
-                  v-if="!resetSuccessful"
-                  type="button"
-                  class="inline-flex w-full justify-center relative rounded-md border border-transparent bg-red-600 px-4 py-1.5 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click.prevent="reset"
-                >
-                  <svg
-                    v-show="loading"
-                    class="w-5 h-5 text-white animate-spin absolute left-1/2 -ml-2.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    />
-                    <path
-                      class="opacity-75"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span :class="{ invisible: loading }"> Reset</span>
-                </button>
-                <button
-                  type="button"
-                  class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-1.5 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-0 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click="closeModal"
-                >
-                  Close
-                </button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
+          <CheckCircleIcon
+            class="h-6 w-6 text-green-600"
+            aria-hidden="true"
+          />
         </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+      </template>
+      <template #text>
+        <div class="pb-4">
+          <p class="">
+            {{
+              action === "USSD"
+                ? "Please note that the next time they access the USSD service,\n" +
+                  "                they will be prompted to set a new pin."
+                : `A password reset email has been sent to
+                (${user.email})
+                Once they click on the email or access the web service, they
+                will be prompted to set a new password.`
+            }}
+          </p>
+        </div>
+        <div class="space-y-1">
+          <div class="flex space-x-4">
+            <p class="text-gray-600">Name</p>
+            <div
+              v-if="showNameCopied"
+              class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
+            >
+              Copied
+            </div>
+          </div>
+          <div class="ml-1 flex space-x-2">
+            <DocumentDuplicateIcon
+              class="h-5 w-5 hover:cursor-pointer"
+              @click.prevent="copyToClipboard('NAME')"
+            />
+            <p>{{ user.firstName + " " + user.lastName }}</p>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <div class="flex space-x-4">
+            <p class="text-gray-600">
+              {{ action === "USSD" ? "Phone number" : "Email" }}
+            </p>
+            <div
+              v-if="showEmailCopied"
+              class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
+            >
+              Copied
+            </div>
+          </div>
+          <div class="ml-1 flex space-x-2">
+            <DocumentDuplicateIcon
+              class="h-5 w-5 hover:cursor-pointer"
+              @click.prevent="copyToClipboard('EMAIL')"
+            />
+            <p>
+              {{ action === "USSD" ? user.ussdPhoneNumber : user.email }}
+            </p>
+          </div>
+        </div>
+        <div
+          v-if="action === 'WEB'"
+          class="space-y-1"
+        >
+          <div class="flex space-x-4">
+            <p class="text-gray-600">Temporary Password</p>
+            <div
+              v-if="showPasswordCopied"
+              class="z-10 bg-green-200 text-green-700 px-1.5 rounded border"
+            >
+              Copied
+            </div>
+          </div>
+          <div
+            v-if="password"
+            class="ml-1 flex space-x-4"
+          >
+            <DocumentDuplicateIcon
+              class="h-5 w-5 hover:cursor-pointer"
+              @click.prevent="copyToClipboard('PASSWORD')"
+            />
+            <p>{{ formattedPassword }}</p>
+            <EyeIcon
+              v-if="passwordType === 'password'"
+              class="h-5 w-5 hover:cursor-pointer"
+              @click.prevent="formatPassword('text')"
+            />
+            <EyeSlashIcon
+              v-else
+              class="h-5 w-5 hover:cursor-pointer"
+              @click.prevent="formatPassword('password')"
+            />
+          </div>
+        </div>
+      </template>
+      <v-card-actions class="px-4">
+        <v-btn
+          variant="outlined"
+          color="secondary"
+          type="button"
+          class="text-none"
+          @click="closeModal"
+        >
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-card
+      v-else
+      :title="action === 'USSD' ? 'Reset USSD Pin' : 'Reset Web Password'"
+      prepend-icon="mdi-alert-circle"
+    >
+      <template #text>
+        <div v-html="message" />
+      </template>
+      <v-card-actions class="px-4">
+        <v-btn
+          color="secondary"
+          type="button"
+          class="text-none"
+          @click="closeModal"
+        >
+          Close
+        </v-btn>
+
+        <v-btn
+          v-if="!resetSuccessful"
+          :loading="isLoading"
+          color="error"
+          type="button"
+          class="text-none"
+          @click.prevent="reset"
+        >
+          <span :class="{ invisible: isLoading }"> Reset</span>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-overlay>
 </template>

@@ -3,7 +3,7 @@ export interface User {
   lastName: string;
   email: string;
   id: string;
-  isEnabled: string;
+  isEnabled: boolean;
   keycloakId: string;
   phoneNumber: string;
   ussdPhoneNumber: string;
@@ -16,6 +16,7 @@ export interface User {
   passwordStatus: string;
   requiredActions: string[];
   accessTypes: string[];
+  userLabel: string;
 }
 
 export interface KeycloakUser {
