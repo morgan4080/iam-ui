@@ -319,7 +319,6 @@ const serverItems = computed(() => {
         no-data-text="No data available"
         loading-text="loading"
         :items-per-page-text="'Show'"
-        :page-text="'entries'"
         :first-icon="''"
         :last-icon="''"
         :show-current-page="true"
@@ -360,17 +359,19 @@ const serverItems = computed(() => {
           <p class="max-w-xs text-caption">{{ item.raw.description }}</p>
         </template>
         <template #[`item.services`]="{ item }">
-          <v-chip
-            v-for="(service, i) in item.raw.services"
-            :key="i"
-            :label="true"
-            color="primary"
-            variant="outlined"
-            density="compact"
-            class="text-caption"
-          >
-            {{ service }}
-          </v-chip>
+          <div class="max-w-sm">
+            <v-chip
+              v-for="(service, i) in item.raw.services"
+              :key="i"
+              :label="true"
+              color="primary"
+              variant="outlined"
+              density="compact"
+              class="text-caption mx-0.5 mb-1"
+            >
+              {{ service }}
+            </v-chip>
+          </div>
         </template>
         <template #[`item.groupName`]="{ item }">
           <v-chip
@@ -378,7 +379,7 @@ const serverItems = computed(() => {
             color="primary"
             variant="outlined"
             density="compact"
-            class="text-caption"
+            class="text-caption mx-0.5"
           >
             {{ item.raw.groupName ? item.raw.groupName.toUpperCase() : "_" }}
           </v-chip>

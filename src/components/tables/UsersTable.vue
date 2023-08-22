@@ -110,7 +110,6 @@ const loadItems = async (options: optionsType) => {
     no-data-text="No data available"
     loading-text="loading"
     :items-per-page-text="'Show'"
-    :page-text="'entries'"
     :first-icon="''"
     :last-icon="''"
     :show-current-page="true"

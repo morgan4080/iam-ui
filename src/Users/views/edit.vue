@@ -104,7 +104,10 @@ const tab = ref(null);
 const tabs = ref(["User Details"]);
 
 const resetCredentialsGroup = computed(() => {
-  if (!user.value?.isUSSDDisabled) {
+  if (
+    user.value?.accessTypes.includes("WEB") &&
+    user.value?.accessTypes.includes("USSD")
+  ) {
     return [
       {
         name: "Reset USSD Pin",
@@ -115,14 +118,29 @@ const resetCredentialsGroup = computed(() => {
         value: "reset-password",
       },
     ];
-  } else {
+  } else if (
+    user.value?.accessTypes.includes("WEB") &&
+    !user.value?.accessTypes.includes("USSD")
+  ) {
     return [
       {
         name: "Reset Web Password",
         value: "reset-password",
       },
     ];
+  } else if (
+    !user.value?.accessTypes.includes("WEB") &&
+    user.value?.accessTypes.includes("USSD")
+  ) {
+    return [
+      {
+        name: "Reset USSD Pin",
+        value: "reset-pin",
+      },
+    ];
   }
+
+  return [];
 });
 
 const resetCredentials = async (group: { name: string; value: string }) => {

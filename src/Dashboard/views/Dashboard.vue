@@ -18,7 +18,6 @@ const topRoleCounts = computed(() => {
   Reflect.deleteProperty(computedRoleCounts, "totalRoles");
   return Object.entries(computedRoleCounts)
     .sort(([, v1], [, v2]) => v1 - v2)
-    .splice(3)
     .reverse()
     .reduce(
       (obj, [k, v]) => ({

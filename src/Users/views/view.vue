@@ -44,7 +44,10 @@ function closeResetCredentialsModal() {
 }
 
 const resetCredentialsGroup = computed(() => {
-  if (!user.value?.isUSSDDisabled) {
+  if (
+    user.value?.accessTypes.includes("WEB") &&
+    user.value?.accessTypes.includes("USSD")
+  ) {
     return [
       {
         name: "Reset USSD Pin",
@@ -55,14 +58,29 @@ const resetCredentialsGroup = computed(() => {
         value: "reset-password",
       },
     ];
-  } else {
+  } else if (
+    user.value?.accessTypes.includes("WEB") &&
+    !user.value?.accessTypes.includes("USSD")
+  ) {
     return [
       {
         name: "Reset Web Password",
         value: "reset-password",
       },
     ];
+  } else if (
+    !user.value?.accessTypes.includes("WEB") &&
+    user.value?.accessTypes.includes("USSD")
+  ) {
+    return [
+      {
+        name: "Reset USSD Pin",
+        value: "reset-pin",
+      },
+    ];
   }
+
+  return [];
 });
 
 const resetCredentials = async (group: { name: string; value: string }) => {
@@ -527,6 +545,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                         :readonly="true"
                       >
                         <v-expansion-panel
+                          v-if="user && user.accessTypes.includes('WEB')"
                           elevation="0"
                           class="rounded-0"
                         >
@@ -635,6 +654,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                           </template>
                         </v-expansion-panel>
                         <v-expansion-panel
+                          v-if="user && user.accessTypes.includes('USSD')"
                           elevation="0"
                           class="rounded-0"
                         >
