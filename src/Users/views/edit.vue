@@ -21,7 +21,8 @@ const authStore = useAuthStore();
 
 const kopeshaURL = ref(import.meta.env.VITE_KOPESHA_URL);
 
-const { fetchUser, verifyUnique, editUser, syncUser } = useUsers();
+const { fetchUser, verifyUnique, editUser, syncUser, updateWebUsername } =
+  useUsers();
 
 const { getLabels } = useRoles();
 
@@ -274,6 +275,8 @@ const submitUser = async () => {
       }
 
       await editUser(payload);
+
+      await updateWebUsername(payload.userRefId, payload.userName);
 
       await router.push(`/users/${props.refId}/view`);
     }

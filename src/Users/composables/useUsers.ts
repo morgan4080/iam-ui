@@ -492,6 +492,20 @@ export const useUsers = defineStore("users", () => {
     }
   };
 
+  const updateWebUsername = async (userRefId: string, username: string) => {
+    try {
+      isLoading.value = true;
+      const response = await axios.put(
+        `/users-admin/api/v1/users/${userRefId}?userName=${username}`
+      );
+      console.log("updated user", response);
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   const countries = ref([
     {
       name: "Afghanistan",
@@ -1999,5 +2013,6 @@ export const useUsers = defineStore("users", () => {
     countries,
     countrySelected,
     canEditUsername,
+    updateWebUsername,
   };
 });
