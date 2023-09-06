@@ -274,11 +274,11 @@ const submitUser = async () => {
         }
       }
 
-      await editUser(payload);
-
-      await updateWebUsername(payload.userRefId, payload.userName);
-
-      await router.push(`/users/${props.refId}/view`);
+      await Promise.all([
+        editUser(payload),
+        updateWebUsername(payload.userRefId, payload.userName),
+        router.push(`/users/${props.refId}/view`),
+      ]);
     }
   } catch (e) {
     console.log(e);

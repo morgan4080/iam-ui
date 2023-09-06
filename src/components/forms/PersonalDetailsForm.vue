@@ -197,7 +197,7 @@ onMounted(() => {
       v-model="state.phoneNumber"
       color="primary"
       :error-messages="v$.phoneNumber.$errors.map(e => e.$message) as any"
-      placeholder="722000000"
+      placeholder="254722000000"
       required
       variant="outlined"
       density="compact"

@@ -136,7 +136,7 @@ const loadItems = async (options: optionsType) => {
         density="compact"
         :label="true"
         color="primary"
-        class="text-caption"
+        class="text-caption mx-0.5"
       >
         {{ type }}
       </v-chip>
