@@ -302,21 +302,13 @@ export const useUsers = defineStore("users", () => {
         ...payload,
       });
 
-      if (response.statusText == "OK" && response.status == 200) {
-        if (response?.data?.messages[0]?.message) {
-          authStore.addAlerts("success", response?.data?.messages[0]?.message);
-        } else {
-          authStore.addAlerts("success", "User Edited Successfully");
-        }
-
-        return response.data;
+      if (response?.data?.messages[0]?.message) {
+        authStore.addAlerts("success", response?.data?.messages[0]?.message);
       } else {
-        authStore.addAlerts(
-          "error",
-          response.status + ": " + "User Creation Failed"
-        );
-        return response.data;
+        authStore.addAlerts("success", "User Edited Successfully");
       }
+
+      return response.data;
     } catch (e: any) {
       authStore.addAlerts("error", JSON.stringify(e));
     } finally {
