@@ -81,6 +81,8 @@ const parseNumber = (phoneNo: string) => {
   return parsePhoneNumber(phoneNo, countrySelected.value);
 };
 
+Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 const phoneChanged = async () => {
   if (v$.value.phoneNumber.$errors.length == 0) {
     emit("updated", {
