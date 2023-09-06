@@ -502,9 +502,10 @@ export const useUsers = defineStore("users", () => {
       const response = await axios.put(
         `/users-admin/api/v1/users/${userRefId}?userName=${username}`
       );
-      console.log("updated user", response);
+      return response.data;
     } catch (e: any) {
-      authStore.addAlerts("error", e.message);
+      authStore.addAlerts("warning", e.message);
+      return Promise.resolve("Exists");
     } finally {
       isLoading.value = false;
     }
