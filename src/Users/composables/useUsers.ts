@@ -302,21 +302,23 @@ export const useUsers = defineStore("users", () => {
         ...payload,
       });
 
-      console.log(response);
+      if (response.statusText == "OK" && response.status == 200) {
+        if (response?.data?.messages[0]?.message) {
+          authStore.addAlerts("success", response?.data?.messages[0]?.message);
+        } else {
+          authStore.addAlerts("success", "User Edited Successfully");
+        }
 
-      if (response?.data?.messages[0]?.message) {
-        authStore.addAlerts("success", response?.data?.messages[0]?.message);
+        return response.data;
       } else {
-        authStore.addAlerts("success", "User Edited Successfully");
+        authStore.addAlerts(
+          "error",
+          response.status + ": " + "User Creation Failed"
+        );
+        return response.data;
       }
-
-      return response.data;
     } catch (e: any) {
-      if (e?.response?.data?.errors[0]?.message) {
-        authStore.addAlerts("error", e.response.data.errors[0].message);
-      } else {
-        authStore.addAlerts("error", e.message);
-      }
+      authStore.addAlerts("error", JSON.stringify(e));
     } finally {
       isLoading.value = false;
     }
@@ -414,16 +416,18 @@ export const useUsers = defineStore("users", () => {
         ...payload,
       });
 
-      authStore.addAlerts("success", "User Created Successfully");
-
-      return response.data;
-    } catch (e: any) {
-      console.log(e);
-      if (e?.response?.data?.errors[0]?.message) {
-        authStore.addAlerts("error", e.response.data.errors[0].message);
+      if (response.statusText == "OK" && response.status == 200) {
+        authStore.addAlerts("success", "User Created Successfully");
+        return response.data;
       } else {
-        authStore.addAlerts("error", e.message);
+        authStore.addAlerts(
+          "error",
+          response.status + ": " + "User Creation Failed"
+        );
+        return response.data;
       }
+    } catch (e: any) {
+      authStore.addAlerts("error", JSON.stringify(e));
     } finally {
       isLoading.value = false;
     }
@@ -485,6 +489,20 @@ export const useUsers = defineStore("users", () => {
         });
       }
       labels.value = l;
+    } catch (e: any) {
+      authStore.addAlerts("error", e.message);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const updateWebUsername = async (userRefId: string, username: string) => {
+    try {
+      isLoading.value = true;
+      const response = await axios.put(
+        `/users-admin/api/v1/users/${userRefId}?userName=${username}`
+      );
+      console.log("updated user", response);
     } catch (e: any) {
       authStore.addAlerts("error", e.message);
     } finally {
@@ -1999,5 +2017,6 @@ export const useUsers = defineStore("users", () => {
     countries,
     countrySelected,
     canEditUsername,
+    updateWebUsername,
   };
 });

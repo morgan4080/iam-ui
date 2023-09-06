@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, reactive, toRef, watch, getCurrentInstance, onMounted } from "vue";
+import {
+  computed,
+  reactive,
+  toRef,
+  watch,
+  getCurrentInstance,
+  onMounted,
+} from "vue";
 import { required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { useUsers } from "@users/composables/useUsers";
@@ -90,6 +97,7 @@ onMounted(async () => {
         density="compact"
         hide-details="auto"
         type="email"
+        autocomplete="off"
         @input="v$.username.$touch"
         @blur="v$.username.$touch"
         @change="
@@ -116,6 +124,7 @@ onMounted(async () => {
         density="compact"
         hide-details="auto"
         type="password"
+        autocomplete="off"
         @change="
           emit('updated', {
             ...state,

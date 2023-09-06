@@ -146,7 +146,7 @@ const submitUser = async () => {
     const payload = {
       firstName: form.firstName,
       lastName: form.lastName,
-      userLabel: selectedGroup.value,
+      groupLabel: selectedGroup.value,
       contact: {
         email: form.emailAddress !== "" ? form.emailAddress : null,
         phone: form.phoneNumber !== "" ? form.phoneNumber : null,
