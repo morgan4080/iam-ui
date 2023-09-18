@@ -419,7 +419,7 @@ export const useUsers = defineStore("users", () => {
         return response.data;
       }
     } catch (e: any) {
-      authStore.addAlerts("error", JSON.stringify(e));
+      authStore.addAlerts("error", JSON.stringify(e.message));
     } finally {
       isLoading.value = false;
     }

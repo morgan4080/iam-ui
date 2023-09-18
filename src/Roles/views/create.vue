@@ -206,7 +206,7 @@ const setInheritedRole = (rolesToInherit: typeof form.parentRoleIds) => {
                     <option
                       v-for="(label, labelIndex) in labels"
                       :key="labelIndex"
-                      :value="label.name"
+                      :value="label.value"
                     >
                       {{ label.name }}
                     </option>
