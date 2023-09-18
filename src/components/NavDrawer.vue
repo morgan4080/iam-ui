@@ -178,8 +178,7 @@
           >
           </v-list-item>
           <v-list-item
-            :link="true"
-            href="https://accounts.presta.co.ke/"
+            :link="false"
             title="Version (Staging)"
             density="compact"
           >
