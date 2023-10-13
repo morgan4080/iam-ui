@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from "vue";
+import { reactive, ref } from "vue";
 import { EnableUserPayload, User } from "@/Users/types";
 import { Pageables } from "@/types";
 import { useQueryParams } from "@/composables/useQueryParams";
@@ -84,7 +84,7 @@ export const useUsers = defineStore("users", () => {
     },
   ]);
 
-  const accessTypes = ref([
+  const userTypes = ref([
     {
       name: "Web",
       value: "WEB",
@@ -153,14 +153,15 @@ export const useUsers = defineStore("users", () => {
         authStore.addAlerts("error", txt);
       })
       .then(async data => {
+        console.log(data);
         user.value = {
           ...data.user,
-          accessTypes: data.accessTypes,
+          userTypes: data.user.userTypes,
           requiredActions: data.requiredActions,
         };
         return {
           ...data.user,
-          accessTypes: data.accessTypes,
+          userTypes: data.user.userTypes,
           requiredActions: data.requiredActions,
         };
       })
@@ -1997,7 +1998,7 @@ export const useUsers = defineStore("users", () => {
     clearPageables,
     headers,
     changeVisibility,
-    accessTypes,
+    userTypes,
     statusTypes,
     labels,
     setLabel,

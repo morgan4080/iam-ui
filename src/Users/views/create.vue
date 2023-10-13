@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useUsers } from "@/Users/composables/useUsers";
 import { QrInterface } from "@/Users/types";
 import CustomCard from "@/components/common/CustomCard.vue";
@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { useRoles } from "@roles/composables/useRoles";
 import { storeToRefs } from "pinia";
 import UserCreatedOverlay from "@/components/overlays/UserCreatedOverlay.vue";
+import MobileCredentialsForm from "@/components/forms/MobileCredentialsForm.vue";
 const { getLabels, assign } = useRoles();
 const { labels } = storeToRefs(useRoles());
 
@@ -78,11 +79,9 @@ async function setQuery(obj: { value: string; context: string }) {
     qrObject.email = value;
     qrObject.username = "";
   }
-  /*if (context === "phone-number") {
+  if (context === "phone-number") {
     qrObject.phoneNumber = value;
-    qrObject.email = "";
-    qrObject.username = "";
-  }*/
+  }
   if (context === "username") {
     qrObject.phoneNumber = "";
     qrObject.email = "";
@@ -117,7 +116,22 @@ const accountStatusGroup = computed(() => {
   ];
 });
 
-const accessType = ref<"Web & Mobile" | "WEB">("WEB");
+const accessType = ref<string[]>([]);
+watch(accessType, () => {
+  isError.value = accessType.value.length <= 0;
+});
+const accessTypes = ref<
+  {
+    name: string;
+  }[]
+>([
+  {
+    name: "WEB",
+  },
+  {
+    name: "USSD",
+  },
+]);
 
 const selectedGroup = ref("");
 
@@ -125,6 +139,11 @@ const setWebCredentials = (obj: { password: string; username: string }) => {
   const { password, username } = obj;
   if (username !== "") form.username = username;
   if (password !== "") form.password = password;
+};
+
+const setMobileCredentials = (obj: { phoneNumber: string }) => {
+  const { phoneNumber } = obj;
+  if (phoneNumber !== "") form.phoneNumber = phoneNumber;
 };
 
 const setPersonalDetails = (obj: {
@@ -156,7 +175,7 @@ const submitUser = async () => {
         password: form.password,
       },
       enabled: form.isEnabled,
-      userTypes: [accessType.value],
+      userTypes: accessType.value,
     };
 
     if (selectedGroup.value == "") {
@@ -328,13 +347,21 @@ const submitUser = async () => {
                 />
               </template>
               <div>
-                <v-text-field
+                <v-autocomplete
                   v-model="accessType"
+                  :items="accessTypes"
+                  item-title="name"
+                  item-value="name"
                   variant="outlined"
                   density="compact"
                   :hide-details="true"
-                  :disabled="true"
-                />
+                  :flat="true"
+                  :multiple="true"
+                  :chips="true"
+                  bg-color="#F2F2F223"
+                  :error="isError"
+                >
+                </v-autocomplete>
               </div>
             </CustomCard>
           </v-col>
@@ -406,6 +433,7 @@ const submitUser = async () => {
               <v-card
                 color="surface"
                 variant="flat"
+                :disabled="!accessType.includes('WEB')"
               >
                 <v-col>
                   <v-col>
@@ -426,6 +454,35 @@ const submitUser = async () => {
                       :password="form.password"
                       @set-query="setQuery"
                       @updated="setWebCredentials"
+                      @is-error="setError"
+                    />
+                  </v-col>
+                </v-col>
+              </v-card>
+            </v-col>
+            <v-col>
+              <v-card
+                color="surface"
+                variant="flat"
+                :disabled="!accessType.includes('USSD')"
+              >
+                <v-col>
+                  <v-col>
+                    <div class="flex flex-wrap items-center justify-between">
+                      <div class="pb-3">
+                        <h4 class="font-weight-medium">Mobile Credentials</h4>
+                        <h5
+                          class="text-grey-darken-1 text-caption font-weight-regular"
+                        >
+                          Edit Your Mobile Credentials
+                        </h5>
+                      </div>
+                    </div>
+                    <MobileCredentialsForm
+                      :key="`${validateForms}`"
+                      :user="null"
+                      @set-query="setQuery"
+                      @updated="setMobileCredentials"
                       @is-error="setError"
                     />
                   </v-col>

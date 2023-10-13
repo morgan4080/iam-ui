@@ -15,7 +15,7 @@ export interface User {
   pinAttempts: number;
   passwordStatus: string;
   requiredActions: string[];
-  accessTypes: string[];
+  userTypes: string[];
   userLabel: string;
 }
 

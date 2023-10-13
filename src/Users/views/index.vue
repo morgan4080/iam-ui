@@ -25,7 +25,7 @@ const {
   headers,
   users,
   isLoading,
-  accessTypes,
+  userTypes,
   statusTypes,
   labels,
   selectedAccessType,
@@ -180,7 +180,7 @@ onMounted(() => {
                   size="small"
                 >
                   <v-list-item
-                    v-for="(type, it) in accessTypes"
+                    v-for="(type, it) in userTypes"
                     :key="it"
                     :value="it"
                     density="compact"

@@ -57,7 +57,7 @@ const serverItems = computed(() => {
         ...user,
         user: user.firstName + " " + user.lastName,
         status: user.isEnabled,
-        access: user.accessTypes,
+        access: user.userTypes,
         group: "_",
         actions: [
           {

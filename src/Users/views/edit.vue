@@ -106,8 +106,8 @@ const tabs = ref(["User Details"]);
 
 const resetCredentialsGroup = computed(() => {
   if (
-    user.value?.accessTypes.includes("WEB") &&
-    user.value?.accessTypes.includes("USSD")
+    user.value?.userTypes.includes("WEB") &&
+    user.value?.userTypes.includes("USSD")
   ) {
     return [
       {
@@ -120,8 +120,8 @@ const resetCredentialsGroup = computed(() => {
       },
     ];
   } else if (
-    user.value?.accessTypes.includes("WEB") &&
-    !user.value?.accessTypes.includes("USSD")
+    user.value?.userTypes.includes("WEB") &&
+    !user.value?.userTypes.includes("USSD")
   ) {
     return [
       {
@@ -130,8 +130,8 @@ const resetCredentialsGroup = computed(() => {
       },
     ];
   } else if (
-    !user.value?.accessTypes.includes("WEB") &&
-    user.value?.accessTypes.includes("USSD")
+    !user.value?.userTypes.includes("WEB") &&
+    user.value?.userTypes.includes("USSD")
   ) {
     return [
       {
@@ -176,10 +176,10 @@ const accessType = ref<string>("Web");
 const selectedGroup = ref<string>("");
 
 watch(user, () => {
+  console.log(user.value);
   accountStatus.value =
     user && user.value && user.value.isEnabled ? "Enabled" : "Disabled";
-  accessType.value =
-    user && user.value ? user.value.accessTypes.join(" & ") : "";
+  accessType.value = user && user.value ? user.value.userTypes.join(" & ") : "";
 
   if (user && user.value) {
     form.firstName = user.value.firstName ? user.value.firstName : "";
@@ -519,7 +519,7 @@ const submitUser = async () => {
             md="6"
             sm="12"
           >
-            <v-col v-if="user && user.accessTypes.includes('USSD')">
+            <v-col v-if="user && user.userTypes.includes('USSD')">
               <v-card
                 color="surface"
                 variant="flat"
@@ -550,7 +550,7 @@ const submitUser = async () => {
                 </v-col>
               </v-card>
             </v-col>
-            <v-col v-if="user && user.accessTypes.includes('WEB')">
+            <v-col v-if="user && user.userTypes.includes('WEB')">
               <v-card
                 color="surface"
                 variant="flat"

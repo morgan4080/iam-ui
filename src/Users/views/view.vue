@@ -45,8 +45,8 @@ function closeResetCredentialsModal() {
 
 const resetCredentialsGroup = computed(() => {
   if (
-    user.value?.accessTypes.includes("WEB") &&
-    user.value?.accessTypes.includes("USSD")
+    user.value?.userTypes.includes("WEB") &&
+    user.value?.userTypes.includes("USSD")
   ) {
     return [
       {
@@ -59,8 +59,8 @@ const resetCredentialsGroup = computed(() => {
       },
     ];
   } else if (
-    user.value?.accessTypes.includes("WEB") &&
-    !user.value?.accessTypes.includes("USSD")
+    user.value?.userTypes.includes("WEB") &&
+    !user.value?.userTypes.includes("USSD")
   ) {
     return [
       {
@@ -69,8 +69,8 @@ const resetCredentialsGroup = computed(() => {
       },
     ];
   } else if (
-    !user.value?.accessTypes.includes("WEB") &&
-    user.value?.accessTypes.includes("USSD")
+    !user.value?.userTypes.includes("WEB") &&
+    user.value?.userTypes.includes("USSD")
   ) {
     return [
       {
@@ -320,7 +320,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
               <v-col>
                 <v-row class="space-x-2 px-2">
                   <v-chip
-                    v-for="(type, i) in user?.accessTypes"
+                    v-for="(type, i) in user?.userTypes"
                     :key="i"
                     density="compact"
                     :label="true"
@@ -545,7 +545,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                         :readonly="true"
                       >
                         <v-expansion-panel
-                          v-if="user && user.accessTypes.includes('WEB')"
+                          v-if="user && user.userTypes.includes('WEB')"
                           elevation="0"
                           class="rounded-0"
                         >
@@ -654,7 +654,7 @@ const editIAMUser = (group: { name: string; value: string }) => {
                           </template>
                         </v-expansion-panel>
                         <v-expansion-panel
-                          v-if="user && user.accessTypes.includes('USSD')"
+                          v-if="user && user.userTypes.includes('USSD')"
                           elevation="0"
                           class="rounded-0"
                         >
